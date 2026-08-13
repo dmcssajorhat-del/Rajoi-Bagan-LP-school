@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Host on GitHub Pages — Rajoi Bagan LP School</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17324E;--soft:#5A7793;--leaf:#1F6B4A;
+  --red:#C8102E;--rule:#CADDEC;--pencil:#F2B705;
+  --gh:#24292F;--gh-btn:#2DA44E;--paper:#FFFDF5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#EAEEF2;font-family:"Karla",sans-serif;color:var(--ink);line-height:1.65;font-size:15px}
+.page{max-width:880px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,.13)}
+
+/* header */
+.hdr{background:var(--gh);color:#fff;padding:26px 36px 20px}
+.hdr h1{font-family:"Baloo 2",sans-serif;font-size:23px;font-weight:800;margin:0 0 4px}
+.hdr p{color:#8B949E;font-size:13.5px}
+.tag{display:inline-block;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:700;
+     letter-spacing:.06em;text-transform:uppercase;background:#238636;color:#fff;margin-left:10px;vertical-align:middle}
+
+/* LIVE URL banner — most prominent element */
+.live-banner{
+  background:linear-gradient(135deg,#0F2D1A 0%,#1F6B4A 100%);
+  padding:22px 36px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.live-dot{width:13px;height:13px;border-radius:50%;background:#2DA44E;flex:none;
+  box-shadow:0 0 0 4px rgba(45,164,78,.3);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(45,164,78,.3)}50%{box-shadow:0 0 0 9px rgba(45,164,78,.08)}}
+.live-text p{color:rgba(255,255,255,.7);font-size:12.5px;margin:0 0 2px}
+.live-url{
+  font-family:"Baloo 2",sans-serif;font-weight:800;font-size:19px;
+  color:#2DA44E;word-break:break-all;letter-spacing:-.01em;
+}
+
+/* file list */
+.fbox{background:#F6F8FA;border:1px solid #D0D7DE;border-radius:10px;
+      padding:14px 18px;margin:20px 36px;font-size:13px}
+.fbox strong{font-family:"Baloo 2",sans-serif;font-size:14px;display:block;margin-bottom:8px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:3px 24px;
+       font-family:monospace;font-size:12.5px;color:var(--red)}
+
+/* steps */
+.steps{padding:4px 36px 36px}
+.step{display:grid;grid-template-columns:46px 1fr;gap:0 20px;margin:28px 0 0;align-items:start}
+.snum{width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;
+      font-family:"Baloo 2",sans-serif;font-weight:800;font-size:18px;
+      display:grid;place-items:center;box-shadow:0 2px 0 rgba(23,50,78,.2)}
+.sbody h2{font-family:"Baloo 2",sans-serif;font-size:17px;font-weight:800;margin:8px 0 9px;color:var(--ink)}
+.sbody p{font-size:14px;margin-bottom:8px;color:#3D4A58}
+.sbody ul,.sbody ol{font-size:14px;padding-left:20px;color:#3D4A58}
+.sbody li{margin-bottom:6px}
+
+/* UI mock elements */
+.ui{display:inline-block;background:#F6F8FA;border:1px solid #D0D7DE;
+    border-radius:6px;padding:2px 9px;font-family:monospace;font-size:13px;
+    color:var(--gh);font-weight:600}
+.ui.grn{background:var(--gh-btn);border-color:#218739;color:#fff}
+.ui.blu{background:#0969DA;border-color:#0969DA;color:#fff}
+
+/* URL display */
+.url{display:block;background:#F6F8FA;border:1px solid #D0D7DE;border-radius:8px;
+     padding:11px 16px;font-family:monospace;font-size:14px;color:var(--leaf);
+     font-weight:700;margin:10px 0;word-break:break-all;letter-spacing:.01em}
+.url.REAL{background:#DFF7E2;border-color:#82CFAA;font-size:15px;padding:13px 18px}
+
+/* screen mockups */
+.screen{background:#F6F8FA;border:1px solid #D0D7DE;border-radius:10px;
+        padding:16px 18px;margin:12px 0;font-size:13px;line-height:1.8}
+.screen .lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+             color:var(--soft);margin-bottom:10px;display:block}
+.field{border:1px solid #D0D7DE;border-radius:6px;padding:7px 11px;
+       font-family:monospace;font-size:13px;background:#fff;display:block;
+       width:100%;margin:4px 0 12px;color:var(--gh)}
+.field.REAL{border-color:#82CFAA;background:#DFF7E2;font-weight:700;color:var(--leaf)}
+.radio-row{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:13px}
+
+/* warn / tip */
+.warn{background:#FFF8C5;border:1px solid #D4A72C;border-left:4px solid #D4A72C;
+      border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13.5px}
+.tip{background:#DFF7E2;border:1px solid #82CFAA;border-left:4px solid var(--leaf);
+     border-radius:8px;padding:12px 16px;margin:12px 0;font-size:13.5px}
+.warn strong,.tip strong{font-family:"Baloo 2",sans-serif;font-size:15px}
+
+.div{border:none;border-top:1px dashed var(--rule);margin:26px 0}
+
+/* update grid */
+.ugrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.ucard{background:#F6F8FA;border:1px solid #D0D7DE;border-radius:10px;
+       padding:14px 16px;font-size:13.5px}
+.ucard h3{font-family:"Baloo 2",sans-serif;font-size:15px;margin-bottom:8px;color:var(--ink)}
+
+/* write-in box */
+.writein{background:#F6F8FA;border:1px solid #D0D7DE;border-radius:10px;
+         padding:16px 20px;margin:20px 0;font-size:14px}
+.writein strong{font-family:"Baloo 2",sans-serif;font-size:15px;display:block;margin-bottom:12px}
+.writein p{margin-bottom:10px}
+.line{display:inline-block;min-width:280px;border-bottom:1px dotted var(--soft)}
+
+/* footer */
+.foot{background:#F6F8FA;border-top:1px solid #D0D7DE;padding:14px 36px;
+      font-size:12.5px;color:var(--soft);display:flex;
+      justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media(max-width:640px){
+  .hdr,.steps{padding-left:18px;padding-right:18px}
+  .fbox{margin:16px 18px}
+  .live-banner{padding:18px}
+  .ugrid{grid-template-columns:1fr}
+  .step{grid-template-columns:38px 1fr;gap:0 14px}
+  .snum{width:38px;height:38px;font-size:15px}
+  .fgrid{grid-template-columns:1fr}
+  .foot{padding:12px 18px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="hdr">
+  <h1>🐙 Host on GitHub Pages <span class="tag">Free Forever</span></h1>
+  <p>Rajoi Bagan LP School &nbsp;·&nbsp; Account: <strong style="color:#fff">dmcssajorhat-del</strong> &nbsp;·&nbsp; Every step with the real names filled in</p>
+</div>
+
+<!-- LIVE URL — show this first so they know where they are headed -->
+<div class="live-banner">
+  <div class="live-dot"></div>
+  <div class="live-text">
+    <p>After completing these steps, your school website will be live at:</p>
+    <div class="live-url">https://dmcssajorhat-del.github.io/Rajoi-Bagan-LP-school</div>
+  </div>
+</div>
+
+<!-- FILE LIST -->
+<div class="fbox">
+  <strong>📁 Before you start — confirm all 25 files are in one folder on your computer:</strong>
+  <div class="fgrid">
+    <span>index.html</span><span>school-logo.png</span>
+    <span>school-gate.jpg</span><span>school-sketch.jpg</span>
+    <span>teacher-niranjan.jpg</span><span>teacher-surajit.jpg</span>
+    <span>teacher-anindita.jpg</span><span>teacher-simki.jpg</span>
+    <span>teacher-ankur.jpg</span><span>teacher-deepshikha.jpg</span>
+    <span>teacher-jutimollika.jpg</span><span>teacher-rabijit.jpg</span>
+    <span>teacher-tarulata.jpg</span><span>teacher-sibani.jpg</span>
+    <span>gallery-school-life.jpg</span><span>gallery-nutrition-garden.jpg</span>
+    <span>gallery-garden-awards.jpg</span><span>gallery-activities.jpg</span>
+    <span>gallery-tiny-tots.jpg</span><span>gallery-ecce.jpg</span>
+    <span>gallery-community.jpg</span><span>gallery-multigrade.jpg</span>
+    <span>gallery-hm-awards.jpg</span><span>HM-Guide.html</span>
+    <span>GitHub_Hosting_Steps.html</span>
+  </div>
+</div>
+
+<!-- ============ STEPS ============ -->
+<div class="steps">
+
+<!-- STEP 1 -->
+<div class="step">
+  <div class="snum">1</div>
+  <div class="sbody">
+    <h2>Sign in to GitHub</h2>
+    <p>Open your browser and go to:</p>
+    <span class="url">https://github.com/login</span>
+    <p>Type the school email and password. Click the green <span class="ui grn">Sign in</span> button.</p>
+    <div class="tip">
+      <strong>✓ You are signed in when</strong> you see the profile icon or initials <strong>dmcssajorhat-del</strong> in the top-right corner.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 2 -->
+<div class="step">
+  <div class="snum">2</div>
+  <div class="sbody">
+    <h2>Create the repository</h2>
+    <p>Click the <span class="ui">+</span> icon at the top-right corner of the page. A small dropdown menu appears. Click <span class="ui">New repository</span>.</p>
+
+    <div class="screen">
+      <span class="lbl">Fill in the form exactly like this — green boxes show what you type:</span>
+
+      <label style="font-size:13px;font-weight:700;display:block;margin-bottom:2px">Owner</label>
+      <div class="field">dmcssajorhat-del</div>
+
+      <label style="font-size:13px;font-weight:700;display:block;margin-bottom:2px">Repository name</label>
+      <div class="field REAL">Rajoi-Bagan-LP-school</div>
+      <p style="font-size:12px;color:#8B949E;margin-top:-8px;margin-bottom:12px">
+        ⚠️ Type the name exactly as shown above — capital letters and hyphens must match.
+      </p>
+
+      <label style="font-size:13px;font-weight:700;display:block;margin-bottom:2px">Description (optional)</label>
+      <div class="field REAL">Official website of Rajoi Bagan LP School, Jorhat, Assam</div>
+
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px">Visibility</div>
+      <div class="radio-row"><input type="radio" checked readonly> <strong>Public</strong> &nbsp;<span style="color:#8B949E;font-size:12px">— must be Public, otherwise GitHub Pages will not work on a free account</span></div>
+      <div class="radio-row" style="color:#8B949E"><input type="radio" disabled> Private</div>
+
+      <div style="margin-top:12px">
+        <div class="radio-row"><input type="checkbox" readonly> <span style="color:#8B949E">Add a README file — leave this <strong>unticked</strong></span></div>
+      </div>
+    </div>
+
+    <p>Scroll down and click:</p>
+    <span class="ui grn" style="display:inline-block;padding:9px 20px;border-radius:8px;font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:700;margin-top:4px">Create repository</span>
+
+    <div class="tip" style="margin-top:14px">
+      <strong>✓ Success</strong> — GitHub shows a new empty page with the heading <strong>dmcssajorhat-del / Rajoi-Bagan-LP-school</strong>.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 3 -->
+<div class="step">
+  <div class="snum">3</div>
+  <div class="sbody">
+    <h2>Upload all 25 files</h2>
+    <p>On the empty repository page, look for the line that says <em>"…or upload an existing file"</em> and click the link <span class="ui">uploading an existing file</span>.</p>
+
+    <div class="warn">
+      <strong>⚠️ Select files — not the folder</strong><br>
+      Open the school website folder in File Explorer (Windows) or Finder (Mac).<br>
+      Press <strong>Ctrl + A</strong> (Windows) &nbsp;or&nbsp; <strong>Cmd + A</strong> (Mac) to select all files inside.<br>
+      Drag those selected files into the GitHub upload box.<br>
+      <strong>Do NOT drag the folder itself</strong> — GitHub needs the individual files, not the folder.
+    </div>
+
+    <p>A large dashed box appears on screen. Drop all 25 files into it. Each filename appears in a list as it uploads. This may take <strong>2–4 minutes</strong> on a slow connection — wait for all 25 to appear before continuing.</p>
+
+    <div class="screen">
+      <span class="lbl">After all files appear, scroll down to the "Commit changes" section:</span>
+      <div style="background:#fff;border:1px solid #D0D7DE;border-radius:8px;padding:14px 16px;margin-top:6px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:8px">Commit changes</div>
+        <div class="field REAL">Upload 25 school website files</div>
+        <div style="font-size:12px;color:#8B949E;margin-bottom:12px">Leave the second box (extended description) blank. Keep <em>"Commit directly to the main branch"</em> selected.</div>
+        <span class="ui grn" style="display:inline-block;padding:7px 16px;border-radius:7px;font-weight:700">Commit changes</span>
+      </div>
+    </div>
+
+    <p>Click <span class="ui grn">Commit changes</span>. GitHub saves and stores all your files.</p>
+
+    <div class="tip">
+      <strong>✓ Check the upload worked</strong> — You should now see a list of all 25 files in the repository. Scroll through and confirm <code>index.html</code> is there. If you see fewer files, some may have been missed — upload them again using <span class="ui">Add file → Upload files</span>.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 4 -->
+<div class="step">
+  <div class="snum">4</div>
+  <div class="sbody">
+    <h2>Turn on GitHub Pages</h2>
+    <p>This is the one step that publishes the website. It only needs to be done <strong>once</strong>.</p>
+    <ol>
+      <li>Click <span class="ui">⚙ Settings</span> in the top menu of the repository.</li>
+      <li>In the left sidebar, scroll down and click <span class="ui">Pages</span>.</li>
+      <li>You will see a section called <strong>Build and deployment</strong>.</li>
+      <li>Under <strong>Source</strong>, the dropdown says <em>"Deploy from a branch"</em> — <strong>leave it as is</strong>.</li>
+      <li>Under <strong>Branch</strong>, click the dropdown that says <em>"None"</em>. Select <span class="ui">main</span>.</li>
+      <li>The second dropdown next to it says <span class="ui">/ (root)</span> — <strong>leave it as is</strong>.</li>
+      <li>Click the <span class="ui blu">Save</span> button.</li>
+    </ol>
+
+    <div class="screen">
+      <span class="lbl">Pages settings should now look exactly like this:</span>
+      <div style="font-size:13px;line-height:2.2;padding:4px 0">
+        <div><strong>Source:</strong> &nbsp;Deploy from a branch</div>
+        <div><strong>Branch:</strong> &nbsp;
+          <span class="ui" style="background:#DFF7E2;border-color:#82CFAA;color:var(--leaf);font-weight:700">main</span>
+          &nbsp;&nbsp;
+          <span class="ui">/ (root)</span>
+          &nbsp;&nbsp;
+          <span class="ui blu" style="padding:5px 14px;border-radius:7px">Save</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="warn">
+      <strong>⏳ Wait 3–5 minutes after clicking Save.</strong><br>
+      GitHub is building the website in the background. Do not close the tab.<br>
+      After 3 minutes, refresh the <strong>Settings → Pages</strong> page.
+    </div>
+
+    <p>When ready, a green banner appears at the top of the Pages settings page:</p>
+    <div class="screen" style="background:#DFF7E2;border-color:#82CFAA">
+      <span style="color:var(--leaf);font-weight:700;font-size:13.5px">
+        ✅ &nbsp;Your site is live at
+        https://dmcssajorhat-del.github.io/Rajoi-Bagan-LP-school
+      </span>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 5 -->
+<div class="step">
+  <div class="snum">5</div>
+  <div class="sbody">
+    <h2>Open and check the live website</h2>
+    <p>Click the link in the green banner, or open this address on any phone or computer:</p>
+    <span class="url REAL">https://dmcssajorhat-del.github.io/Rajoi-Bagan-LP-school</span>
+
+    <p><strong>Check every page — on a phone, not just the computer:</strong></p>
+    <ul>
+      <li><strong>Home</strong> — school logo in header ✓ · Assamese name ✓ · sketch ✓ · gate photo ✓ · Head Master photo in note ✓</li>
+      <li><strong>Classes</strong> — 6 class cards with correct numbers ✓</li>
+      <li><strong>Our record</strong> — bar chart with 16 years of data ✓</li>
+      <li><strong>Notice board</strong> — 3 sample notices appear ✓</li>
+      <li><strong>Gallery</strong> — 9 collage images load ✓ · clicking opens full screen ✓</li>
+      <li><strong>Students</strong> — 176 names in the table ✓ · search bar filters correctly ✓ · class cards clickable ✓</li>
+      <li><strong>Teachers</strong> — 10 teacher cards with real photos ✓</li>
+      <li><strong>Admissions</strong> — contact details appear ✓</li>
+    </ul>
+
+    <div class="tip">
+      <strong>✓ Share immediately</strong> — Send this link in the school WhatsApp group and ask one parent to open it and confirm it works on their phone.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 6 -->
+<div class="step">
+  <div class="snum">6</div>
+  <div class="sbody">
+    <h2>How to update the website in future</h2>
+    <div class="ugrid">
+      <div class="ucard">
+        <h3>📋 Add a notice</h3>
+        Add a row to the <strong>School Notices</strong> Google Sheet. Appears on the website within 1–2 minutes. <strong>No GitHub needed.</strong>
+      </div>
+      <div class="ucard">
+        <h3>📝 Change any text</h3>
+        Go to the repository → click <code>index.html</code> → click the ✏️ pencil icon → make the change → click <span class="ui grn" style="padding:2px 8px">Commit changes</span>. Live in ~1 minute.
+      </div>
+      <div class="ucard">
+        <h3>🖼️ Replace a photo</h3>
+        Go to the repository → <span class="ui">Add file</span> → <span class="ui">Upload files</span> → upload the new image with the <strong>exact same filename</strong> → <span class="ui grn" style="padding:2px 8px">Commit changes</span>.
+      </div>
+      <div class="ucard">
+        <h3>📊 New year's enrolment</h3>
+        Open <code>index.html</code> in the repository. Click ✏️. Find the <code>enrolment:</code> table. Add one line at the bottom. Commit. Chart and all figures update automatically.
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- WRITE-IN BOX -->
+<div class="writein">
+  <strong>📌 Write this down and keep near the office table</strong>
+  <p>Website address: <span class="line" style="color:var(--leaf);font-weight:700">&nbsp;https://dmcssajorhat-del.github.io/Rajoi-Bagan-LP-school&nbsp;</span></p>
+  <p>GitHub username: <span class="line" style="color:var(--leaf);font-weight:700">&nbsp;dmcssajorhat-del&nbsp;</span></p>
+  <p>Repository name: <span class="line" style="color:var(--leaf);font-weight:700">&nbsp;Rajoi-Bagan-LP-school&nbsp;</span></p>
+  <p>Password kept with: <span class="line">&nbsp;</span></p>
+  <p>Website published on: <span class="line">&nbsp;</span></p>
+</div>
+
+</div><!-- end .steps -->
+
+<div class="foot">
+  <span>Rajoi Bagan LP School &nbsp;·&nbsp; Rajoi, Central Jorhat, Assam</span>
+  <span>GitHub Pages &nbsp;·&nbsp; Cost: ₹0 &nbsp;·&nbsp; Never expires</span>
+</div>
+
+</div><!-- end .page -->
+</body>
+</html>
