@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rajoi Bagan LP School — Pre-Primary to Class V, Jorhat</title>
+<meta name="description" content="Rajoi Bagan LP School, Rajoi cluster, Central Jorhat. Assamese-medium government school for Pre-Primary to Class V. Notices, classes, enrolment record and admission enquiries." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Karla:wght@400;500;700&family=Noto+Sans+Bengali:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   RAJOI BAGAN LP SCHOOL
+   Motif: a school exercise book — ruled paper, red margin line,
+   ink-navy writing. Accent green from the tea gardens of Jorhat.
+   ============================================================ */
+:root{
+  --paper:      #FFFDF5;
+  --paper-deep: #F4EFE1;
+  --ink:        #17324E;
+  --ink-soft:   #5A7793;
+  --rule:       #CADDEC;
+  --margin-red: #C8102E;
+  --leaf:       #1F6B4A;
+  --leaf-soft:  #A9CDB9;
+  --pencil:     #F2B705;
+  --shadow-tag: 0 2px 0 rgba(23,50,78,.14);
+  --radius: 14px;
+  --maxw: 1080px;
+  --margin-x: 84px;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+body{
+  margin:0;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(to bottom, transparent 31px, var(--rule) 31px, var(--rule) 32px, transparent 32px);
+  background-size: 100% 32px;
+  color: var(--ink);
+  font-family:"Karla", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:17px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:""; position:fixed; top:0; bottom:0; left:var(--margin-x);
+  width:2px; background:var(--margin-red); opacity:.42; z-index:1; pointer-events:none;
+}
+@media (max-width:860px){ :root{ --margin-x:22px; } body::before{ opacity:.3; } }
+
+.wrap{ max-width:var(--maxw); margin:0 auto; padding:0 26px 0 calc(var(--margin-x) + 26px); position:relative; z-index:2; }
+@media (min-width:1300px){ .wrap{ padding-left:26px; padding-right:26px; } }
+
+h1,h2,h3{ font-family:"Baloo 2", cursive, sans-serif; font-weight:800; line-height:1.1; letter-spacing:-.01em; margin:0; }
+h2{ font-size:clamp(1.75rem,3.6vw,2.5rem); }
+h3{ font-size:1.2rem; font-weight:700; }
+p{ margin:0 0 1rem; }
+a{ color:var(--margin-red); }
+
+.eyebrow{
+  font-size:.74rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-soft); display:flex; align-items:center; gap:10px; margin:0 0 14px;
+}
+.eyebrow::after{ content:""; flex:1; height:1px; background:var(--rule); max-width:120px; }
+
+/* ---------- header ---------- */
+header.site{ position:sticky; top:0; z-index:40; background:rgba(255,253,245,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--rule); }
+.bar{ display:flex; align-items:center; gap:18px; min-height:70px; }
+.brand{ display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; margin-right:auto; }
+.site-logo{
+  width:46px;height:46px;flex:none;border-radius:50%;
+  object-fit:contain;background:transparent;
+  filter:drop-shadow(0 2px 4px rgba(23,50,78,.18));
+}
+.brand b{ font-family:"Baloo 2",sans-serif; font-size:1.12rem; font-weight:800; display:block; line-height:1.15; }
+.brand span{ font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); white-space:nowrap; }
+@media (max-width:560px){
+  header.site .wrap{ padding-left:calc(var(--margin-x) + 12px); padding-right:14px; }
+  .brand{ min-width:0; }
+  .brand b{ font-size:.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .brand span{ font-size:.6rem; letter-spacing:.06em; }
+  .crest{ width:34px; height:34px; font-size:.82rem; border-radius:9px; }
+  .bar{ gap:9px; min-height:62px; }
+  .menu-btn{ padding:8px 11px; font-size:.88rem; }
+}
+nav.main{ display:flex; gap:2px; }
+nav.main a{ text-decoration:none; color:var(--ink); font-weight:700; font-size:.93rem; padding:9px 13px; border-radius:9px; }
+nav.main a:hover{ background:var(--paper-deep); }
+nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
+.menu-btn{ display:none; border:1px solid var(--rule); background:var(--paper); border-radius:10px; padding:9px 12px; font:inherit; font-weight:700; cursor:pointer; }
+@media (max-width:900px){
+  nav.main{ position:absolute; top:100%; left:0; right:0; flex-direction:column; gap:2px;
+    background:var(--paper); border-bottom:1px solid var(--rule);
+    padding:10px 26px 16px calc(var(--margin-x) + 26px); display:none; }
+  nav.main.open{ display:flex; }
+  .menu-btn{ display:block; }
+}
+
+/* ---------- pages ---------- */
+.page{ display:none; padding:44px 0 72px; }
+.page.active{ display:block; animation:rise .38s ease both; }
+@keyframes rise{ from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:none;} }
+
+/* ---------- hero ---------- */
+.hero{ padding-top:26px; padding-bottom:10px; }
+.hero-grid{ display:grid; grid-template-columns:1.22fr .78fr; gap:40px; align-items:center; }
+@media (max-width:900px){ .hero-grid{ grid-template-columns:1fr; gap:30px; } }
+.hero h1{ font-size:clamp(2.4rem,6vw,4rem); margin:0 0 4px; }
+.hero h1 .line{ display:block; overflow:hidden; }
+.hero h1 .line > span{ display:block; animation:up .7s cubic-bezier(.2,.7,.2,1) both; }
+.hero h1 .line:nth-child(2) > span{ animation-delay:.09s; }
+@keyframes up{ from{transform:translateY(105%);} to{transform:none;} }
+.assamese{
+  font-family:"Noto Sans Bengali","Baloo 2",sans-serif;
+  font-size:clamp(1.05rem,2.2vw,1.35rem); font-weight:600;
+  color:var(--leaf); margin:0 0 6px; line-height:1.5;
+}
+.motto{
+  font-family:"Baloo 2", cursive, sans-serif;
+  font-weight:600; font-size:clamp(1.15rem,2.4vw,1.5rem);
+  line-height:1.25; color:var(--leaf); max-width:22ch; margin:0 0 14px;
+}
+.lede{ font-size:1.1rem; max-width:48ch; }
+.cta-row{ display:flex; flex-wrap:wrap; gap:12px; margin-top:22px; }
+.btn{ display:inline-block; text-decoration:none; font-weight:700; font-size:.95rem; padding:13px 20px;
+  border-radius:11px; border:2px solid var(--ink); background:var(--ink); color:var(--paper);
+  box-shadow:var(--shadow-tag); cursor:pointer; font-family:inherit; }
+.btn.ghost{ background:transparent; color:var(--ink); }
+.btn.red{ background:var(--margin-red); border-color:var(--margin-red); color:#fff; }
+.illus{ width:100%; height:auto; display:block; }
+.sketch{ width:100%; height:auto; display:block; border-radius:8px; }
+.hero-sketch{ animation:sketchIn .9s ease .15s both; }
+@keyframes sketchIn{ from{ opacity:0; transform:scale(.985); } to{ opacity:1; transform:none; } }
+.sketch-cap{ font-size:.82rem; color:var(--ink-soft); padding:11px 4px 4px; margin:0; }
+
+.photo-frame{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius);
+  padding:10px; box-shadow:0 3px 0 rgba(23,50,78,.10); margin:0; }
+.photo-frame img{ width:100%; height:auto; border-radius:8px; display:block; }
+.photo-frame figcaption{ font-size:.82rem; color:var(--ink-soft); padding:11px 4px 4px; margin:0; }
+
+.gate-grid{ display:grid; grid-template-columns:1.08fr .92fr; gap:40px; align-items:center; margin-top:26px; }
+@media (max-width:880px){ .gate-grid{ grid-template-columns:1fr; gap:24px; } }
+.gate-grid h2{ margin-bottom:12px; }
+.admissions-visual{ margin-top:20px; }
+.admissions-visual .photo-frame{ max-width:none; }
+
+/* ---------- key figures ---------- */
+.figs{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; margin-top:40px; }
+.fig{ background:#fff; padding:20px 18px; }
+.fig b{ display:block; font-family:"Baloo 2",sans-serif; font-size:2.1rem; line-height:1; color:var(--leaf); }
+.fig span{ display:block; font-size:.84rem; color:var(--ink-soft); margin-top:8px; }
+
+/* ---------- cards ---------- */
+section.block{ padding:54px 0 0; }
+.cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:18px; }
+.tag{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-tag); }
+.tag .strip{ padding:9px 16px; color:#fff; font-family:"Baloo 2",sans-serif; font-weight:700;
+  letter-spacing:.04em; font-size:.8rem; text-transform:uppercase; display:flex; justify-content:space-between; gap:8px; }
+.tag .body{ padding:16px 18px 20px; }
+.tag h3{ margin:0 0 6px; }
+.tag p{ margin:0; font-size:.94rem; color:var(--ink-soft); }
+.tag .age{ display:inline-block; margin-top:12px; font-size:.73rem; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; background:var(--paper-deep); border-radius:99px; padding:5px 12px; color:var(--ink); }
+
+.note{ background:#fff; border:1px solid var(--rule); border-left:5px solid var(--pencil);
+  border-radius:var(--radius); padding:28px 30px; box-shadow:var(--shadow-tag); }
+.note.green{ border-left-color:var(--leaf); }
+.note .sign{ font-family:"Baloo 2",sans-serif; font-weight:700; font-size:1.05rem; margin-top:14px; color:var(--leaf); }
+.note .sign small{ display:block; font-family:"Karla",sans-serif; font-weight:500; color:var(--ink-soft);
+  font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; }
+
+/* ---------- notices ---------- */
+.notice{ display:grid; grid-template-columns:96px 1fr; gap:20px; background:#fff; border:1px solid var(--rule);
+  border-radius:var(--radius); padding:18px 22px; margin-bottom:14px; box-shadow:var(--shadow-tag); }
+.notice .date{ text-align:center; border-right:1px dashed var(--rule); padding-right:14px; }
+.notice .date b{ display:block; font-family:"Baloo 2",sans-serif; font-size:1.9rem; line-height:1; color:var(--margin-red); }
+.notice .date span{ font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); }
+.notice h3{ margin:0 0 4px; }
+.notice p{ margin:0; color:var(--ink-soft); font-size:.96rem; }
+.notice .for{ display:inline-block; margin-top:10px; font-size:.72rem; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; background:var(--paper-deep); border-radius:99px; padding:4px 11px; }
+@media (max-width:600px){
+  .notice{ grid-template-columns:1fr; gap:10px; }
+  .notice .date{ text-align:left; border-right:0; border-bottom:1px dashed var(--rule); padding:0 0 10px;
+    display:flex; align-items:baseline; gap:8px; }
+  .notice .date b{ font-size:1.3rem; }
+}
+.state{ border:1px dashed var(--rule); border-radius:var(--radius); padding:26px; text-align:center; color:var(--ink-soft); background:#fff; }
+
+/* ---------- chart + table ---------- */
+.chart-card{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); padding:24px 22px 18px;
+  box-shadow:var(--shadow-tag); margin-top:26px; }
+.chart-card svg{ width:100%; height:auto; display:block; }
+.legend{ display:flex; flex-wrap:wrap; gap:18px; margin-top:16px; font-size:.82rem; color:var(--ink-soft); }
+.legend i{ width:13px; height:13px; border-radius:3px; display:inline-block; margin-right:7px; vertical-align:-1px; }
+.caption{ font-size:.85rem; color:var(--ink-soft); margin:14px 0 0; }
+
+.table-scroll{ overflow-x:auto; margin-top:26px; border:1px solid var(--rule); border-radius:var(--radius); background:#fff; }
+table{ border-collapse:collapse; width:100%; min-width:720px; font-size:.9rem; }
+th,td{ padding:9px 12px; text-align:right; border-bottom:1px solid var(--rule); white-space:nowrap; }
+th:first-child, td:first-child{ text-align:left; font-weight:700; }
+thead th{ background:var(--paper-deep); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); position:sticky; top:0; }
+tbody tr:last-child td{ border-bottom:0; }
+tbody tr.now td{ background:#F1F7F3; font-weight:700; }
+td.tot{ color:var(--leaf); font-weight:700; }
+
+/* ---------- contact ---------- */
+.split{ display:grid; grid-template-columns:1fr 1fr; gap:30px; align-items:start; }
+@media (max-width:880px){ .split{ grid-template-columns:1fr; } }
+.info-list{ list-style:none; margin:0; padding:0; }
+.info-list li{ display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--rule); }
+.info-list li:last-child{ border-bottom:0; }
+.info-list .k{ flex:none; width:108px; font-size:.73rem; font-weight:700; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-soft); padding-top:4px; }
+.info-list .v{ font-weight:500; }
+.info-list a{ color:var(--ink); text-decoration-color:var(--margin-red); text-underline-offset:3px; }
+.form-frame{ width:100%; min-height:640px; border:1px solid var(--rule); border-radius:var(--radius); background:#fff; }
+
+/* ---------- footer ---------- */
+footer.site{ margin-top:60px; border-top:2px solid var(--ink); background:var(--paper-deep); }
+footer.site .wrap{ padding-top:28px; padding-bottom:34px; }
+footer.site .fgrid{ display:flex; flex-wrap:wrap; gap:22px; justify-content:space-between; align-items:baseline; }
+footer.site p{ margin:0; font-size:.87rem; color:var(--ink-soft); }
+footer.site a{ color:var(--ink); }
+
+
+:focus-visible{ outline:3px solid var(--pencil); outline-offset:2px; border-radius:6px; }
+.skip{ position:absolute; left:-9999px; top:8px; background:var(--ink); color:#fff; padding:10px 16px; border-radius:8px; z-index:99; text-decoration:none; }
+.skip:focus{ left:12px; }
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
+
+/* ====== students & teachers ====== */
+/* ====== gallery ====== */
+.gal-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 18px}
+.gtab{font:inherit;font-size:.84rem;font-weight:700;padding:8px 16px;border-radius:99px;
+  border:1px solid var(--rule);background:#fff;color:var(--ink);cursor:pointer}
+.gtab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.gal-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+}
+.gal-item{
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--rule);background:#fff;
+  box-shadow:var(--shadow-tag);
+  cursor:pointer;
+  transition:transform .18s,box-shadow .18s;
+}
+.gal-item:hover{transform:translateY(-3px);box-shadow:0 6px 0 rgba(23,50,78,.12)}
+.gal-item img{
+  width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;display:block;
+}
+.gal-item.wide img{ aspect-ratio:4/3;object-position:center; }
+.gal-cap{padding:10px 12px;font-size:.84rem;color:var(--ink-soft);line-height:1.4}
+.gal-cap strong{display:block;color:var(--ink);font-size:.9rem;margin-bottom:2px}
+/* lightbox */
+.lb-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;cursor:zoom-out;
+}
+.lb-overlay img{max-width:92vw;max-height:90vh;border-radius:10px;object-fit:contain}
+.lb-close{position:absolute;top:16px;right:20px;font-size:2rem;color:#fff;cursor:pointer;line-height:1}
+
+
+/* class breakdown cards */
+.cls-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:6px}
+@media(max-width:900px){.cls-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.cls-grid{grid-template-columns:repeat(2,1fr)}}
+.cls-card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow-tag);cursor:pointer;transition:transform .15s}
+.cls-card:hover{transform:translateY(-2px)}
+.cls-strip{padding:7px 10px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.cls-body{padding:10px 12px 12px}
+.cls-total{font-family:"Baloo 2",sans-serif;font-size:2rem;font-weight:800;line-height:1;color:var(--leaf)}
+.cls-sub{font-size:.75rem;color:var(--ink-soft);margin:2px 0 8px}
+.cls-bar{height:5px;background:var(--rule);border-radius:99px;overflow:hidden;margin-bottom:4px}
+.cls-bar-fill{height:100%;background:var(--margin-red);border-radius:99px}
+.cls-pct{font-size:.72rem;color:var(--ink-soft)}
+
+.search-bar{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0;align-items:center}
+.search-bar input,.search-bar select{
+  font:inherit;font-size:.94rem;padding:10px 14px;border:1px solid var(--rule);
+  border-radius:10px;background:#fff;color:var(--ink);outline:none;min-width:0}
+.search-bar input{flex:1 1 200px}
+.search-bar select{flex:0 0 auto}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--leaf)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--radius);background:#fff;margin-top:4px}
+.tbl-wrap table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem}
+.tbl-wrap th,.tbl-wrap td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+.tbl-wrap thead th{background:var(--paper-deep);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);position:sticky;top:0}
+.tbl-wrap tbody tr:last-child td{border-bottom:0}
+.tbl-wrap tbody tr:hover td{background:#F5FAF7}
+.badge{display:inline-block;border-radius:99px;padding:3px 10px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.b-m{background:#DDEEF9;color:#1B5E8A}.b-f{background:#FCE4EC;color:#880E35}
+.b-obc{background:#E8F5E9;color:#1B5E20}.b-gen{background:#FFF8E1;color:#6D4C00}.b-mobc{background:#F3E5F5;color:#4A148C}
+.b-reg{background:#E8F5E9;color:#1B5E20}.b-ssa{background:#FFF3E0;color:#7B4500}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.pill{border-radius:99px;padding:6px 16px;font-size:.84rem;font-weight:700;border:1px solid var(--rule);background:#fff}
+.tc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:24px}
+.tc-card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-tag)}
+.tc-card .head{background:var(--leaf);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:14px}
+.tc-card .avatar{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.22);
+  display:grid;place-items:center;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1.1rem;color:#fff;flex:none}
+.tc-card .head .hname{font-family:"Baloo 2",sans-serif;font-weight:700;font-size:1.05rem;line-height:1.15}
+.tc-card .head .hpost{font-size:.75rem;opacity:.82;letter-spacing:.06em;text-transform:uppercase}
+.tc-card .body{padding:14px 18px}
+.tc-card .dl{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:.88rem}
+.tc-card .dk{color:var(--ink-soft);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding-top:2px}
+.tc-card .dv{color:var(--ink);font-weight:500}
+.tc-card.hm .head{background:var(--margin-red)}
+.tc-photo{
+  width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:top;
+  flex:none;border:3px solid rgba(255,255,255,.35);
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+.tc-card.hm .tc-photo{ border-color:rgba(255,255,255,.55); }
+
+.hm-note{ display:grid; grid-template-columns:auto 1fr; gap:22px; align-items:start; }
+.hm-note-photo{ width:100px;height:100px;border-radius:50%;object-fit:cover;object-position:top;
+  border:3px solid var(--leaf);box-shadow:var(--shadow-tag);flex:none; }
+@media(max-width:600px){ .hm-note{ grid-template-columns:1fr; }
+  .hm-note-photo{ width:80px;height:80px; } }
+
+.res-count{font-size:.88rem;color:var(--ink-soft);margin:0 0 10px}
+</style>
+</head>
+
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="#home">
+      <img src="school-logo.png" alt="Rajoi Bagan LP School logo" class="site-logo" id="crest">
+      <span><b id="brand-name">Rajoi Bagan LP School</b><span id="brand-sub">Pre-Primary to Class V</span></span>
+    </a>
+    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="main" id="nav" aria-label="Main">
+      <a href="#home">Home</a>
+      <a href="#classes">Classes</a>
+      <a href="#record">Our record</a>
+      <a href="#notices">Notice board</a>
+      <a href="#gallery">Gallery</a><a href="#students">Students</a><a href="#teachers">Teachers</a><a href="#admissions">Admissions</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HOME ============ -->
+<div class="page" id="page-home">
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow" id="home-eyebrow">Rajoi cluster · Central Jorhat · Assam</p>
+        <p class="assamese" id="hero-assamese">ৰাজৈ বাগান প্ৰাথমিক বিদ্যালয়</p>
+        <h1>
+          <span class="line"><span id="hero-name-1">Rajoi Bagan</span></span>
+          <span class="line"><span id="hero-name-2">LP School</span></span>
+        </h1>
+        <p class="motto" id="home-motto">The garden gives leaves. We give wings.</p>
+        <p class="lede" id="home-lede">
+          An Assamese-medium government school for Pre-Primary to Class V, serving the children of
+          Rajoi and the tea garden families around it since long before our records begin.
+        </p>
+        <div class="cta-row">
+          <a class="btn red" href="#admissions">Enquire about admission</a>
+          <a class="btn ghost" href="#record">See our 16-year record</a>
+        </div>
+      </div>
+      <div id="hero-visual"></div>
+    </div>
+
+    <div class="figs" id="figs"></div>
+  </div>
+
+  <div class="wrap">
+    <section class="block">
+      <p class="eyebrow">From the Head Master</p>
+      <div class="note green hm-note">
+        <p id="principal-msg"></p>
+        <p class="sign" id="principal-name"></p>
+      </div>
+    </section>
+
+    <section class="block">
+      <p class="eyebrow">How we work</p>
+      <h2>Three things we do differently</h2>
+      <div class="cards" style="margin-top:24px">
+        <article class="tag">
+          <div class="strip" style="background:var(--margin-red)"><span>No child drifts away</span></div>
+          <div class="body"><h3>We come to your home</h3>
+            <p>When a child becomes irregular, the Head Master visits the family himself. Where a visit is
+               difficult, a card goes directly to the parents. No child is allowed to quietly stop coming.</p></div>
+        </article>
+        <article class="tag">
+          <div class="strip" style="background:var(--leaf)"><span>Learning by doing</span></div>
+          <div class="body"><h3>The kitchen garden</h3>
+            <p>A low-cost greenhouse built with help from parents and the community. Children grow their own
+               vegetables and learn practical skills that outlast any textbook.</p></div>
+        </article>
+        <article class="tag">
+          <div class="strip" style="background:var(--pencil); color:var(--ink)"><span>A door worth opening</span></div>
+          <div class="body"><h3>Free JNV coaching</h3>
+            <p>Extra classes after school and in the holidays, plus free guide books, so children from tea
+               garden families get a real chance at a Jawahar Navodaya Vidyalaya seat.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="gate-grid">
+        <figure class="photo-frame">
+          <img id="gate-photo" src="" alt="" loading="lazy" width="1171" height="1135">
+          <figcaption id="gate-caption"></figcaption>
+        </figure>
+        <div>
+          <p class="eyebrow">Finding us</p>
+          <h2>Come through the gate</h2>
+          <p>The school stands just off the road at Rajoi. You will find it easily.</p>
+          <p>You do not need an appointment to visit. Any school morning, walk in and ask for the
+             Head Master.</p>
+          <div class="cta-row" style="margin-top:16px">
+            <a class="btn red" href="#admissions">Admissions &amp; contact</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <p class="eyebrow">At a glance</p>
+      <h2>The school, in short</h2>
+      <ul class="info-list" style="margin-top:18px" id="school-facts"></ul>
+    </section>
+  </div>
+</div>
+
+<!-- ============ CLASSES ============ -->
+<div class="page" id="page-classes">
+  <div class="wrap">
+    <p class="eyebrow">Pre-Primary to Class V · Assamese medium · Co-educational</p>
+    <h2>Our classes this year</h2>
+    <p class="lede" style="margin-top:12px" id="classes-lede"></p>
+    <div class="cards" id="class-cards" style="margin-top:30px"></div>
+    <p class="caption">Class strengths are this year's UDISE+ figures. They change each year — update them in one place in the file.</p>
+
+    <section class="block">
+      <p class="eyebrow">Beyond the timetable</p>
+      <div class="cards">
+        <div class="tag"><div class="body"><h3>Mid-day meal</h3><p>A cooked meal every school day, planned with the vegetables grown in the school garden where the season allows.</p></div></div>
+        <div class="tag"><div class="body"><h3>Kitchen garden work</h3><p>Children take turns in the greenhouse — sowing, watering and harvesting alongside their lessons.</p></div></div>
+        <div class="tag"><div class="body"><h3>JNV preparation</h3><p>Class IV and V children who wish to sit the Navodaya entrance get free coaching and guide books.</p></div></div>
+        <div class="tag"><div class="body"><h3>Parent meetings</h3><p>Class teachers meet parents through the year; the Head Master's door is open on any school morning.</p></div></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ============ RECORD ============ -->
+<div class="page" id="page-record">
+  <div class="wrap">
+    <p class="eyebrow">From the school's own UDISE+ returns</p>
+    <h2>Sixteen years of children on the roll</h2>
+    <p class="lede" style="margin-top:12px">
+      The roll rose to 199 in 2012-13, fell to 126 in 2016-17, and has been climbing back ever since.
+      Since 2021-22 it has held steadily between 164 and 174 children in Classes I–V.
+    </p>
+
+    <div class="chart-card">
+      <h3 style="margin-bottom:4px">Children in Classes I–V, 2010-11 to 2025-26</h3>
+      <div id="chart"></div>
+      <div class="legend">
+        <span><i style="background:var(--leaf-soft)"></i>Earlier years</span>
+        <span><i style="background:var(--leaf)"></i>Last five years</span>
+        <span><i style="background:var(--margin-red)"></i>Lowest year (2016-17)</span>
+        <span><i style="background:var(--ink-soft);height:2px;border-radius:0"></i>16-year average</span>
+      </div>
+    </div>
+
+    <section class="block">
+      <p class="eyebrow">What the numbers show</p>
+      <div class="cards">
+        <div class="tag"><div class="body"><h3>Turned around</h3><p>From 126 children at the low point in 2016-17 to 174 today — a rise of 38% in nine years.</p></div></div>
+        <div class="tag"><div class="body"><h3>Steady five years</h3><p>164 to 174 children every year since 2021-22, which makes planning meals, books and teaching far easier.</p></div></div>
+        <div class="tag"><div class="body"><h3>Senior classes full</h3><p>Classes IV and V together hold 77 children, the most since 2014-15. Older children are staying on.</p></div></div>
+        <div class="tag"><div class="body"><h3>Girls nearly half</h3><p>Girls were about 45% of Classes I–V in the first eight years on record, and close to 49% in the last eight.</p></div></div>
+        <div class="tag"><div class="body"><h3>Strong pre-primary</h3><p>Pre-primary reached a 16-year high of 48 children in 2024-25 and stands at 36 this year — next year's Class I.</p></div></div>
+        <div class="tag"><div class="body"><h3>Consistently full</h3><p>In 12 of the last 16 years the Class I–V roll has been 150 children or more.</p></div></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <p class="eyebrow">The full record</p>
+      <h2>Year by year</h2>
+      <p class="caption" style="margin-bottom:0">
+        As reported by the school to UDISE+. Boys and girls figures cover Classes I–V only; the grand total
+        also includes pre-primary children. Counts are children on the roll, not daily attendance.
+      </p>
+      <div class="table-scroll"><table id="record-table"></table></div>
+      <p class="caption" id="child-years"></p>
+    </section>
+  </div>
+</div>
+
+<!-- ============ NOTICES ============ -->
+<div class="page" id="page-notices">
+  <div class="wrap">
+    <p class="eyebrow">Updated by the school</p>
+    <h2>Notice board</h2>
+    <p class="lede" style="margin-top:12px">Holidays, exam dates, meetings and events. Newest at the top.</p>
+    <div id="notice-list" style="margin-top:30px"><div class="state">Loading notices…</div></div>
+    <p style="margin-top:24px; font-size:.9rem; color:var(--ink-soft)">
+      Missed something? Call the school on <a href="tel:" id="notice-phone">the school number</a> on any working day.
+    </p>
+  </div>
+</div>
+
+<!-- ============ ADMISSIONS ============ -->
+<div class="page" id="page-admissions">
+  <div class="wrap">
+    <p class="eyebrow">Admissions &amp; contact</p>
+    <h2>Enquire about a place</h2>
+    <p class="lede" style="margin-top:12px">
+      Fill in the form and the school will contact you. You are also welcome to simply walk in and meet
+      the Head Master on any school morning.
+    </p>
+
+    <div class="split" style="margin-top:32px">
+      <div>
+        <h3 style="margin-bottom:14px">Reach the school</h3>
+        <ul class="info-list" id="contact-list"></ul>
+
+        <h3 style="margin:30px 0 12px">What to bring</h3>
+        <ul class="info-list">
+          <li><span class="k">Child</span><span class="v">Birth certificate and two photographs</span></li>
+          <li><span class="k">Parent</span><span class="v">Address proof and Aadhaar</span></li>
+          <li><span class="k">Transfer</span><span class="v">Report card and transfer certificate from the previous school</span></li>
+        </ul>
+        <p class="caption">There is no admission fee. This is a Department of Education school.</p>
+      </div>
+      <div>
+        <div id="form-slot"></div>
+        <div class="admissions-visual" id="admissions-visual"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="page" id="page-students">
+  <div class="wrap">
+    <p class="eyebrow">Academic year 2025-26 &middot; UDISE 18170117702</p>
+    <h2>Student register</h2>
+    <p class="lede" style="margin-top:10px" id="stu-lede"></p>
+    <div id="stu-figs" class="figs" style="margin-top:22px"></div>
+    <div id="class-breakdown" style="margin-top:28px"></div>
+    <div class="search-bar" style="margin-top:18px">
+      <input type="search" id="stu-search" placeholder="Search by name&hellip;" aria-label="Search students">
+      <select id="stu-class" aria-label="Filter by class">
+        <option value="">All classes</option>
+        <option>Pre-Primary</option><option>Class I</option><option>Class II</option>
+        <option>Class III</option><option>Class IV</option><option>Class V</option>
+      </select>
+      <select id="stu-gender" aria-label="Filter by gender">
+        <option value="">All genders</option>
+        <option value="M">Boys</option><option value="F">Girls</option>
+      </select>
+      <select id="stu-cat" aria-label="Filter by category">
+        <option value="">All categories</option>
+        <option>OBC</option><option>General</option><option>MOBC</option>
+      </select>
+    </div>
+    <p class="res-count" id="stu-count"></p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Class</th><th>Gender</th>
+          <th>Category</th><th>Mother Tongue</th><th>Date of Birth</th>
+        </tr></thead>
+        <tbody id="stu-body"></tbody>
+      </table>
+    </div>
+    <p class="caption" style="margin-top:14px">Source: school UDISE+ student register, 2025-26.</p>
+  </div>
+</div>
+
+<div class="page" id="page-teachers">
+  <div class="wrap">
+    <p class="eyebrow">Working teachers &middot; 2025-26</p>
+    <h2>Our teachers</h2>
+    <p class="lede" style="margin-top:10px" id="tch-lede"></p>
+    <div class="tc-grid" id="tc-grid"></div>
+    <section class="block">
+      <p class="eyebrow">Full details</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Name</th><th>Post</th>
+            <th>Teaches</th>
+          </tr></thead>
+          <tbody id="tch-body"></tbody>
+        </table>
+      </div>
+    </section>
+    <p class="caption" style="margin-top:14px">Source: school UDISE+ teacher register, 2025-26.</p>
+  </div>
+</div>
+
+<!-- ============ GALLERY ============ -->
+<div class="page" id="page-gallery">
+  <div class="wrap">
+    <p class="eyebrow">School life in pictures</p>
+    <h2>Gallery</h2>
+    <p class="lede" style="margin-top:10px">
+      From the kitchen garden and sports day to classroom moments, community events
+      and the Head Master&#8217;s recognitions.
+    </p>
+
+    <div class="gal-tabs" id="gal-tabs">
+      <button class="gtab active" data-cat="all">All</button>
+      <button class="gtab" data-cat="garden">Kitchen Garden</button>
+      <button class="gtab" data-cat="classroom">Classroom &amp; Learning</button>
+      <button class="gtab" data-cat="events">Events &amp; Activities</button>
+      <button class="gtab" data-cat="awards">Awards &amp; Recognition</button>
+    </div>
+
+    <div class="gal-grid" id="gal-grid"></div>
+  </div>
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <p><strong id="foot-name"></strong></p>
+        <p id="foot-addr"></p>
+        <p id="foot-udise"></p>
+      </div>
+      <div>
+        <p><a href="#record">Our record</a> · <a href="#notices">Notice board</a> · <a href="#gallery">Gallery</a><a href="#students">Students</a><a href="#teachers">Teachers</a><a href="#admissions">Admissions</a></p>
+        <p style="margin-top:6px">© <span id="year"></span> · Figures from the school's UDISE+ returns</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ================================================================
+   EDIT EVERYTHING HERE — nothing below this block needs touching.
+   ================================================================ */
+const CONFIG = {
+  schoolName: "Rajoi Bagan LP School",
+  shortName:  "RB",
+  tagline:    "Pre-Primary to Class V",
+  location:   "Rajoi cluster · Central Jorhat · Assam",
+
+  /* The school's name in Assamese, as painted on the gate. Leave "" to hide it. */
+  nameAssamese: "ৰাজৈ বাগান প্ৰাথমিক বিদ্যালয়",
+
+  /* The big headline on the home page, split over two lines. */
+  heroLine1:  "Rajoi Bagan",
+  heroLine2:  "LP School",
+  /* The line that sits under it, in green. */
+  motto:      "The garden gives leaves. We give wings.",
+
+  /* Set to false to hide teacher mobile numbers from the public website */
+  showTeacherMobile: true,
+
+  udise:   "18170117702",
+  block:   "Central Jorhat",
+  cluster: "Rajoi",
+  district:"Jorhat, Assam",
+  medium:  "Assamese",
+  managedBy:"Department of Education",
+  schoolType:"Co-educational",
+
+  /* Fill these in — they are the only details the PDF did not contain. */
+  phone:   "",
+  email:   "",
+  address: "Rajoi, Central Jorhat, Jorhat, Assam",
+  hours:   "Monday to Saturday, school hours",
+  mapUrl:  "https://maps.google.com/?q=Rajoi+Jorhat+Assam",
+
+  headMaster: {
+    name: "Niranjan Bhuyan",
+    title: "Head Master",
+    message: "Numbers on a register only move when someone goes out and brings the children in. When a child stops coming regularly, I go to the house myself, and where that is not possible I send a card to the parents — no child should be allowed to quietly drift away from school. With help from parents and the community we have built a greenhouse where the children grow their own vegetables, and for those who dream of a Navodaya seat, I take extra classes outside school hours and give the guide books free. Your child is welcome here."
+  },
+
+  /* ---- LIVE NOTICES FROM GOOGLE SHEETS ----------------------------
+     Google Sheet → File → Share → Publish to web → select the sheet →
+     "Comma-separated values (.csv)" → Publish → paste the link below.
+     Columns, in this order: Date | Title | Details | For
+     Leave empty ("") to use noticesFallback instead. */
+  noticesCsvUrl: "",
+
+  /* ---- ADMISSION FORM FROM GOOGLE FORMS ---------------------------
+     Google Form → Send → <> (embed) → copy the src="..." URL here. */
+  formEmbedUrl: "",
+
+  /* Pictures, kept next to this file. Replace the files to change the pictures —
+     keep the same names and nothing else needs editing. */
+  sketch:       "school-sketch.jpg",
+  sketchCaption:"",
+  gatePhoto:    "school-gate.jpg",
+  gateCaption:  "",
+
+  /* ---- UDISE+ ENROLMENT RECORD ------------------------------------
+     Add one line each year and the chart, the table, the class cards
+     and the headline figures all update themselves.
+     [ year, pre-primary, I, II, III, IV, V, boys, girls ] */
+  enrolment: [
+    ["2010-11",  9, 47, 30, 32, 24, 27,  88, 72],
+    ["2011-12", 25, 47, 42, 32, 37, 28,  95, 91],
+    ["2012-13", 21, 43, 51, 32, 42, 31, 102, 97],
+    ["2013-14", 30, 43, 41, 40, 42, 30, 110, 86],
+    ["2014-15", 46, 42, 34, 39, 42, 36, 113, 80],
+    ["2015-16", 43, 39, 35, 34, 37, 40, 110, 75],
+    ["2016-17", 35, 30, 20, 20, 29, 27,  74, 52],
+    ["2017-18", 35, 34, 28, 22, 22, 30,  71, 65],
+    ["2018-19", 17, 34, 27, 26, 23, 25,  58, 77],
+    ["2019-20", 25, 29, 34, 35, 20, 23,  68, 73],
+    ["2020-21", 19, 31, 28, 36, 35, 20,  73, 77],
+    ["2021-22", 25, 27, 34, 33, 36, 35,  85, 80],
+    ["2022-23", 24, 32, 35, 31, 33, 33,  88, 76],
+    ["2023-24", 33, 31, 35, 38, 33, 28,  83, 82],
+    ["2024-25", 48, 28, 34, 37, 37, 33,  93, 76],
+    ["2025-26", 36, 36, 33, 28, 39, 38, 100, 74]
+  ],
+
+  classNotes: {
+    "Pre-Primary":"The first year in school. Songs, play, letters and getting used to a full morning away from home.",
+    "Class I":"Reading and writing Assamese, numbers, and the habit of coming to school every day.",
+    "Class II":"Fluent reading, tables, and the first written tests.",
+    "Class III":"Longer writing, environmental studies, and English alongside Assamese.",
+    "Class IV":"Science and social studies begin in earnest. JNV preparation starts for those who want it.",
+    "Class V":"The final year with us — finishing well and moving on to middle school."
+  },
+
+  /* Used only when noticesCsvUrl is empty. Newest first. */
+  noticesFallback: [
+    { date:"2026-08-14", title:"Independence Day — flag hoisting", details:"Flag hoisting at 8:00 am on 15 August. Children may come in white. No classes that day.", for:"All classes" },
+    { date:"2026-08-05", title:"Parent meeting for Classes IV and V", details:"Class teachers will meet parents about JNV entrance preparation and the extra holiday classes.", for:"Class IV & V" },
+    { date:"2026-07-28", title:"Pre-primary admissions open", details:"Parents may collect a form from the school or send an enquiry through this website.", for:"New parents" }
+  ]
+};
+
+/* ================================================================
+   Site machinery
+   ================================================================ */
+const $ = (s,r=document)=>r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* --- derive everything from the enrolment table --- */
+const ROWS = CONFIG.enrolment.map(r => {
+  const [year,pre,i,ii,iii,iv,v,boys,girls] = r;
+  const iv5 = i+ii+iii+iv+v;
+  return { year, pre, i, ii, iii, iv, v, total:iv5, boys, girls, grand:iv5+pre };
+});
+const LATEST = ROWS[ROWS.length-1];
+const TOTALS = ROWS.map(r=>r.total);
+const AVG    = Math.round(TOTALS.reduce((a,b)=>a+b,0)/TOTALS.length);
+const MINROW = ROWS.reduce((a,b)=> b.total < a.total ? b : a);
+const LAST5  = ROWS.slice(-5);
+const RANGE  = Math.min(...LAST5.map(r=>r.total)) + "–" + Math.max(...LAST5.map(r=>r.total));
+const GROWTH = Math.round((LATEST.total - MINROW.total) / MINROW.total * 100);
+const CHILD_YEARS_IV = ROWS.reduce((a,r)=>a+r.total,0);
+const CHILD_YEARS_ALL= ROWS.reduce((a,r)=>a+r.grand,0);
+
+function applyConfig(){
+  document.title = CONFIG.schoolName + " — " + CONFIG.tagline + ", Jorhat";
+  $("#brand-name").textContent = CONFIG.schoolName;
+  $("#brand-sub").textContent  = CONFIG.tagline;
+  $("#home-eyebrow").textContent = CONFIG.location;
+  $("#hero-name-1").textContent  = CONFIG.heroLine1;
+  $("#hero-name-2").textContent  = CONFIG.heroLine2;
+  $("#home-motto").textContent   = CONFIG.motto;
+  var hmNote = document.querySelector(".hm-note");
+  if(hmNote){
+    var hmImg = document.createElement("img");
+    hmImg.src = "teacher-niranjan.jpg";
+    hmImg.alt = "Head Master Niranjan Bhuyan";
+    hmImg.className = "hm-note-photo";
+    hmNote.insertBefore(hmImg, hmNote.firstChild);
+  }
+  $("#principal-msg").textContent = CONFIG.headMaster.message;
+  $("#principal-name").innerHTML  = esc(CONFIG.headMaster.name) + "<small>" + esc(CONFIG.headMaster.title) + "</small>";
+  $("#foot-name").textContent  = CONFIG.schoolName;
+  $("#foot-addr").textContent  = CONFIG.address;
+  $("#foot-udise").textContent = "UDISE Code " + CONFIG.udise;
+  $("#year").textContent = new Date().getFullYear();
+
+  const tel = $("#notice-phone");
+  if (CONFIG.phone){ tel.href = "tel:" + CONFIG.phone.replace(/\s/g,""); tel.textContent = CONFIG.phone; }
+  else { tel.replaceWith("the school number"); }
+
+  /* hero: the pen-and-ink drawing of the gate, printed onto the ruled paper */
+  $("#hero-visual").innerHTML = CONFIG.sketch
+    ? '<figure class="photo-frame hero-sketch"><img class="sketch" src="'+esc(CONFIG.sketch)+
+      '" alt="Pen and ink drawing of the gate of '+esc(CONFIG.schoolName)+
+      '" width="1100" height="1057">'+
+      (CONFIG.sketchCaption?'<figcaption class="sketch-cap">'+esc(CONFIG.sketchCaption)+'</figcaption>':'')+
+      '</figure>'
+    : schoolDrawing();
+
+  /* home: the photograph of the gate */
+  const gp = $("#gate-photo");
+  if (CONFIG.gatePhoto){
+    gp.src = CONFIG.gatePhoto;
+    gp.alt = "The turquoise entrance gate of " + CONFIG.schoolName + ", with the school buildings beyond";
+    $("#gate-caption").textContent = CONFIG.gateCaption || "";
+  } else { gp.closest("figure").remove(); }
+
+  /* admissions: the drawing again, smaller */
+  $("#admissions-visual").innerHTML = CONFIG.sketch
+    ? '<figure class="photo-frame"><img class="sketch" src="'+esc(CONFIG.sketch)+
+      '" alt="Drawing of the school gate" loading="lazy" width="1100" height="1057">'+
+      '</figure>'
+    : schoolDrawing();
+
+  /* the Assamese name, on the gate and now on the page */
+  const asm = $("#hero-assamese");
+  if (CONFIG.nameAssamese) asm.textContent = CONFIG.nameAssamese; else asm.remove();
+
+  /* headline figures */
+  $("#figs").innerHTML = [
+    [LATEST.total, "Children in Classes I–V today ("+LATEST.year+")"],
+    [LATEST.grand, "On the roll today, pre-primary included"],
+    ["+"+GROWTH+"%", "Growth in Classes I–V since the lowest year, "+MINROW.year],
+    [RANGE, "The band the roll has held for five years — steady"]
+  ].map(f=>'<div class="fig"><b>'+esc(f[0])+'</b><span>'+esc(f[1])+'</span></div>').join("");
+
+  /* school facts */
+  $("#school-facts").innerHTML = [
+    ["UDISE code", CONFIG.udise], ["Block", CONFIG.block], ["Cluster", CONFIG.cluster],
+    ["District", CONFIG.district], ["Classes", "Pre-primary to Class V"], ["Medium", CONFIG.medium],
+    ["Managed by", CONFIG.managedBy], ["School type", CONFIG.schoolType]
+  ].map(f=>'<li><span class="k">'+esc(f[0])+'</span><span class="v">'+esc(f[1])+'</span></li>').join("");
+
+  /* class cards, strengths pulled from the latest year */
+  $("#classes-lede").textContent =
+    "In " + LATEST.year + " there are " + LATEST.grand + " children on the roll — " +
+    LATEST.total + " in Classes I to V and " + LATEST.pre + " in pre-primary.";
+  const CLASSES = [
+    ["Pre-Primary", LATEST.pre, "Age 4–5",  "var(--pencil)"],
+    ["Class I",     LATEST.i,   "Age 5–6",  "var(--pencil)"],
+    ["Class II",    LATEST.ii,  "Age 6–7",  "var(--leaf)"],
+    ["Class III",   LATEST.iii, "Age 7–8",  "var(--leaf)"],
+    ["Class IV",    LATEST.iv,  "Age 8–9",  "var(--margin-red)"],
+    ["Class V",     LATEST.v,   "Age 9–10", "var(--margin-red)"]
+  ];
+  $("#class-cards").innerHTML = CLASSES.map(c=>
+    '<article class="tag"><div class="strip" style="background:'+c[3]+'; color:'+(c[3]==="var(--pencil)"?"var(--ink)":"#fff")+'">'+
+      '<span>'+esc(c[0])+'</span><span>'+c[1]+' children</span></div>'+
+    '<div class="body"><h3>'+esc(c[0])+'</h3><p>'+esc(CONFIG.classNotes[c[0]]||"")+'</p>'+
+      '<span class="age">'+esc(c[2])+'</span></div></article>').join("");
+
+  /* contact */
+  const rows = [];
+  if (CONFIG.phone) rows.push(["Phone",'<a href="tel:'+esc(CONFIG.phone.replace(/\s/g,""))+'">'+esc(CONFIG.phone)+'</a>']);
+  if (CONFIG.email) rows.push(["Email",'<a href="mailto:'+esc(CONFIG.email)+'">'+esc(CONFIG.email)+'</a>']);
+  rows.push(["Head Master", esc(CONFIG.headMaster.name)]);
+  rows.push(["Address",'<a href="'+esc(CONFIG.mapUrl)+'" target="_blank" rel="noopener">'+esc(CONFIG.address)+'</a>']);
+  rows.push(["UDISE code", esc(CONFIG.udise)]);
+  rows.push(["Open", esc(CONFIG.hours)]);
+  $("#contact-list").innerHTML = rows.map(r=>'<li><span class="k">'+r[0]+'</span><span class="v">'+r[1]+'</span></li>').join("");
+
+  /* admission form */
+  $("#form-slot").innerHTML = CONFIG.formEmbedUrl
+    ? '<iframe class="form-frame" src="'+esc(CONFIG.formEmbedUrl)+'" loading="lazy" title="Admission enquiry form">Loading form…</iframe>'
+    : '<div class="note"><h3 style="margin-bottom:8px">The online form is not set up yet</h3>'+
+      '<p>Until it is, please visit the school and meet the Head Master, '+esc(CONFIG.headMaster.name)+
+      ', on any school morning with your child\'s birth certificate.</p>'+
+      '<p style="margin:0"><a class="btn red" style="margin-top:8px" href="'+esc(CONFIG.mapUrl)+'" target="_blank" rel="noopener">Find the school</a></p></div>';
+
+  buildChart();
+  buildTable();
+  $("#child-years").textContent =
+    "Since " + ROWS[0].year + ", the school has provided " + CHILD_YEARS_IV.toLocaleString("en-IN") +
+    " child-years of Classes I–V schooling, and " + CHILD_YEARS_ALL.toLocaleString("en-IN") +
+    " including pre-primary.";
+}
+
+/* ---- bar chart, drawn from ROWS ---- */
+function buildChart(){
+  const W=920, H=380, padL=44, padR=16, padT=26, padB=64;
+  const n=ROWS.length, max=Math.max(...TOTALS,10);
+  const step=(W-padL-padR)/n, bw=Math.min(step*0.62, 40);
+  const y = v => padT + (H-padT-padB) * (1 - v/(max*1.12));
+
+  let g="";
+  /* gridlines */
+  [0,50,100,150,200].filter(v=>v<=max*1.12).forEach(v=>{
+    g+='<line x1="'+padL+'" y1="'+y(v)+'" x2="'+(W-padR)+'" y2="'+y(v)+'" stroke="var(--rule)" stroke-width="1"/>'+
+       '<text x="'+(padL-8)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="11" fill="var(--ink-soft)">'+v+'</text>';
+  });
+  /* bars */
+  ROWS.forEach((r,idx)=>{
+    const x = padL + step*idx + (step-bw)/2;
+    const isLast5 = idx >= n-5, isMin = r.year === MINROW.year;
+    const fill = isMin ? "var(--margin-red)" : (isLast5 ? "var(--leaf)" : "var(--leaf-soft)");
+    g+='<rect x="'+x.toFixed(1)+'" y="'+y(r.total).toFixed(1)+'" width="'+bw.toFixed(1)+
+       '" height="'+(y(0)-y(r.total)).toFixed(1)+'" fill="'+fill+'" rx="2"><title>'+r.year+': '+r.total+' children</title></rect>'+
+       '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(y(r.total)-7).toFixed(1)+'" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--ink)">'+r.total+'</text>'+
+       '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(y(0)+16)+'" text-anchor="end" font-size="10.5" fill="var(--ink-soft)" transform="rotate(-45 '+(x+bw/2).toFixed(1)+' '+(y(0)+16)+')">'+r.year+'</text>';
+  });
+  /* average line, with the label sitting on a clear patch so it never collides */
+  const avgLabel = "16-year average = " + AVG;
+  const lw = avgLabel.length * 6.4 + 16;
+  g+='<line x1="'+padL+'" y1="'+y(AVG)+'" x2="'+(W-padR)+'" y2="'+y(AVG)+'" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="6 5"/>'+
+     '<rect x="'+(padL+4)+'" y="'+(y(AVG)+5)+'" width="'+lw+'" height="18" rx="4" fill="#fff" opacity="0.95"/>'+
+     '<text x="'+(padL+12)+'" y="'+(y(AVG)+18)+'" text-anchor="start" font-size="11" fill="var(--ink-soft)">'+avgLabel+'</text>';
+  /* axis */
+  g+='<line x1="'+padL+'" y1="'+y(0)+'" x2="'+(W-padR)+'" y2="'+y(0)+'" stroke="var(--ink)" stroke-width="1.5"/>';
+
+  $("#chart").innerHTML =
+    '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Bar chart of children in Classes I to V each year from '+
+    ROWS[0].year+' to '+LATEST.year+', ranging from '+MINROW.total+' to '+Math.max(...TOTALS)+'.">'+g+'</svg>';
+}
+
+/* ---- year-by-year table ---- */
+function buildTable(){
+  const head = ["Year","Pre-primary","I","II","III","IV","V","Class I–V","Boys","Girls","Grand total"];
+  let h='<thead><tr>'+head.map(c=>'<th scope="col">'+c+'</th>').join("")+'</tr></thead><tbody>';
+  ROWS.forEach(r=>{
+    h+='<tr'+(r===LATEST?' class="now"':'')+'><th scope="row">'+r.year+'</th>'+
+       [r.pre,r.i,r.ii,r.iii,r.iv,r.v].map(v=>'<td>'+v+'</td>').join("")+
+       '<td class="tot">'+r.total+'</td><td>'+r.boys+'</td><td>'+r.girls+'</td><td class="tot">'+r.grand+'</td></tr>';
+  });
+  $("#record-table").innerHTML = h+'</tbody>';
+}
+
+/* ---- the drawing used when there is no photo ---- */
+function schoolDrawing(){
+  /* the school standing in the tea garden, its name painted on the wall */
+  const name = (CONFIG.schoolName || "").toUpperCase();
+  const size = name.length > 24 ? 8 : (name.length > 18 ? 9.5 : 11);
+
+  /* three receding rows of tea bushes */
+  let bushes = "";
+  const rows = [
+    { y:186, rx:13, ry:8,  fill:"#BFD9C6", step:34, off:0  },
+    { y:206, rx:15, ry:9,  fill:"#9CC7AC", step:38, off:19 },
+    { y:228, rx:18, ry:11, fill:"#6FA987", step:44, off:6  }
+  ];
+  rows.forEach(r=>{
+    for(let x=-10; x<440; x+=r.step){
+      const cx = x + r.off;
+      bushes += '<ellipse cx="'+cx+'" cy="'+r.y+'" rx="'+r.rx+'" ry="'+r.ry+'" fill="'+r.fill+'"/>'+
+                '<ellipse cx="'+(cx-r.rx*0.45)+'" cy="'+(r.y-r.ry*0.5)+'" rx="'+(r.rx*0.55)+'" ry="'+(r.ry*0.6)+'" fill="'+r.fill+'"/>'+
+                '<ellipse cx="'+(cx+r.rx*0.45)+'" cy="'+(r.y-r.ry*0.5)+'" rx="'+(r.rx*0.55)+'" ry="'+(r.ry*0.6)+'" fill="'+r.fill+'"/>';
+    }
+  });
+
+  return '<svg class="illus" viewBox="0 0 420 320" role="img" aria-label="Drawing of '+esc(CONFIG.schoolName)+
+    ' standing among rows of tea bushes, with the school name painted on the front wall">'+
+
+    /* sky and sun */
+    '<circle cx="352" cy="52" r="26" fill="var(--pencil)"/>'+
+    '<g stroke="var(--pencil)" stroke-width="4" stroke-linecap="round">'+
+      '<line x1="352" y1="10" x2="352" y2="19"/><line x1="396" y1="52" x2="387" y2="52"/>'+
+      '<line x1="383" y1="21" x2="377" y2="27"/><line x1="383" y1="83" x2="377" y2="77"/></g>'+
+
+    /* the tea garden */
+    '<rect x="0" y="172" width="420" height="90" fill="#E8F2EA"/>'+
+    bushes +
+
+    /* shade tree, the kind that stands over a tea garden */
+    '<rect x="47" y="150" width="11" height="66" fill="#8A6A4A"/>'+
+    '<ellipse cx="52" cy="132" rx="36" ry="30" fill="var(--leaf)"/>'+
+    '<ellipse cx="30" cy="146" rx="22" ry="17" fill="#2A7C57"/>'+
+    '<ellipse cx="76" cy="146" rx="22" ry="17" fill="#2A7C57"/>'+
+
+    /* the school building */
+    '<path d="M110 150 L210 88 L310 150 Z" fill="var(--margin-red)"/>'+
+    '<path d="M104 150 h212" stroke="var(--margin-red)" stroke-width="7" stroke-linecap="round"/>'+
+    '<rect x="126" y="150" width="168" height="112" fill="#fff" stroke="var(--ink)" stroke-width="3"/>'+
+
+    /* the name painted on the wall */
+    '<rect x="134" y="156" width="152" height="20" fill="var(--leaf)" rx="3"/>'+
+    '<text x="210" y="170.5" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="700"'+
+      ' font-size="'+size+'" letter-spacing="0.6" fill="#fff">'+esc(name)+'</text>'+
+
+    /* door and windows */
+    '<rect x="192" y="204" width="48" height="58" fill="var(--ink)" rx="2"/>'+
+    '<circle cx="231" cy="234" r="3" fill="var(--pencil)"/>'+
+    '<g fill="var(--rule)" stroke="var(--ink)" stroke-width="3">'+
+      '<rect x="145" y="196" width="34" height="32"/><rect x="253" y="196" width="34" height="32"/></g>'+
+    '<path d="M162 196 v32 M145 212 h34 M270 196 v32 M253 212 h34" stroke="var(--ink)" stroke-width="2"/>'+
+
+    /* flag */
+    '<line x1="210" y1="88" x2="210" y2="60" stroke="var(--ink)" stroke-width="3"/>'+
+    '<path d="M210 60 L246 70 L210 80 Z" fill="var(--leaf)"/>'+
+
+    /* the greenhouse, off to the right */
+    '<g><path d="M318 214 q17 -20 34 0 v30 h-34 z" fill="#fff" stroke="var(--leaf)" stroke-width="3"/>'+
+      '<path d="M328 244 v-16 M338 244 v-22 M348 244 v-14" stroke="var(--leaf)" stroke-width="3" stroke-linecap="round"/></g>'+
+
+    /* ground */
+    '<line x1="14" y1="262" x2="406" y2="262" stroke="var(--ink)" stroke-width="3"/>'+
+
+    /* two children on the way in */
+    '<circle cx="96" cy="232" r="9" fill="var(--ink)"/>'+
+    '<path d="M96 242 v18 M96 248 l-11 8 M96 248 l11 8" stroke="var(--ink)" stroke-width="4" fill="none" stroke-linecap="round"/>'+
+    '<circle cx="124" cy="237" r="8" fill="var(--margin-red)"/>'+
+    '<path d="M124 246 v14 M124 250 l-9 6 M124 250 l9 6" stroke="var(--margin-red)" stroke-width="4" fill="none" stroke-linecap="round"/>'+
+    '</svg>';
+}
+
+/* ---- notices ---- */
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function splitDate(raw){
+  const d=new Date(raw);
+  if(!isNaN(d)) return { day:String(d.getDate()).padStart(2,"0"), mon:MONTHS[d.getMonth()]+" "+d.getFullYear() };
+  return { day:"•", mon:String(raw||"") };
+}
+function renderNotices(items){
+  const box=$("#notice-list");
+  if(!items.length){ box.innerHTML='<div class="state">No notices right now. Please check again after the weekend.</div>'; return; }
+  box.innerHTML=items.map(n=>{
+    const d=splitDate(n.date);
+    return '<article class="notice"><div class="date"><b>'+esc(d.day)+'</b><span>'+esc(d.mon)+'</span></div>'+
+      '<div><h3>'+esc(n.title)+'</h3><p>'+esc(n.details)+'</p>'+
+      (n.for?'<span class="for">'+esc(n.for)+'</span>':'')+'</div></article>';
+  }).join("");
+}
+function parseCsv(text){
+  const rows=[]; let row=[],cell="",q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else q=false; } else cell+=ch; }
+    else if(ch==='"') q=true;
+    else if(ch===","){ row.push(cell); cell=""; }
+    else if(ch==="\n"){ row.push(cell); rows.push(row); row=[]; cell=""; }
+    else if(ch!=="\r") cell+=ch;
+  }
+  if(cell.length||row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r=>r.some(c=>c.trim()!==""));
+}
+async function loadNotices(){
+  if(!CONFIG.noticesCsvUrl){ renderNotices(CONFIG.noticesFallback); return; }
+  try{
+    const res=await fetch(CONFIG.noticesCsvUrl,{cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    const rows=parseCsv(await res.text());
+    const body=(rows[0]&&/date/i.test(rows[0][0]))?rows.slice(1):rows;
+    const items=body.map(r=>({date:(r[0]||"").trim(),title:(r[1]||"").trim(),details:(r[2]||"").trim(),for:(r[3]||"").trim()}))
+      .filter(n=>n.title).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    renderNotices(items.length?items:CONFIG.noticesFallback);
+  }catch(err){
+    console.warn("Notice sheet did not load:",err);
+    $("#notice-list").innerHTML='<div class="state">The notice sheet did not load. Check that it is still published to the web, then reload this page.</div>';
+  }
+}
+
+/* ---- routing ---- */
+const PAGES=["home","classes","record","notices","gallery","students","teachers","admissions"];
+function show(name){
+  const id=PAGES.includes(name)?name:"home";
+  PAGES.forEach(p=>$("#page-"+p).classList.toggle("active",p===id));
+  document.querySelectorAll("nav.main a").forEach(a=>
+    a.setAttribute("aria-current", a.getAttribute("href")==="#"+id ? "page":"false"));
+  $("#nav").classList.remove("open");
+  $("#menu-btn").setAttribute("aria-expanded","false");
+  window.scrollTo({top:0,behavior:"auto"});
+}
+$("#menu-btn").addEventListener("click",e=>{
+  const open=$("#nav").classList.toggle("open");
+  e.currentTarget.setAttribute("aria-expanded",String(open));
+});
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+
+applyConfig();
+show(location.hash.slice(1)||"home");
+loadNotices();
+
+
+</script>
+
+<script>
+/* ===== Students & Teachers — UDISE+ Excel 2025-26 ===== */
+var DB={"students":[{"n":"Rohit Agarwala","cl":"Pre-Primary","g":"M","cat":"General","mt":"Hindi","dob":"28-10-2019"},{"n":"Lashmi Mahli","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Assamese","dob":"02-11-2019"},{"n":"Deb Mahli","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Assamese","dob":"06-11-2020"},{"n":"Madhobi Nayak","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"24-07-2020"},{"n":"Losmi Karmakar","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"07-11-2020"},{"n":"Arpona Bawri","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Other","dob":"08-12-2020"},{"n":"Switee Mahli","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"13-10-2020"},{"n":"Bondona Guwala","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"25-07-2020"},{"n":"Bebi Mahli","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"01-09-2020"},{"n":"Arnab Mahli","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Oriya","dob":"14-09-2020"},{"n":"Risna Karmakar","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"25-04-2021"},{"n":"Roshmi Mahli","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"11-05-2021"},{"n":"Anshuman Karmokar","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Oriya","dob":"19-02-2021"},{"n":"Luhit Tasa","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Oriya","dob":"06-04-2021"},{"n":"Abhi Mahli","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Oriya","dob":"02-02-2021"},{"n":"Rima Rajput","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"13-04-2021"},{"n":"Rishab Nayak","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Oriya","dob":"03-03-2021"},{"n":"Mahir Karmakar","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Oriya","dob":"06-09-2021"},{"n":"Sweety Karmakar","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"05-07-2021"},{"n":"Dharitri Nayak","cl":"Pre-Primary","g":"F","cat":"OBC","mt":"Oriya","dob":"22-04-2021"},{"n":"Rihan Pantanti","cl":"Pre-Primary","g":"M","cat":"OBC","mt":"Oriya","dob":"12-02-2021"},{"n":"Shruti Karmakar","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"04-10-2017"},{"n":"Kartik Pator","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"08-12-2018"},{"n":"Gaurav Bhumij","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"09-09-2018"},{"n":"Bidya Mahali","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"22-10-2018"},{"n":"Manab Mahali","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"27-11-2018"},{"n":"Vishakha Mahli","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"06-01-2020"},{"n":"Amaira Tanti","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"02-12-2019"},{"n":"Borun Mahly","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"23-10-2019"},{"n":"Ruhit Mirda","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"17-08-2019"},{"n":"Amrita Naik","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"09-04-2019"},{"n":"Rajbir Nayak","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"14-12-2018"},{"n":"Sarva Karmakar","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"06-02-2020"},{"n":"Barun Pantanti","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"01-02-2020"},{"n":"Achintya Nayak","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"04-01-2020"},{"n":"Binita Mahli","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"27-07-2019"},{"n":"Parinita Mahli","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"11-08-2019"},{"n":"Anisha Karmakar","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"11-08-2019"},{"n":"Monjit Tanti","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"30-09-2019"},{"n":"Arpita Bedia","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"30-05-2020"},{"n":"Om Nayak","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"12-08-2019"},{"n":"Bibek Tanti","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"19-02-2020"},{"n":"Purab Manki","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"31-10-2019"},{"n":"Sanjana Nayak","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"28-01-2020"},{"n":"Pronamika Mahli","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"16-02-2020"},{"n":"Gayatri Tasa","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"03-03-2020"},{"n":"Amarjit Karmakar","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"05-03-2019"},{"n":"Sahil Nayak","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"04-10-2019"},{"n":"Pokhila Karmakar","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"09-03-2020"},{"n":"Nitya Nayak","cl":"Class I","g":"F","cat":"MOBC","mt":"Assamese","dob":"04-02-2020"},{"n":"Ranjir Mahli","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"29-05-2020"},{"n":"Dipankar Bedia","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"24-08-2020"},{"n":"Shikha Manki","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"05-10-2020"},{"n":"Karan Dutta","cl":"Class I","g":"M","cat":"General","mt":"Bengali","dob":"31-05-2020"},{"n":"Suman Mahli","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"02-10-2020"},{"n":"Kiran Mahly","cl":"Class I","g":"F","cat":"OBC","mt":"Assamese","dob":"10-10-2019"},{"n":"Adit Nayak","cl":"Class I","g":"M","cat":"OBC","mt":"Assamese","dob":"18-11-2019"},{"n":"Khushi Naik","cl":"Class I","g":"F","cat":"OBC","mt":"Oriya","dob":"04-10-2019"},{"n":"Anish Nayak","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"19-02-2017"},{"n":"Riya Mahli","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"26-01-2018"},{"n":"Arhaan Mahli","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"24-02-2018"},{"n":"Arush Naik","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"02-02-2018"},{"n":"Mahmud Ahmed","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"08-09-2018"},{"n":"Omprakash Rajak","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"12-01-2018"},{"n":"Lashmi Nayak","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"24-11-2018"},{"n":"Benkar Tanti","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"26-09-2018"},{"n":"Samir Mahli","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"09-04-2018"},{"n":"Sita Mahli","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"16-11-2018"},{"n":"Suman Mahli","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"10-10-2018"},{"n":"Pranjal Nayak","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"31-10-2018"},{"n":"Sonam Mahli","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"16-02-2018"},{"n":"Nikhil Mahli","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"01-04-2018"},{"n":"Nandini Pator","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"13-11-2018"},{"n":"Gopi Pator","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"20-11-2018"},{"n":"Bishnushri Karmakar","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"07-03-2019"},{"n":"Parikshit Bhumij","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"30-10-2018"},{"n":"Sharat Karmakar","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"08-11-2018"},{"n":"Netik Khodal","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"27-03-2019"},{"n":"Cahmapa Nayak","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"14-08-2018"},{"n":"Juned Ali","cl":"Class II","g":"M","cat":"General","mt":"Assamese","dob":"27-05-2019"},{"n":"Boisnabnayak","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"05-07-2019"},{"n":"Sangita Nayak","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"31-10-2018"},{"n":"Lucky Naik","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"27-04-2019"},{"n":"Swarthi Mahli","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"03-05-2019"},{"n":"Suhani Mahli","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"09-03-2019"},{"n":"Mehak Karmakar","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"15-06-2019"},{"n":"Robin Nayak","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"03-01-2019"},{"n":"Arohi Kumar","cl":"Class II","g":"F","cat":"OBC","mt":"Assamese","dob":"10-06-2019"},{"n":"Rihan Mahli","cl":"Class II","g":"M","cat":"OBC","mt":"Assamese","dob":"14-04-2019"},{"n":"Biraj Tassa","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"31-12-2016"},{"n":"Rima Pantanti","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"09-01-2018"},{"n":"Prakash Nayak","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"27-08-2017"},{"n":"Hirumoni Mahli","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"28-12-2017"},{"n":"Basundhara Pator","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"06-04-2017"},{"n":"Sanjana Pator","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"15-02-2017"},{"n":"Arman Mahli","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"12-10-2017"},{"n":"Anurag Mahli","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"03-03-2017"},{"n":"Ashik Mahli","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"25-10-2016"},{"n":"Lakshmi Mahli","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"20-12-2016"},{"n":"Dipmala Pantanti","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"11-11-2017"},{"n":"Dipika Mahli","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"02-07-2017"},{"n":"Sunali Karmakar","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"03-03-2018"},{"n":"Naira Karmakar","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"21-03-2018"},{"n":"Rupahi Rajput","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"09-03-2018"},{"n":"Pompi Bhumij","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"23-03-2018"},{"n":"Sagarika Dutta","cl":"Class III","g":"F","cat":"General","mt":"Assamese","dob":"29-11-2017"},{"n":"Mausumi Naik","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"12-06-2018"},{"n":"Sibam Kalandi","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"15-02-2018"},{"n":"Purab Rajput","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"26-09-2018"},{"n":"Amrita Naik","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"06-09-2017"},{"n":"Santoshi Karmakar","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"18-05-2018"},{"n":"Anamika Gusai","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"21-12-2016"},{"n":"Krishna Khudal","cl":"Class III","g":"M","cat":"OBC","mt":"Assamese","dob":"04-11-2017"},{"n":"Mousumi Mahli","cl":"Class III","g":"F","cat":"OBC","mt":"Assamese","dob":"06-03-2017"},{"n":"Pompi Nayak","cl":"Class III","g":"F","cat":"OBC","mt":"Oriya","dob":"25-08-2015"},{"n":"Kartik Guwala","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"28-02-2015"},{"n":"Krishna Pantanti","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"24-09-2015"},{"n":"Hemantee Mahli","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"29-10-2016"},{"n":"Khushi Nayak","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"08-11-2016"},{"n":"Satyam Rai","cl":"Class IV","g":"M","cat":"OBC","mt":"Hindi","dob":"24-07-2016"},{"n":"Abhijit Kumar","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"05-03-2017"},{"n":"Suraj Bhumiz","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"20-03-2017"},{"n":"Subham Pator","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"17-09-2016"},{"n":"Sneha Rajput","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"08-12-2017"},{"n":"Sanjit Nayak","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"09-04-2016"},{"n":"Abantika Bedia","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"23-11-2016"},{"n":"Babu Nayak","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"07-12-2013"},{"n":"Sunami Mahli","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"27-03-2017"},{"n":"Arohi Mahli","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"27-02-2017"},{"n":"Debangi Manki","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"25-07-2017"},{"n":"Gaurav Naik","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"26-09-2016"},{"n":"Priyanshi Agarwalla","cl":"Class IV","g":"F","cat":"General","mt":"Hindi","dob":"25-11-2015"},{"n":"Ujjal Nayak","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"15-09-2015"},{"n":"Ishani Nayak","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"17-12-2015"},{"n":"Amit Karmakar","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"15-03-2015"},{"n":"Junmoni Urang","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"15-04-2015"},{"n":"Gonesh Karmakar","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"07-04-2017"},{"n":"Arosh Bhumij","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"24-03-2017"},{"n":"Samir Karmakar","cl":"Class IV","g":"M","cat":"OBC","mt":"Assamese","dob":"10-01-2015"},{"n":"Mangita Mahli","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"21-04-2017"},{"n":"Mahima Mahli","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"21-09-2013"},{"n":"Monalisha Tanti","cl":"Class IV","g":"F","cat":"OBC","mt":"Assamese","dob":"15-01-2017"},{"n":"Ishan Karmakar","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"31-01-2015"},{"n":"Niharika Pantanti","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"27-10-2014"},{"n":"Tapashree Murah","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"12-10-2015"},{"n":"Ankita Mahli","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"14-09-2015"},{"n":"Naina Karmakar","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"02-12-2016"},{"n":"Janmoni Karmakar","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"18-07-2016"},{"n":"Rontu Tasha","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"15-12-2016"},{"n":"Anikit Mahli","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"15-06-2016"},{"n":"Natrik Naik","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"03-11-2015"},{"n":"Pahi Mahli","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"13-10-2015"},{"n":"Ankur Mahli","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"18-06-2015"},{"n":"Kisangi Manki","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"12-09-2015"},{"n":"Mangla Mahli","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"09-12-2014"},{"n":"Om Mahli","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"16-06-2015"},{"n":"Bagabanta Karmakar","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"14-05-2014"},{"n":"Ruhan Mahli","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"23-02-2015"},{"n":"Anupom Karmakar","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"11-03-2016"},{"n":"Dev Pator","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"07-11-2016"},{"n":"Anisha Guwala","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"24-09-2015"},{"n":"Dipsikha Naik","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"28-11-2016"},{"n":"Satyanarayan Karmakar","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"06-10-2016"},{"n":"Mohini Karmakar","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"17-07-2015"},{"n":"Netrik Nayak","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"26-04-2015"},{"n":"Mosomi Mahli","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"12-03-2016"},{"n":"Mayuri Mahli","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"30-05-2016"},{"n":"Mitali Kumar","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"05-10-2016"},{"n":"Niharika Nayak","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"20-06-2015"},{"n":"Jiban Pantanti","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"04-03-2016"},{"n":"Shanti Mahli","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"28-01-2015"},{"n":"Rupan Majhi","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"29-10-2015"},{"n":"Satyajit Mahli","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"09-12-2014"},{"n":"Nikhil Mahli","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"11-03-2015"},{"n":"Anuj Nayak","cl":"Class V","g":"M","cat":"OBC","mt":"Assamese","dob":"06-09-2016"},{"n":"Saawni Nayak","cl":"Class V","g":"F","cat":"OBC","mt":"Assamese","dob":"10-10-2015"}],"by_class":{"Pre-Primary":{"total":21,"boys":9,"girls":12},"Class I":{"total":37,"boys":20,"girls":17},"Class II":{"total":31,"boys":17,"girls":14},"Class III":{"total":26,"boys":8,"girls":18},"Class IV":{"total":27,"boys":14,"girls":13},"Class V":{"total":34,"boys":18,"girls":16}},"teachers":[{"name":"Niranjan Bhuyan","post":"Regular","appt":"Compassionate Appointment","subj":"All Classes","dob":"01-03-1974","doj_govt":"2009-03-02","doj_sch":"2012-06-16","mob":"9435350895"},{"name":"Surajit Borgohain","post":"Regular","appt":"Provincialisation","subj":"All Classes","dob":"01-07-1977","doj_govt":"2013-07-01","doj_sch":"2016-04-02","mob":"6000439301"},{"name":"Anindita Deb","post":"Regular","appt":"Direct Recruitment","subj":"All Classes","dob":"22-02-1982","doj_govt":"2024-09-13","doj_sch":"2024-09-13","mob":"8876179419"},{"name":"Simki Rani Saikia","post":"Regular","appt":"Direct Recruitment","subj":"All Classes","dob":"31-12-1993","doj_govt":"2021-05-11","doj_sch":"2021-05-11","mob":"8403932433"},{"name":"Ankur Dutta","post":"Regular","appt":"Direct Recruitment","subj":"All Classes","dob":"19-10-1996","doj_govt":"","doj_sch":"","mob":"8752965396"},{"name":"Deepshikha Chutia","post":"Regular","appt":"Direct Recruitment","subj":"All Classes","dob":"18-03-1997","doj_govt":"2022-05-19","doj_sch":"2023-08-10","mob":"7002149202"},{"name":"Juti Mollika Dutta","post":"Regular","appt":"Direct Recruitment","subj":"All Classes","dob":"01-01-1988","doj_govt":"2024-09-13","doj_sch":"2024-09-13","mob":"6900480580"},{"name":"Rabijit Rajkumar","post":"SSA Contractual","appt":"Contractual","subj":"All Classes","dob":"30-12-1972","doj_govt":"2012-09-09","doj_sch":"2023-08-05","mob":"9954281237"},{"name":"Tarulata Lahon","post":"SSA Contractual","appt":"Contractual","subj":"All Classes","dob":"01-01-1968","doj_govt":"2012-09-05","doj_sch":"2023-08-10","mob":"9613430846"},{"name":"Sibani Gogoi","post":"Regular","appt":"Direct Recruitment","subj":"All Classes","dob":"01-01-1990","doj_govt":"2024-09-13","doj_sch":"2024-09-13","mob":"9954223177"}],"summary":{"total":176,"boys":86,"girls":90,"obc":170,"general":5,"mobc":1,"assamese":152}};
+
+
+/* teacher photo filenames, keyed by exact name in DB.teachers */
+var TEACHER_PHOTOS = {
+  "Niranjan Bhuyan":   "teacher-niranjan.jpg",
+  "Surajit Borgohain": "teacher-surajit.jpg",
+  "Anindita Deb":      "teacher-anindita.jpg",
+  "Simki Rani Saikia": "teacher-simki.jpg",
+  "Ankur Dutta":       "teacher-ankur.jpg",
+  "Deepshikha Chutia": "teacher-deepshikha.jpg",
+  "Juti Mollika Dutta":"teacher-jutimollika.jpg",
+  "Rabijit Rajkumar":  "teacher-rabijit.jpg",
+  "Tarulata Lahon":    "teacher-tarulata.jpg",
+  "Sibani Gogoi":      "teacher-sibani.jpg"
+};
+function esc2(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function badgeG(g){return g==="M"?'<span class="badge b-m">Boy</span>':'<span class="badge b-f">Girl</span>';}
+function badgeCat(c){var m={OBC:"b-obc",General:"b-gen",MOBC:"b-mobc"};return '<span class="badge '+(m[c]||"b-gen")+'">'+ esc2(c)+'</span>';}
+function badgePost(p){return '<span class="badge '+(p==="Regular"?"b-reg":"b-ssa")+'">'+ esc2(p)+'</span>';}
+function initials(n){return n.split(" ").filter(Boolean).map(function(w){return w[0];}).join("").slice(0,2).toUpperCase();}
+function fmtDate(s){return(!s||s==="nan"||s==="NaT")?"\u2014":String(s).slice(0,10);}
+function gid(id){return document.getElementById(id);}
+
+function buildStudents(){
+  /* class breakdown mini-cards */
+  var bc=DB.by_class;
+  var CLIST=["Pre-Primary","Class I","Class II","Class III","Class IV","Class V"];
+  var CCOLORS={"Pre-Primary":"var(--pencil)","Class I":"var(--leaf-soft)","Class II":"var(--leaf-soft)",
+    "Class III":"var(--leaf)","Class IV":"var(--margin-red)","Class V":"var(--margin-red)"};
+  var CTEXTCOLORS={"Pre-Primary":"var(--ink)","Class I":"var(--ink)","Class II":"var(--ink)",
+    "Class III":"#fff","Class IV":"#fff","Class V":"#fff"};
+  var bcHtml=CLIST.map(function(c){
+    var d=bc[c]||{total:0,boys:0,girls:0};
+    var pct=d.total>0?Math.round(d.girls/d.total*100):0;
+    return '<div class="cls-card" onclick="filterClass(\''+ c +'\')" title="Click to filter">'+
+      '<div class="cls-strip" style="background:'+CCOLORS[c]+';color:'+CTEXTCOLORS[c]+'">'+esc2(c)+'<\/div>'+
+      '<div class="cls-body">'+
+      '<div class="cls-total">'+d.total+'<\/div>'+
+      '<div class="cls-sub">'+ d.boys +' boys · '+ d.girls +' girls<\/div>'+
+      '<div class="cls-bar"><div class="cls-bar-fill" style="width:'+pct+'%"><\/div><\/div>'+
+      '<div class="cls-pct">'+pct+'% girls<\/div>'+
+      '<\/div><\/div>';
+  }).join("");
+  gid("class-breakdown").innerHTML='<div class="cls-grid">'+bcHtml+'<\/div>';
+
+  var s=DB.summary;
+  gid("stu-lede").textContent=s.total+" children on the roll this year \u2014 "+s.boys+" boys and "+s.girls+" girls.";
+  var figs=[[s.total,"Children on the roll"],[s.boys+" / "+s.girls,"Boys / Girls"],[s.obc,"OBC students"],[s.assamese,"Assamese mother tongue"]];
+  gid("stu-figs").innerHTML=figs.map(function(f){return '<div class="fig"><b>'+esc2(String(f[0]))+'</b><span>'+esc2(f[1])+'</span></div>';}).join("");
+  function render(){
+    var q=gid("stu-search").value.trim().toLowerCase();
+    var cls=gid("stu-class").value;
+    var gen=gid("stu-gender").value;
+    var cat=gid("stu-cat").value;
+    var rows=DB.students.filter(function(s){return(!q||s.n.toLowerCase().indexOf(q)>-1)&&(!cls||s.cl===cls)&&(!gen||s.g===gen)&&(!cat||s.cat===cat);});
+    gid("stu-count").textContent=rows.length+" student"+(rows.length!==1?"s":"")+" shown";
+    gid("stu-body").innerHTML=rows.map(function(s,i){
+      return "<tr><td>"+(i+1)+"<\/td><td><strong>"+esc2(s.n)+"<\/strong><\/td><td>"+esc2(s.cl)+"<\/td><td>"+badgeG(s.g)+"<\/td><td>"+badgeCat(s.cat)+"<\/td><td>"+esc2(s.mt)+"<\/td><td>"+esc2(s.dob)+"<\/td><\/tr>";
+    }).join("");
+  }
+  window.filterClass=function(c){gid("stu-class").value=c;render();
+    gid("stu-search").scrollIntoView({behavior:"smooth",block:"nearest"});};
+  ["stu-search","stu-class","stu-gender","stu-cat"].forEach(function(id){gid(id).addEventListener("input",render);});
+  render();
+}
+
+function buildTeachers(){
+  var t=DB.teachers;
+  var reg=t.filter(function(x){return x.post==="Regular";}).length;
+  var ssa=t.length-reg;
+  gid("tch-lede").textContent="The school has "+t.length+" working teachers: "+reg+" regular government-appointed and "+ssa+" SSA Contractual.";
+
+  gid("tc-grid").innerHTML=t.map(function(tc){
+    var isHM=(tc.name==="Niranjan Bhuyan");
+    var ph=TEACHER_PHOTOS[tc.name];
+    var avatarHtml=ph
+      ? '<img class="tc-photo" src="'+ph+'" alt="'+esc2(tc.name)+'" loading="lazy">'
+      : '<div class="avatar">'+initials(tc.name)+'<\/div>';
+    return '<div class="tc-card'+(isHM?" hm":"")+'">'+
+      '<div class="head">'+avatarHtml+
+      '<div><div class="hname">'+esc2(tc.name)+'<\/div>'+
+      '<div class="hpost">'+badgePost(tc.post)+"<\/div><\/div><\/div>"+
+      '<div class="body"><dl class="dl">'+
+      '<dt class="dk">Teaches<\/dt><dd class="dv">'+esc2(tc.subj)+"<\/dd>"+
+      '<dt class="dk">Mobile<\/dt><dd class="dv">'+(CONFIG.showTeacherMobile&&tc.mob?'<a href="tel:'+tc.mob+'">'+tc.mob+"<\/a>":"\u2014")+"<\/dd>"+
+      "<\/dl><\/div><\/div>";
+  }).join("");
+  gid("tch-body").innerHTML=t.map(function(tc,i){
+    return "<tr><td>"+(i+1)+"<\/td><td><strong>"+esc2(tc.name)+"<\/strong><\/td><td>"+badgePost(tc.post)+"<\/td><td>"+esc2(tc.subj)+"<\/td><\/tr>";
+  }).join("");
+}
+
+
+/* ---- GALLERY ---- */
+var GALLERY_ITEMS = [
+  {src:"gallery-school-life.jpg",     cat:"classroom", title:"School life", caption:"Daily assembly, classroom teaching and the Head Master in action with the children."},
+  {src:"gallery-nutrition-garden.jpg",cat:"garden",    title:"Kitchen garden — awards", caption:"Appreciation from Krishi Vigyan Kendra and the Best School Nutrition Garden certificate, PM POSHAN 2023-24."},
+  {src:"gallery-garden-awards.jpg",   cat:"awards",    title:"Garden recognition", caption:"Awards and letters of appreciation for the school's nutrition garden from AAU and government bodies."},
+  {src:"gallery-activities.jpg",      cat:"events",    title:"Sports, events &amp; trips", caption:"Sports day, Tiny Tots on Akashvani, Independence Day, book distribution and educational excursions."},
+  {src:"gallery-tiny-tots.jpg",       cat:"classroom", title:"Tiny Tots programme", caption:"The Tiny Tots (Khopakolli) radio programme on Akashvani Jorhat, featuring children from the school."},
+  {src:"gallery-ecce.jpg",            cat:"classroom", title:"Early childhood &amp; ECCE", caption:"ECCE classroom activities, Big Book preparation, letter-learning with manipulatives and training visits."},
+  {src:"gallery-community.jpg",       cat:"events",    title:"Community &amp; infrastructure", caption:"Community outreach, library books, school construction and parent meetings."},
+  {src:"gallery-multigrade.jpg",      cat:"classroom", title:"Multi-grade teaching", caption:"Multi-grade, multi-level teaching methodology programme inaugurated by the local MLA, covered in the press."},
+  {src:"gallery-hm-awards.jpg",       cat:"awards",    title:"Head Master&#8217;s recognition", caption:"Awards received by Head Master Niranjan Bhuyan: National Child Award (1987, New Delhi), News18 Excellence Award, Certificate of Excellence, and community appreciation."},
+];
+
+var _galBuilt = false;
+function buildGallery(){
+  var grid = gid("gal-grid");
+  function renderGal(cat){
+    var items = cat === "all" ? GALLERY_ITEMS : GALLERY_ITEMS.filter(function(g){ return g.cat===cat; });
+    grid.innerHTML = items.map(function(g,i){
+      var wide = g.src.indexOf("school-life")>-1||g.src.indexOf("multigrade")>-1||g.src.indexOf("activities")>-1?"wide":"";
+      return '<div class="gal-item '+wide+'" onclick="openLB('+JSON.stringify(g.src)+')">'+
+        '<img src="'+g.src+'" alt="'+esc2(g.title)+'" loading="lazy">'+
+        '<div class="gal-cap"><strong>'+g.title+'</strong>'+g.caption+'</div>'+
+        '</div>';
+    }).join("");
+  }
+  document.querySelectorAll(".gtab").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll(".gtab").forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderGal(btn.dataset.cat);
+    });
+  });
+  renderGal("all");
+}
+
+window.openLB = function(src){
+  var ov = document.createElement("div");
+  ov.className = "lb-overlay";
+  ov.innerHTML = '<span class="lb-close" title="Close">&times;</span><img src="'+src+'" alt="Gallery image">';
+  ov.addEventListener("click", function(){ document.body.removeChild(ov); });
+  document.body.appendChild(ov);
+};
+
+window.addEventListener("load",function(){
+  var _orig=show; var _sb=false,_tb=false;
+  show=function(name){_orig(name);
+    if(name==="gallery"&&!_galBuilt){buildGallery();_galBuilt=true;}
+    if(name==="students"&&!_sb){buildStudents();_sb=true;}
+    if(name==="teachers"&&!_tb){buildTeachers();_tb=true;}
+  };
+  var h=location.hash.slice(1);
+  if(h==="students"||h==="teachers"||h==="gallery"){show(h);}
+});
+</script>
+</body>
+</html>
