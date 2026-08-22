@@ -833,33 +833,43 @@ footer.site a{ color:var(--ink); }
               <li>Copy the Web app URL → paste into <code>noticesSheetUrl</code> in CONFIG → re-upload <code>index.html</code> to GitHub.</li>
             </ol>
             <div class="notice-script-box" id="notice-script-text">function doGet(e) {
+  var action = (e.parameter.action || "list");
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var rows = sheet.getDataRange().getValues();
-  var out = [];
-  for (var i = 1; i < rows.length; i++) {
-    if (!rows[i][1]) continue;
-    out.push({
-      id: rows[i][4] ? String(rows[i][4]) : String(i),
-      date: fmtDate_(rows[i][0]), title: rows[i][1],
-      details: rows[i][2], "for": rows[i][3]
-    });
-  }
-  return jsonOut_(out);
-}
-function doPost(e) {
-  var data = JSON.parse(e.postData.contents);
-  if (data.passcode !== "RAJOI2026") return jsonOut_({error:"forbidden"});
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  if (data.action === "delete") {
+
+  if (action === "list") {
     var rows = sheet.getDataRange().getValues();
+    var out = [];
     for (var i = 1; i < rows.length; i++) {
-      if (String(rows[i][4]) === String(data.id)) { sheet.deleteRow(i + 1); break; }
+      if (!rows[i][1]) continue;
+      out.push({
+        id: rows[i][4] ? String(rows[i][4]) : String(i),
+        date: fmtDate_(rows[i][0]), title: rows[i][1],
+        details: rows[i][2], "for": rows[i][3]
+      });
     }
-    return jsonOut_({ok:true});
+    return jsonOut_(out);
   }
-  var id = data.id || Utilities.getUuid();
-  sheet.appendRow([data.date, data.title, data.details, data.for, id]);
-  return jsonOut_({ok:true, id:id});
+
+  // "add" and "delete" both require the correct passcode
+  if (e.parameter.passcode !== "RAJOI2026") {
+    return jsonOut_({ ok:false, error:"wrong passcode" });
+  }
+
+  if (action === "add") {
+    var id = Utilities.getUuid();
+    sheet.appendRow([e.parameter.date, e.parameter.title, e.parameter.details, e.parameter.for_, id]);
+    return jsonOut_({ ok:true, id:id });
+  }
+
+  if (action === "delete") {
+    var rows2 = sheet.getDataRange().getValues();
+    for (var j = 1; j < rows2.length; j++) {
+      if (String(rows2[j][4]) === String(e.parameter.id)) { sheet.deleteRow(j + 1); break; }
+    }
+    return jsonOut_({ ok:true });
+  }
+
+  return jsonOut_({ ok:false, error:"unknown action" });
 }
 function fmtDate_(v){
   if (Object.prototype.toString.call(v) === "[object Date]")
@@ -1556,16 +1566,25 @@ async function submitNotice(){
     resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Publishing…</div>';
     if (publishBtn) publishBtn.disabled = true;
     try{
-      await fetch(CONFIG.noticesSheetUrl, {
-        method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain"},
-        body: JSON.stringify({ action:"add", date, title, details, for: forWhom, passcode: CONFIG.noticesAdminPasscode })
+      const params = new URLSearchParams({
+        action:"add", date, title, details, for_: forWhom, passcode: CONFIG.noticesAdminPasscode
       });
-      await new Promise(r=>setTimeout(r, 1300));
+      const res = await fetch(CONFIG.noticesSheetUrl + "?" + params.toString(), {cache:"no-store"});
+      const data = await res.json();
+      if (!data.ok){
+        resultBox.innerHTML = '<div class="alert err">The Sheet rejected this — '+
+          (data.error === "wrong passcode"
+            ? 'the passcode in the deployed script does not match <code>noticesAdminPasscode</code> in CONFIG.'
+            : esc(data.error||"unknown error")) +
+          '</div>';
+        return;
+      }
       await loadNotices();
       resultBox.innerHTML = '<div class="alert ok">✓ Published — visible to everyone now.</div>';
       $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
     }catch(err){
-      resultBox.innerHTML = '<div class="alert err">Could not publish — check your internet connection and try again.</div>';
+      resultBox.innerHTML = '<div class="alert err">Could not reach the Google Sheet. Check that the Web app URL is correct '+
+        'and that it was deployed as a <strong>new version</strong> after the script last changed.</div>';
     }finally{
       if (publishBtn) publishBtn.disabled = false;
     }
@@ -1610,14 +1629,18 @@ async function deleteNotice(id){
 
   if (NOTICES_SOURCE === "sheet" && CONFIG.noticesSheetUrl){
     try{
-      await fetch(CONFIG.noticesSheetUrl, {
-        method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain"},
-        body: JSON.stringify({ action:"delete", id, passcode: CONFIG.noticesAdminPasscode })
-      });
-      await new Promise(r=>setTimeout(r, 1000));
+      const params = new URLSearchParams({ action:"delete", id, passcode: CONFIG.noticesAdminPasscode });
+      const res = await fetch(CONFIG.noticesSheetUrl + "?" + params.toString(), {cache:"no-store"});
+      const data = await res.json();
+      if (!data.ok){
+        alert("The Sheet rejected this delete — " + (data.error === "wrong passcode"
+          ? "the passcode in the deployed script does not match noticesAdminPasscode in CONFIG."
+          : (data.error || "unknown error")));
+        return;
+      }
       await loadNotices();
     }catch(err){
-      alert("Could not delete — check your internet connection and try again.");
+      alert("Could not reach the Google Sheet. Check your internet connection and try again.");
     }
     return;
   }
