@@ -317,7 +317,13 @@ section.block{ padding:54px 0 0; }
 .notice-item .nco{ font-size:1.3rem; flex:none; }
 .notice-item h4{ font-family:"Baloo 2",sans-serif; font-size:.92rem; margin:0 0 2px; }
 .notice-item .nmeta{ font-size:.78rem; color:var(--ink-soft); }
-.notice-item .ndel{ margin-left:auto; flex:none; }
+.notice-item .ndel{ flex:none; }
+.notice-copy-row{ display:none; }
+#notice-submit-result .notice-copy-row{
+  display:block; background:var(--surface); border:1px solid var(--rule); border-radius:8px;
+  padding:9px 12px; font-family:monospace; font-size:.78rem; color:var(--ink);
+  overflow-x:auto; white-space:pre;
+}
 
 .notice-device-note{
   margin-top:20px; background:var(--paper-deep); border-radius:10px;
@@ -1582,13 +1588,31 @@ async function submitNotice(){
 
   // saved on this device only, like an exam — the "Export for website" button
   // below sends this to whoever maintains the site to publish for real
+  const noticeObj = { id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date, title, details, for: forWhom };
   const notices = loadLocalNotices();
-  notices.push({ id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date, title, details, for: forWhom });
+  notices.push(noticeObj);
   saveLocalNotices(notices);
   await loadNotices();
   renderSavedNoticesList();
-  resultBox.innerHTML = '<div class="alert ok">✓ Saved on this device. Use Export for website below to make it visible to everyone.</div>';
+
+  resultBox.innerHTML =
+    '<div class="alert ok">✓ Saved on this device.</div>'+
+    '<div style="margin-top:12px;background:var(--paper-deep);border-radius:10px;padding:12px 14px">'+
+      '<b style="font-size:.85rem;display:block;margin-bottom:6px">Want it visible to everyone right now?</b>'+
+      '<p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:8px">Copy this row, open the Google Sheet, paste it into a new row — one click, no retyping.</p>'+
+      '<div class="notice-copy-row" id="copy-row-latest">'+esc([date,title,details,forWhom].join("\t"))+'</div>'+
+      '<button class="btn ghost small" style="margin-top:8px" onclick="copyRow(\'copy-row-latest\')">📋 Copy row for the Sheet</button>'+
+    '</div>';
   $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
+}
+
+function copyRow(elId){
+  const text = $("#"+elId).innerText;
+  navigator.clipboard?.writeText(text).then(()=>{
+    alert("Copied! Open the Google Sheet, click the first empty cell in a new row, and paste (Ctrl+V). It fills all four columns at once.");
+  }).catch(()=>{
+    alert("Could not copy automatically — please select and copy the text manually.");
+  });
 }
 
 function renderSavedNoticesList(){
@@ -1599,10 +1623,13 @@ function renderSavedNoticesList(){
     box.innerHTML = '<p style="font-size:.85rem;color:var(--ink-soft)">No notices added from this device yet.</p>';
     return;
   }
-  box.innerHTML = notices.map(n=>
+  box.innerHTML = notices.map((n,i)=>
     '<div class="notice-item">'+
       '<div class="nco">📌</div>'+
-      '<div><h4>'+esc(n.title)+'</h4><div class="nmeta">'+esc(n.date)+' · '+esc(n.for||'All classes')+'</div></div>'+
+      '<div style="flex:1"><h4>'+esc(n.title)+'</h4><div class="nmeta">'+esc(n.date)+' · '+esc(n.for||'All classes')+'</div>'+
+        '<div class="notice-copy-row" id="copy-row-'+i+'" style="display:none">'+esc([n.date,n.title,n.details,n.for||'All classes'].join("\t"))+'</div>'+
+      '</div>'+
+      '<button class="btn ghost small" onclick="copyRow(\'copy-row-'+i+'\')" title="Copy for the Google Sheet">📋</button>'+
       '<button class="btn ghost small ndel" onclick="deleteNotice(\''+n.id+'\')">Delete</button>'+
     '</div>'
   ).join("");
