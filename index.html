@@ -830,7 +830,7 @@ footer.site a{ color:var(--ink); }
               <li><strong>Extensions → Apps Script.</strong> Delete anything already there.</li>
               <li>Paste the script below. Change <code>RAJOI2026</code> to match <code>noticesAdminPasscode</code> in CONFIG.</li>
               <li><strong>Deploy → New deployment</strong> → type: <strong>Web app</strong> → Who has access: <strong>Anyone</strong> → Deploy. Approve permissions when asked.</li>
-              <li>Copy the Web app URL → paste into <code>noticesSheetUrl:"https://script.google.com/macros/s/AKfycbzrYqft4b5K_VZOP998EC00pE6BBo0EhPh8FzZsgbGmuvd0B_ZSZ2qASg_ZCHKwCNBVxg/exec"</code> in CONFIG → re-upload <code>index.html</code> to GitHub.</li>
+              <li>Copy the Web app URL → paste into <code>noticesSheetUrl</code> in CONFIG → re-upload <code>index.html</code> to GitHub.</li>
             </ol>
             <div class="notice-script-box" id="notice-script-text">function doGet(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -1072,7 +1072,7 @@ const CONFIG = {
      device — no export, no re-uploading. One-time setup, a few
      minutes. Full steps are inside the "Manage notices" panel on the
      site itself, or ask for Notice_Board_Setup_Guide.html. */
-  noticesSheetUrl: "",
+  noticesSheetUrl: "https://script.google.com/macros/s/AKfycbzrYqft4b5K_VZOP998EC00pE6BBo0EhPh8FzZsgbGmuvd0B_ZSZ2qASg_ZCHKwCNBVxg/exec",
 
   /* ---- ADMISSION FORM FROM GOOGLE FORMS ---------------------------
      Google Form → Send → <> (embed) → copy the src="..." URL here. */
