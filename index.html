@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>
+/* Applied before first paint so the page never flashes the wrong theme. */
+(function(){
+  try{
+    var saved = localStorage.getItem('rb_theme');
+    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    if(theme === 'dark') document.documentElement.setAttribute('data-theme','dark');
+  }catch(e){}
+})();
+</script>
 <title>Rajoi Bagan LP School — Pre-Primary to Class V, Jorhat</title>
 <meta name="description" content="Rajoi Bagan LP School, Rajoi cluster, Central Jorhat. Assamese-medium government school for Pre-Primary to Class V. Notices, classes, enrolment record and admission enquiries." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,12 +35,61 @@
   --leaf:       #1F6B4A;
   --leaf-soft:  #A9CDB9;
   --pencil:     #F2B705;
+  --surface:    #FFFFFF;
   --shadow-tag: 0 2px 0 rgba(23,50,78,.14);
   --radius: 14px;
   --maxw: 1080px;
   --margin-x: 84px;
+  color-scheme: light;
+  --header-bg: rgba(255,253,245,.94);
 }
+
+/* ---------- dark theme ---------- */
+[data-theme="dark"]{
+  --paper:      #10181F;
+  --paper-deep: #17222B;
+  --ink:        #EAF1F6;
+  --ink-soft:   #93A9B8;
+  --rule:       #24333E;
+  --margin-red: #E5546B;
+  --leaf:       #4CAF7D;
+  --leaf-soft:  #2A4A3C;
+  --pencil:     #F2B705;
+  --surface:    #17222B;
+  --shadow-tag: 0 2px 0 rgba(0,0,0,.35);
+  color-scheme: dark;
+  --header-bg: rgba(16,24,31,.88);
+}
+[data-theme="dark"] body::before{ opacity:.28; }
+[data-theme="dark"] .hero-photo,
+[data-theme="dark"] .photo-frame img,
+[data-theme="dark"] .sketch,
+[data-theme="dark"] .gal-item img,
+[data-theme="dark"] .tc-photo{ filter:brightness(.92) contrast(1.03); }
+[data-theme="dark"] .crest,
+[data-theme="dark"] .site-logo{ filter:none; }
+[data-theme="dark"] ::selection{ background:var(--leaf); color:#fff; }
+
+[data-theme="dark"] tbody tr.now td{ background:var(--paper-deep); }
+[data-theme="dark"] .tbl-wrap tbody tr:hover td{ background:var(--paper-deep); }
+[data-theme="dark"] .stbl tbody tr:hover td{ background:var(--paper-deep); }
+[data-theme="dark"] .exam-item:hover{ background:var(--paper-deep); }
+[data-theme="dark"] .gtab{ background:var(--surface); }
+[data-theme="dark"] .gtab.active{ background:var(--ink); color:var(--paper); }
+[data-theme="dark"] .btn.ghost{ color:var(--ink); border-color:var(--ink); }
+[data-theme="dark"] .field input,[data-theme="dark"] .field select,[data-theme="dark"] .field textarea,
+[data-theme="dark"] .search-bar input,[data-theme="dark"] .search-bar select{
+  background:var(--surface); color:var(--ink); border-color:var(--rule);
+}
+[data-theme="dark"] .lb-overlay img{ filter:none; }
+[data-theme="dark"] .cls-strip{ filter:brightness(.95); }
+
 *,*::before,*::after{ box-sizing:border-box; }
+body,.tag,.note,.notice,.chart-card,.tbl-wrap,.table-scroll,.fig,.state,
+.tc-card,.photo-frame,.gal-item,.pill,.form-frame,header.site,nav.main,
+footer.site,.menu-btn,.search-bar input,.search-bar select{
+  transition:background-color .25s ease, color .25s ease, border-color .25s ease;
+}
 html{ scroll-behavior:smooth; }
 
 body{
@@ -66,7 +125,7 @@ a{ color:var(--margin-red); }
 .eyebrow::after{ content:""; flex:1; height:1px; background:var(--rule); max-width:120px; }
 
 /* ---------- header ---------- */
-header.site{ position:sticky; top:0; z-index:40; background:rgba(255,253,245,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--rule); }
+header.site{ position:sticky; top:0; z-index:40; background:var(--header-bg); backdrop-filter:blur(8px); border-bottom:1px solid var(--rule); }
 .bar{ display:flex; align-items:center; gap:18px; min-height:70px; }
 .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; margin-right:auto; }
 .site-logo{
@@ -78,17 +137,51 @@ header.site{ position:sticky; top:0; z-index:40; background:rgba(255,253,245,.94
 .brand span{ font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); white-space:nowrap; }
 @media (max-width:560px){
   header.site .wrap{ padding-left:calc(var(--margin-x) + 12px); padding-right:14px; }
-  .brand{ min-width:0; }
+  .brand{ min-width:0; flex:1 1 auto; overflow:hidden; }
+  .brand > span{ min-width:0; overflow:hidden; }
   .brand b{ font-size:.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .brand span{ font-size:.6rem; letter-spacing:.06em; }
-  .crest{ width:34px; height:34px; font-size:.82rem; border-radius:9px; }
-  .bar{ gap:9px; min-height:62px; }
-  .menu-btn{ padding:8px 11px; font-size:.88rem; }
+  .brand span#brand-sub{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; }
+  .crest,.site-logo{ width:34px; height:34px; font-size:.82rem; border-radius:9px; }
+  .bar{ gap:8px; min-height:62px; }
+  .theme-toggle{ width:44px; height:26px; flex:none; }
+  .theme-toggle::before{ width:20px; height:20px; }
+  [data-theme="dark"] .theme-toggle::before{ transform:translateX(18px); }
+  .theme-icon{ font-size:11px; }
+  .theme-icon-sun{ left:5px; }
+  .theme-icon-moon{ right:5px; }
+  .menu-btn{ padding:8px 11px; font-size:.88rem; flex:none; }
 }
+@media (max-width:340px){
+  .theme-toggle{ display:none; } /* icon reappears in the mobile nav instead */
+  .nav-theme-link{ display:block!important; }
+}
+.nav-theme-link{ display:none; }
 nav.main{ display:flex; gap:2px; }
 nav.main a{ text-decoration:none; color:var(--ink); font-weight:700; font-size:.93rem; padding:9px 13px; border-radius:9px; }
 nav.main a:hover{ background:var(--paper-deep); }
 nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
+.theme-toggle{
+  position:relative; flex:none; width:52px; height:30px; border-radius:99px;
+  border:1px solid var(--rule); background:var(--paper-deep);
+  cursor:pointer; padding:0; transition:background .25s ease, border-color .25s ease;
+}
+.theme-toggle::before{
+  content:""; position:absolute; top:2px; left:2px; width:24px; height:24px;
+  border-radius:50%; background:var(--surface);
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"] .theme-toggle::before{ transform:translateX(22px); }
+.theme-icon{
+  position:absolute; top:50%; transform:translateY(-50%);
+  font-size:13px; line-height:1; pointer-events:none;
+  transition:opacity .2s ease;
+}
+.theme-icon-sun{ left:6px; opacity:1; }
+.theme-icon-moon{ right:6px; opacity:.35; }
+[data-theme="dark"] .theme-icon-sun{ opacity:.35; }
+[data-theme="dark"] .theme-icon-moon{ opacity:1; }
 .menu-btn{ display:none; border:1px solid var(--rule); background:var(--paper); border-radius:10px; padding:9px 12px; font:inherit; font-weight:700; cursor:pointer; }
 @media (max-width:900px){
   nav.main{ position:absolute; top:100%; left:0; right:0; flex-direction:column; gap:2px;
@@ -128,6 +221,8 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
   border-radius:11px; border:2px solid var(--ink); background:var(--ink); color:var(--paper);
   box-shadow:var(--shadow-tag); cursor:pointer; font-family:inherit; }
 .btn.ghost{ background:transparent; color:var(--ink); }
+.btn.green{ background:var(--leaf); border-color:var(--leaf); color:#fff; }
+.btn.small{ padding:7px 14px; font-size:.85rem; border-radius:9px; }
 .btn.red{ background:var(--margin-red); border-color:var(--margin-red); color:#fff; }
 .illus{ width:100%; height:auto; display:block; }
 .sketch{ width:100%; height:auto; display:block; border-radius:8px; }
@@ -135,7 +230,7 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
 @keyframes sketchIn{ from{ opacity:0; transform:scale(.985); } to{ opacity:1; transform:none; } }
 .sketch-cap{ font-size:.82rem; color:var(--ink-soft); padding:11px 4px 4px; margin:0; }
 
-.photo-frame{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius);
+.photo-frame{ background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius);
   padding:10px; box-shadow:0 3px 0 rgba(23,50,78,.10); margin:0; }
 .photo-frame img{ width:100%; height:auto; border-radius:8px; display:block; }
 .photo-frame figcaption{ font-size:.82rem; color:var(--ink-soft); padding:11px 4px 4px; margin:0; }
@@ -149,14 +244,14 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
 /* ---------- key figures ---------- */
 .figs{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1px;
   background:var(--rule); border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; margin-top:40px; }
-.fig{ background:#fff; padding:20px 18px; }
+.fig{ background:var(--surface); padding:20px 18px; }
 .fig b{ display:block; font-family:"Baloo 2",sans-serif; font-size:2.1rem; line-height:1; color:var(--leaf); }
 .fig span{ display:block; font-size:.84rem; color:var(--ink-soft); margin-top:8px; }
 
 /* ---------- cards ---------- */
 section.block{ padding:54px 0 0; }
 .cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:18px; }
-.tag{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-tag); }
+.tag{ background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-tag); }
 .tag .strip{ padding:9px 16px; color:#fff; font-family:"Baloo 2",sans-serif; font-weight:700;
   letter-spacing:.04em; font-size:.8rem; text-transform:uppercase; display:flex; justify-content:space-between; gap:8px; }
 .tag .body{ padding:16px 18px 20px; }
@@ -165,7 +260,7 @@ section.block{ padding:54px 0 0; }
 .tag .age{ display:inline-block; margin-top:12px; font-size:.73rem; font-weight:700; letter-spacing:.1em;
   text-transform:uppercase; background:var(--paper-deep); border-radius:99px; padding:5px 12px; color:var(--ink); }
 
-.note{ background:#fff; border:1px solid var(--rule); border-left:5px solid var(--pencil);
+.note{ background:var(--surface); border:1px solid var(--rule); border-left:5px solid var(--pencil);
   border-radius:var(--radius); padding:28px 30px; box-shadow:var(--shadow-tag); }
 .note.green{ border-left-color:var(--leaf); }
 .note .sign{ font-family:"Baloo 2",sans-serif; font-weight:700; font-size:1.05rem; margin-top:14px; color:var(--leaf); }
@@ -173,7 +268,7 @@ section.block{ padding:54px 0 0; }
   font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; }
 
 /* ---------- notices ---------- */
-.notice{ display:grid; grid-template-columns:96px 1fr; gap:20px; background:#fff; border:1px solid var(--rule);
+.notice{ display:grid; grid-template-columns:96px 1fr; gap:20px; background:var(--surface); border:1px solid var(--rule);
   border-radius:var(--radius); padding:18px 22px; margin-bottom:14px; box-shadow:var(--shadow-tag); }
 .notice .date{ text-align:center; border-right:1px dashed var(--rule); padding-right:14px; }
 .notice .date b{ display:block; font-family:"Baloo 2",sans-serif; font-size:1.9rem; line-height:1; color:var(--margin-red); }
@@ -188,17 +283,106 @@ section.block{ padding:54px 0 0; }
     display:flex; align-items:baseline; gap:8px; }
   .notice .date b{ font-size:1.3rem; }
 }
-.state{ border:1px dashed var(--rule); border-radius:var(--radius); padding:26px; text-align:center; color:var(--ink-soft); background:#fff; }
+.state{ border:1px dashed var(--rule); border-radius:var(--radius); padding:26px; text-align:center; color:var(--ink-soft); background:var(--surface); }
+
+/* ---- notice board admin panel ---- */
+.notice-admin-panel{
+  background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius);
+  padding:22px 24px; margin-top:22px; box-shadow:var(--shadow-tag);
+}
+.notice-admin-panel .alert{
+  border-radius:10px; padding:11px 15px; font-size:.9rem; margin-bottom:0;
+}
+.notice-admin-panel .alert.err{ background:#FEE2E2; border:1px solid #FCA5A5; color:#7F1D1D; }
+.notice-admin-panel .alert.ok{ background:#DFF7E2; border:1px solid #82CFAA; color:#14532D; }
+.notice-admin-panel .alert.warn{ background:#FEF9C3; border:1px solid #EAB308; color:#713F12; }
+.notice-admin-panel .alert.info{ background:#DBEAFE; border:1px solid #93C5FD; color:#1E3A8A; }
+[data-theme="dark"] .notice-admin-panel .alert.err{ background:#3A1B1B; color:#FCA5A5; border-color:#5C2626; }
+[data-theme="dark"] .notice-admin-panel .alert.ok{ background:#123321; color:#82CFAA; border-color:#1F4A34; }
+[data-theme="dark"] .notice-admin-panel .alert.warn{ background:#3D3312; color:#FDE68A; border-color:#5C4A15; }
+[data-theme="dark"] .notice-admin-panel .alert.info{ background:#152A4A; color:#93C5FD; border-color:#1E3A6A; }
+.notice-admin-panel .alert a{ color:inherit; }
+.mini-spin{
+  display:inline-block; width:12px; height:12px; border-radius:50%;
+  border:2px solid rgba(0,0,0,.2); border-top-color:currentColor;
+  animation:mini-spin-rotate .7s linear infinite; vertical-align:-1px; margin-right:4px;
+}
+@keyframes mini-spin-rotate{ to{ transform:rotate(360deg); } }
+
+.notice-saved-section{ border-top:1px dashed var(--rule); padding-top:14px; margin-top:22px; }
+.notice-item{
+  display:flex; align-items:center; gap:14px; padding:12px 14px;
+  border:1px solid var(--rule); border-radius:10px; margin-bottom:8px; background:var(--surface);
+}
+.notice-item .nco{ font-size:1.3rem; flex:none; }
+.notice-item h4{ font-family:"Baloo 2",sans-serif; font-size:.92rem; margin:0 0 2px; }
+.notice-item .nmeta{ font-size:.78rem; color:var(--ink-soft); }
+.notice-item .ndel{ margin-left:auto; flex:none; }
+
+.notice-device-note{
+  margin-top:20px; background:var(--paper-deep); border-radius:10px;
+  padding:14px 16px; font-size:.86rem;
+}
+.notice-device-note b{ display:block; margin-bottom:6px; font-family:"Baloo 2",sans-serif; font-size:.92rem; }
+.notice-device-note p{ margin:0 0 8px; color:var(--ink); }
+.notice-export-box{
+  background:#1E1E1E; color:#D4D4D4; border-radius:10px; padding:14px;
+  font-family:monospace; font-size:.76rem; line-height:1.6; overflow-x:auto;
+  white-space:pre; max-height:260px; overflow-y:auto;
+}
+.notice-badge{
+  display:inline-block; border-radius:99px; padding:4px 12px;
+  font-size:.72rem; font-weight:700; letter-spacing:.04em;
+  background:var(--paper-deep); color:var(--ink-soft);
+}
+.notice-badge.live{ background:#DCFCE7; color:#14532D; }
+.notice-badge.local{ background:#FEF9C3; color:#713F12; }
+[data-theme="dark"] .notice-badge.live{ background:#123321; color:#82CFAA; }
+[data-theme="dark"] .notice-badge.local{ background:#3D3312; color:#FDE68A; }
+.notice-setup{ margin-top:16px; border-top:1px dashed var(--rule); padding-top:14px; }
+.notice-setup-toggle{
+  background:none; border:none; color:var(--ink-soft); font:inherit;
+  font-size:.85rem; font-weight:700; cursor:pointer; padding:0;
+}
+.notice-setup-toggle:hover{ color:var(--leaf); }
+.notice-setup-body{ display:none; margin-top:14px; }
+.notice-setup-body.open{ display:block; }
+.notice-setup-body ol{ margin:0 0 14px 20px; font-size:.9rem; color:var(--ink); }
+.notice-setup-body li{ margin-bottom:8px; }
+.notice-script-box{
+  background:#1E1E1E; color:#D4D4D4; border-radius:10px; padding:16px;
+  font-family:monospace; font-size:.76rem; line-height:1.55; overflow-x:auto; white-space:pre;
+}
+.notice-copy-box{
+  background:var(--paper-deep); border:1px solid var(--rule); border-radius:10px;
+  padding:14px 16px; font-size:.86rem; margin-top:10px; white-space:pre-wrap; font-family:monospace;
+}
+.notice-admin-panel .field{ margin-bottom:16px; }
+.notice-admin-panel .field label{
+  display:block; font-weight:700; font-size:.78rem; margin-bottom:6px;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);
+}
+.notice-admin-panel .field input,
+.notice-admin-panel .field textarea{
+  width:100%; border:1px solid var(--rule); border-radius:10px;
+  padding:10px 14px; font:inherit; font-size:.96rem; color:var(--ink);
+  background:var(--surface); outline:none; resize:vertical;
+}
+.notice-admin-panel .field input:focus,
+.notice-admin-panel .field textarea:focus{ border-color:var(--leaf); }
+.notice-admin-panel .row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:560px){ .notice-admin-panel .row2{ grid-template-columns:1fr; } }
+.notice-admin-panel .btn-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
 
 /* ---------- chart + table ---------- */
-.chart-card{ background:#fff; border:1px solid var(--rule); border-radius:var(--radius); padding:24px 22px 18px;
+.chart-card{ background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius); padding:24px 22px 18px;
   box-shadow:var(--shadow-tag); margin-top:26px; }
 .chart-card svg{ width:100%; height:auto; display:block; }
 .legend{ display:flex; flex-wrap:wrap; gap:18px; margin-top:16px; font-size:.82rem; color:var(--ink-soft); }
 .legend i{ width:13px; height:13px; border-radius:3px; display:inline-block; margin-right:7px; vertical-align:-1px; }
 .caption{ font-size:.85rem; color:var(--ink-soft); margin:14px 0 0; }
 
-.table-scroll{ overflow-x:auto; margin-top:26px; border:1px solid var(--rule); border-radius:var(--radius); background:#fff; }
+.table-scroll{ overflow-x:auto; margin-top:26px; border:1px solid var(--rule); border-radius:var(--radius); background:var(--surface); }
 table{ border-collapse:collapse; width:100%; min-width:720px; font-size:.9rem; }
 th,td{ padding:9px 12px; text-align:right; border-bottom:1px solid var(--rule); white-space:nowrap; }
 th:first-child, td:first-child{ text-align:left; font-weight:700; }
@@ -217,7 +401,7 @@ td.tot{ color:var(--leaf); font-weight:700; }
   text-transform:uppercase; color:var(--ink-soft); padding-top:4px; }
 .info-list .v{ font-weight:500; }
 .info-list a{ color:var(--ink); text-decoration-color:var(--margin-red); text-underline-offset:3px; }
-.form-frame{ width:100%; min-height:640px; border:1px solid var(--rule); border-radius:var(--radius); background:#fff; }
+.form-frame{ width:100%; min-height:640px; border:1px solid var(--rule); border-radius:var(--radius); background:var(--surface); }
 
 /* ---------- footer ---------- */
 footer.site{ margin-top:60px; border-top:2px solid var(--ink); background:var(--paper-deep); }
@@ -227,6 +411,54 @@ footer.site p{ margin:0; font-size:.87rem; color:var(--ink-soft); }
 footer.site a{ color:var(--ink); }
 
 
+.exam-promo{
+  display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center;
+}
+@media(max-width:900px){.exam-promo{grid-template-columns:1fr;gap:28px}}
+.exam-feature-list{
+  list-style:none;padding:0;margin:16px 0 0;
+  display:flex;flex-direction:column;gap:7px;
+}
+.exam-feature-list li{font-size:.93rem;color:var(--ink);display:flex;gap:8px}
+/* mock app card */
+.exam-promo-card{
+  background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius);
+  overflow:hidden;box-shadow:0 4px 0 rgba(23,50,78,.10);
+}
+.epc-header{
+  background:var(--leaf);color:#fff;padding:14px 18px;
+  display:flex;align-items:center;gap:12px;
+}
+.epc-tabs{
+  display:flex;border-bottom:2px solid var(--rule);padding:0 4px;
+  background:var(--surface);
+}
+.epc-tab{
+  padding:10px 14px;font-size:.8rem;font-weight:700;color:var(--soft);
+  border-bottom:3px solid transparent;cursor:default;white-space:nowrap;
+}
+.epc-tab.active{color:var(--ink);border-bottom-color:var(--leaf)}
+.epc-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:11px 16px;border-bottom:1px solid var(--rule);font-size:.88rem;
+}
+.epc-row:last-of-type{border-bottom:0}
+.epc-label{color:var(--ink);font-weight:500}
+.epc-chip{
+  display:inline-block;border-radius:99px;padding:3px 11px;
+  font-size:.75rem;font-weight:700;background:var(--paper-deep);color:var(--ink);
+}
+.epc-chip.green{background:#DCFCE7;color:#14532D}
+.epc-chip.yellow{background:#FEF9C3;color:#713F12}
+.epc-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 16px;background:var(--paper-deep);font-size:.78rem;color:var(--soft);
+}
+.exam-nav-link{
+  background:var(--margin-red)!important;color:#fff!important;
+  border-radius:9px!important;
+}
+.exam-nav-link:hover{background:#A30D25!important}
 :focus-visible{ outline:3px solid var(--pencil); outline-offset:2px; border-radius:6px; }
 .skip{ position:absolute; left:-9999px; top:8px; background:var(--ink); color:#fff; padding:10px 16px; border-radius:8px; z-index:99; text-decoration:none; }
 .skip:focus{ left:12px; }
@@ -238,7 +470,7 @@ footer.site a{ color:var(--ink); }
 /* ====== gallery ====== */
 .gal-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 18px}
 .gtab{font:inherit;font-size:.84rem;font-weight:700;padding:8px 16px;border-radius:99px;
-  border:1px solid var(--rule);background:#fff;color:var(--ink);cursor:pointer}
+  border:1px solid var(--rule);background:var(--surface);color:var(--ink);cursor:pointer}
 .gtab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
 .gal-grid{
   display:grid;
@@ -247,7 +479,7 @@ footer.site a{ color:var(--ink); }
 }
 .gal-item{
   border-radius:var(--radius);overflow:hidden;
-  border:1px solid var(--rule);background:#fff;
+  border:1px solid var(--rule);background:var(--surface);
   box-shadow:var(--shadow-tag);
   cursor:pointer;
   transition:transform .18s,box-shadow .18s;
@@ -273,7 +505,7 @@ footer.site a{ color:var(--ink); }
 .cls-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:6px}
 @media(max-width:900px){.cls-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){.cls-grid{grid-template-columns:repeat(2,1fr)}}
-.cls-card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+.cls-card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius);
   overflow:hidden;box-shadow:var(--shadow-tag);cursor:pointer;transition:transform .15s}
 .cls-card:hover{transform:translateY(-2px)}
 .cls-strip{padding:7px 10px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
@@ -287,11 +519,11 @@ footer.site a{ color:var(--ink); }
 .search-bar{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0;align-items:center}
 .search-bar input,.search-bar select{
   font:inherit;font-size:.94rem;padding:10px 14px;border:1px solid var(--rule);
-  border-radius:10px;background:#fff;color:var(--ink);outline:none;min-width:0}
+  border-radius:10px;background:var(--surface);color:var(--ink);outline:none;min-width:0}
 .search-bar input{flex:1 1 200px}
 .search-bar select{flex:0 0 auto}
 .search-bar input:focus,.search-bar select:focus{border-color:var(--leaf)}
-.tbl-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--radius);background:#fff;margin-top:4px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--radius);background:var(--surface);margin-top:4px}
 .tbl-wrap table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem}
 .tbl-wrap th,.tbl-wrap td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
 .tbl-wrap thead th{background:var(--paper-deep);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);position:sticky;top:0}
@@ -302,9 +534,9 @@ footer.site a{ color:var(--ink); }
 .b-obc{background:#E8F5E9;color:#1B5E20}.b-gen{background:#FFF8E1;color:#6D4C00}.b-mobc{background:#F3E5F5;color:#4A148C}
 .b-reg{background:#E8F5E9;color:#1B5E20}.b-ssa{background:#FFF3E0;color:#7B4500}
 .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
-.pill{border-radius:99px;padding:6px 16px;font-size:.84rem;font-weight:700;border:1px solid var(--rule);background:#fff}
+.pill{border-radius:99px;padding:6px 16px;font-size:.84rem;font-weight:700;border:1px solid var(--rule);background:var(--surface)}
 .tc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:24px}
-.tc-card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-tag)}
+.tc-card{background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-tag)}
 .tc-card .head{background:var(--leaf);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:14px}
 .tc-card .avatar{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.22);
   display:grid;place-items:center;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:1.1rem;color:#fff;flex:none}
@@ -341,13 +573,18 @@ footer.site a{ color:var(--ink); }
       <img src="school-logo.png" alt="Rajoi Bagan LP School logo" class="site-logo" id="crest">
       <span><b id="brand-name">Rajoi Bagan LP School</b><span id="brand-sub">Pre-Primary to Class V</span></span>
     </a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch between light and dark theme" title="Switch theme">
+      <span class="theme-icon theme-icon-sun" aria-hidden="true">☀️</span>
+      <span class="theme-icon theme-icon-moon" aria-hidden="true">🌙</span>
+    </button>
     <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
     <nav class="main" id="nav" aria-label="Main">
       <a href="#home">Home</a>
       <a href="#classes">Classes</a>
       <a href="#record">Our record</a>
       <a href="#notices">Notice board</a>
-      <a href="#gallery">Gallery</a><a href="#students">Students</a><a href="#teachers">Teachers</a><a href="#admissions">Admissions</a>
+      <a href="#gallery">Gallery</a><a href="#students">Students</a><a href="#teachers">Teachers</a><a href="#admissions">Admissions</a><a href="exam.html" class="exam-nav-link">📝 Exam Manager</a>
+      <a href="#" id="nav-theme-link" class="nav-theme-link">☀️ Switch to dark theme</a>
     </nav>
   </div>
 </header>
@@ -439,6 +676,7 @@ footer.site a{ color:var(--ink); }
       <h2>The school, in short</h2>
       <ul class="info-list" style="margin-top:18px" id="school-facts"></ul>
     </section>
+
   </div>
 </div>
 
@@ -512,9 +750,131 @@ footer.site a{ color:var(--ink); }
 <!-- ============ NOTICES ============ -->
 <div class="page" id="page-notices">
   <div class="wrap">
-    <p class="eyebrow">Updated by the school</p>
-    <h2>Notice board</h2>
-    <p class="lede" style="margin-top:12px">Holidays, exam dates, meetings and events. Newest at the top.</p>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div>
+        <p class="eyebrow">Updated by the school</p>
+        <h2>Notice board</h2>
+        <p class="lede" style="margin-top:12px">Holidays, exam dates, meetings and events. Newest at the top.</p>
+      </div>
+      <button class="btn ghost small" id="notice-admin-btn" onclick="openNoticeAdmin()" style="flex:none;margin-top:4px">🔒 Manage notices</button>
+    </div>
+
+    <!-- password-gated panel: hidden until unlocked, never affects public list below -->
+    <div id="notice-admin-panel" class="notice-admin-panel" style="display:none">
+      <div id="notice-admin-lock">
+        <p class="eyebrow" style="margin-bottom:10px">Staff only</p>
+        <div class="field" style="max-width:320px">
+          <label>Admin passcode</label>
+          <input type="password" id="notice-passcode" placeholder="Enter passcode" autocomplete="off"
+            onkeydown="if(event.key==='Enter')checkNoticePasscode()">
+        </div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn green small" onclick="checkNoticePasscode()">Unlock →</button>
+          <button class="btn ghost small" onclick="closeNoticeAdmin()">Cancel</button>
+        </div>
+        <p class="alert err" id="notice-passcode-err" style="display:none;margin-top:12px;max-width:400px">Incorrect passcode.</p>
+      </div>
+
+      <div id="notice-admin-form" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <p class="eyebrow" style="margin-bottom:0">Add a new notice</p>
+          <button class="btn ghost small" onclick="lockNoticeAdmin()">🔒 Lock</button>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Date</label>
+            <input type="date" id="na-date"></div>
+          <div class="field"><label>For (which classes)</label>
+            <input type="text" id="na-for" placeholder="e.g. All classes"></div>
+        </div>
+        <div class="field"><label>Title</label>
+          <input type="text" id="na-title" placeholder="e.g. School closed for Durga Puja"></div>
+        <div class="field"><label>Details</label>
+          <textarea id="na-details" rows="3" placeholder="A sentence or two with the full details."></textarea></div>
+        <div class="btn-row">
+          <button class="btn green" onclick="submitNotice()">Publish notice →</button>
+        </div>
+        <div id="notice-submit-result" style="margin-top:14px"></div>
+
+        <div class="notice-saved-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Saved notices</p>
+            <span id="notice-source-badge" class="notice-badge">checking…</span>
+          </div>
+          <div id="notice-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">No notices yet.</p></div>
+        </div>
+
+        <!-- shown only when NOT connected to a live Sheet -->
+        <div class="notice-device-note" id="notice-local-note">
+          <b>⚠ These notices are only visible on this device</b>
+          <p>A parent opening the website on their own phone will not see them until they're
+             published properly. Either connect a free live Google Sheet below (recommended — one-time,
+             then this warning disappears for good), or click <strong>Export for website</strong> and
+             send the result to whoever maintains the website.</p>
+          <button class="btn ghost small" onclick="exportNoticesForWebsite()">📋 Export for website</button>
+          <div id="notice-export-result" style="margin-top:10px"></div>
+        </div>
+
+        <div class="notice-setup">
+          <button class="notice-setup-toggle" id="notice-setup-toggle" onclick="toggleNoticeSetup()">
+            <span id="notice-setup-arrow">▸</span> <span id="notice-setup-status">Connect a live Google Sheet (one-time setup)</span>
+          </button>
+          <div class="notice-setup-body" id="notice-setup-body">
+            <p style="font-size:.9rem;margin-bottom:10px">
+              This one-time setup makes every notice visible to <strong>every visitor, on every
+              device, instantly</strong> — no export, no sending files, nothing to re-upload.
+              A full illustrated guide with pictures of every screen is available separately —
+              ask for <b>Notice_Board_Setup_Guide.html</b>. Short version:
+            </p>
+            <ol>
+              <li>Create a Google Sheet with 5 column headers in row 1: <code>Date | Title | Details | For | ID</code></li>
+              <li><strong>Extensions → Apps Script.</strong> Delete anything already there.</li>
+              <li>Paste the script below. Change <code>RAJOI2026</code> to match <code>noticesAdminPasscode</code> in CONFIG.</li>
+              <li><strong>Deploy → New deployment</strong> → type: <strong>Web app</strong> → Who has access: <strong>Anyone</strong> → Deploy. Approve permissions when asked.</li>
+              <li>Copy the Web app URL → paste into <code>noticesSheetUrl:"https://script.google.com/macros/s/AKfycbzrYqft4b5K_VZOP998EC00pE6BBo0EhPh8FzZsgbGmuvd0B_ZSZ2qASg_ZCHKwCNBVxg/exec"</code> in CONFIG → re-upload <code>index.html</code> to GitHub.</li>
+            </ol>
+            <div class="notice-script-box" id="notice-script-text">function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  var out = [];
+  for (var i = 1; i < rows.length; i++) {
+    if (!rows[i][1]) continue;
+    out.push({
+      id: rows[i][4] ? String(rows[i][4]) : String(i),
+      date: fmtDate_(rows[i][0]), title: rows[i][1],
+      details: rows[i][2], "for": rows[i][3]
+    });
+  }
+  return jsonOut_(out);
+}
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  if (data.passcode !== "RAJOI2026") return jsonOut_({error:"forbidden"});
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  if (data.action === "delete") {
+    var rows = sheet.getDataRange().getValues();
+    for (var i = 1; i < rows.length; i++) {
+      if (String(rows[i][4]) === String(data.id)) { sheet.deleteRow(i + 1); break; }
+    }
+    return jsonOut_({ok:true});
+  }
+  var id = data.id || Utilities.getUuid();
+  sheet.appendRow([data.date, data.title, data.details, data.for, id]);
+  return jsonOut_({ok:true, id:id});
+}
+function fmtDate_(v){
+  if (Object.prototype.toString.call(v) === "[object Date]")
+    return Utilities.formatDate(v, "GMT", "yyyy-MM-dd");
+  return String(v);
+}
+function jsonOut_(obj){
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}</div>
+            <button class="btn ghost small" style="margin-top:10px" onclick="copyNoticeScript()">📋 Copy script</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="notice-list" style="margin-top:30px"><div class="state">Loading notices…</div></div>
     <p style="margin-top:24px; font-size:.9rem; color:var(--ink-soft)">
       Missed something? Call the school on <a href="tel:" id="notice-phone">the school number</a> on any working day.
@@ -696,12 +1056,23 @@ const CONFIG = {
     message: "Numbers on a register only move when someone goes out and brings the children in. When a child stops coming regularly, I go to the house myself, and where that is not possible I send a card to the parents — no child should be allowed to quietly drift away from school. With help from parents and the community we have built a greenhouse where the children grow their own vegetables, and for those who dream of a Navodaya seat, I take extra classes outside school hours and give the guide books free. Your child is welcome here."
   },
 
-  /* ---- LIVE NOTICES FROM GOOGLE SHEETS ----------------------------
-     Google Sheet → File → Share → Publish to web → select the sheet →
-     "Comma-separated values (.csv)" → Publish → paste the link below.
-     Columns, in this order: Date | Title | Details | For
-     Leave empty ("") to use noticesFallback instead. */
-  noticesCsvUrl: "",
+  /* ---- NOTICE BOARD — ADD PROTECTION ------------------------------
+     Anyone can VIEW the notice board — no passcode needed to look.
+     Only someone who knows this passcode can ADD or DELETE a notice,
+     via the "🔒 Manage notices" button. Change this before publishing. */
+  noticesAdminPasscode: "RAJOI2026",
+
+  /* ---- NOTICE BOARD — LIVE SYNC (optional, recommended) -----------
+     Leave empty and notices work fine, but only on the device that
+     added them (like Saved Exams) — an Export button lets the admin
+     send updates to be baked into the site by hand.
+
+     Paste a deployed Google Apps Script Web App URL here instead, and
+     every notice becomes instantly visible to every visitor on every
+     device — no export, no re-uploading. One-time setup, a few
+     minutes. Full steps are inside the "Manage notices" panel on the
+     site itself, or ask for Notice_Board_Setup_Guide.html. */
+  noticesSheetUrl: "",
 
   /* ---- ADMISSION FORM FROM GOOGLE FORMS ---------------------------
      Google Form → Send → <> (embed) → copy the src="..." URL here. */
@@ -917,7 +1288,7 @@ function buildChart(){
   const avgLabel = "16-year average = " + AVG;
   const lw = avgLabel.length * 6.4 + 16;
   g+='<line x1="'+padL+'" y1="'+y(AVG)+'" x2="'+(W-padR)+'" y2="'+y(AVG)+'" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="6 5"/>'+
-     '<rect x="'+(padL+4)+'" y="'+(y(AVG)+5)+'" width="'+lw+'" height="18" rx="4" fill="#fff" opacity="0.95"/>'+
+     '<rect x="'+(padL+4)+'" y="'+(y(AVG)+5)+'" width="'+lw+'" height="18" rx="4" fill="var(--surface)" opacity="0.95"/>'+
      '<text x="'+(padL+12)+'" y="'+(y(AVG)+18)+'" text-anchor="start" font-size="11" fill="var(--ink-soft)">'+avgLabel+'</text>';
   /* axis */
   g+='<line x1="'+padL+'" y1="'+y(0)+'" x2="'+(W-padR)+'" y2="'+y(0)+'" stroke="var(--ink)" stroke-width="1.5"/>';
@@ -1033,33 +1404,53 @@ function renderNotices(items){
       (n.for?'<span class="for">'+esc(n.for)+'</span>':'')+'</div></article>';
   }).join("");
 }
-function parseCsv(text){
-  const rows=[]; let row=[],cell="",q=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(q){ if(ch==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else q=false; } else cell+=ch; }
-    else if(ch==='"') q=true;
-    else if(ch===","){ row.push(cell); cell=""; }
-    else if(ch==="\n"){ row.push(cell); rows.push(row); row=[]; cell=""; }
-    else if(ch!=="\r") cell+=ch;
-  }
-  if(cell.length||row.length){ row.push(cell); rows.push(row); }
-  return rows.filter(r=>r.some(c=>c.trim()!==""));
-}
-async function loadNotices(){
-  if(!CONFIG.noticesCsvUrl){ renderNotices(CONFIG.noticesFallback); return; }
+function loadLocalNotices(){
   try{
-    const res=await fetch(CONFIG.noticesCsvUrl,{cache:"no-store"});
-    if(!res.ok) throw new Error(res.status);
-    const rows=parseCsv(await res.text());
-    const body=(rows[0]&&/date/i.test(rows[0][0]))?rows.slice(1):rows;
-    const items=body.map(r=>({date:(r[0]||"").trim(),title:(r[1]||"").trim(),details:(r[2]||"").trim(),for:(r[3]||"").trim()}))
-      .filter(n=>n.title).sort((a,b)=>new Date(b.date)-new Date(a.date));
-    renderNotices(items.length?items:CONFIG.noticesFallback);
-  }catch(err){
-    console.warn("Notice sheet did not load:",err);
-    $("#notice-list").innerHTML='<div class="state">The notice sheet did not load. Check that it is still published to the web, then reload this page.</div>';
+    const raw = localStorage.getItem("rb_notices");
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
+function saveLocalNotices(arr){
+  try{ localStorage.setItem("rb_notices", JSON.stringify(arr)); }catch(e){}
+}
+
+let CURRENT_NOTICES = [];   // whatever is currently on screen, from whichever source
+let NOTICES_SOURCE = "fallback"; // "sheet" | "local" | "fallback"
+
+async function loadNotices(){
+  /* Priority: a connected live Google Sheet (visible to everyone, every
+     device) → notices saved on this device only (like Saved Exams) →
+     the sample notices baked into the site. */
+  if (CONFIG.noticesSheetUrl){
+    try{
+      const res = await fetch(CONFIG.noticesSheetUrl + "?action=list", {cache:"no-store"});
+      if(!res.ok) throw new Error(res.status);
+      const items = await res.json();
+      if (Array.isArray(items)){
+        CURRENT_NOTICES = items.map(n=>({
+          id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
+          details:(n.details||"").trim(), for:(n.for||"").trim()
+        })).filter(n=>n.title).sort((a,b)=>new Date(b.date)-new Date(a.date));
+        NOTICES_SOURCE = "sheet";
+        renderNotices(CURRENT_NOTICES.length ? CURRENT_NOTICES : CONFIG.noticesFallback);
+        renderSavedNoticesList();
+        return;
+      }
+    }catch(err){
+      console.warn("Live notice sheet did not load, using local/fallback instead:", err);
+    }
   }
+  const local = loadLocalNotices();
+  if (local.length){
+    CURRENT_NOTICES = local.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+    NOTICES_SOURCE = "local";
+    renderNotices(CURRENT_NOTICES);
+  } else {
+    CURRENT_NOTICES = [];
+    NOTICES_SOURCE = "fallback";
+    renderNotices(CONFIG.noticesFallback);
+  }
+  renderSavedNoticesList();
 }
 
 /* ---- routing ---- */
@@ -1079,11 +1470,202 @@ $("#menu-btn").addEventListener("click",e=>{
 });
 window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
 
+/* ---- theme toggle ---- */
+function setTheme(theme){
+  if(theme === 'dark') document.documentElement.setAttribute('data-theme','dark');
+  else document.documentElement.removeAttribute('data-theme');
+  try{ localStorage.setItem('rb_theme', theme); }catch(e){}
+  const btn = $("#theme-toggle");
+  if(btn) btn.setAttribute('aria-pressed', theme==='dark' ? 'true':'false');
+  const navLink = $("#nav-theme-link");
+  if(navLink) navLink.textContent = theme==='dark' ? '☀️ Switch to light theme' : '🌙 Switch to dark theme';
+}
+$("#theme-toggle").addEventListener("click", ()=>{
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  setTheme(isDark ? 'light' : 'dark');
+});
+$("#nav-theme-link").addEventListener("click", (e)=>{
+  e.preventDefault();
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  setTheme(isDark ? 'light' : 'dark');
+});
+setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
 applyConfig();
 show(location.hash.slice(1)||"home");
 loadNotices();
 
+/* ================================================================
+   NOTICE BOARD — password-protected "add", fully open "view"
+   The public list above (loadNotices/renderNotices) is untouched
+   and needs no passcode — anyone can see it, always.
+   ================================================================ */
+function openNoticeAdmin(){
+  $("#notice-admin-panel").style.display = "block";
+  const unlockedUntil = sessionStorage.getItem("rb_notice_unlocked_until");
+  if (unlockedUntil && Date.now() < parseInt(unlockedUntil)) {
+    showNoticeForm();
+  } else {
+    $("#notice-admin-lock").style.display = "block";
+    $("#notice-admin-form").style.display = "none";
+    $("#notice-passcode").focus();
+  }
+  $("#notice-admin-panel").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+function closeNoticeAdmin(){
+  $("#notice-admin-panel").style.display = "none";
+  $("#notice-passcode").value = "";
+  $("#notice-passcode-err").style.display = "none";
+}
+function checkNoticePasscode(){
+  const val = $("#notice-passcode").value.trim();
+  if (val !== CONFIG.noticesAdminPasscode){
+    $("#notice-passcode-err").style.display = "block";
+    return;
+  }
+  $("#notice-passcode-err").style.display = "none";
+  sessionStorage.setItem("rb_notice_unlocked_until", Date.now() + 120*60*1000); // 2 hours
+  showNoticeForm();
+}
+function showNoticeForm(){
+  $("#notice-admin-lock").style.display = "none";
+  $("#notice-admin-form").style.display = "block";
+  const dateField = $("#na-date");
+  if (!dateField.value) dateField.value = new Date().toISOString().slice(0,10);
+  loadNotices();
+}
+function lockNoticeAdmin(){
+  sessionStorage.removeItem("rb_notice_unlocked_until");
+  closeNoticeAdmin();
+}
 
+async function submitNotice(){
+  const date = $("#na-date").value;
+  const title = $("#na-title").value.trim();
+  const details = $("#na-details").value.trim();
+  const forWhom = $("#na-for").value.trim() || "All classes";
+  const resultBox = $("#notice-submit-result");
+  const publishBtn = document.querySelector('#notice-admin-form button.btn.green');
+
+  if (!date || !title){
+    resultBox.innerHTML = '<div class="alert err">Please fill in at least the date and title.</div>';
+    return;
+  }
+
+  if (CONFIG.noticesSheetUrl){
+    resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Publishing…</div>';
+    if (publishBtn) publishBtn.disabled = true;
+    try{
+      await fetch(CONFIG.noticesSheetUrl, {
+        method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain"},
+        body: JSON.stringify({ action:"add", date, title, details, for: forWhom, passcode: CONFIG.noticesAdminPasscode })
+      });
+      await new Promise(r=>setTimeout(r, 1300));
+      await loadNotices();
+      resultBox.innerHTML = '<div class="alert ok">✓ Published — visible to everyone now.</div>';
+      $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
+    }catch(err){
+      resultBox.innerHTML = '<div class="alert err">Could not publish — check your internet connection and try again.</div>';
+    }finally{
+      if (publishBtn) publishBtn.disabled = false;
+    }
+    return;
+  }
+
+  // no live sheet configured — save on this device, like an exam
+  const notices = loadLocalNotices();
+  notices.push({ id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date, title, details, for: forWhom });
+  saveLocalNotices(notices);
+  await loadNotices();
+  resultBox.innerHTML = '<div class="alert ok">✓ Published — the notice board below has been updated on this device.</div>';
+  $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
+}
+
+function renderSavedNoticesList(){
+  const box = $("#notice-saved-list");
+  const badge = $("#notice-source-badge");
+  const localNote = $("#notice-local-note");
+
+  if (badge){
+    if (NOTICES_SOURCE === "sheet"){ badge.textContent = "🌐 Live — everyone sees these"; badge.className = "notice-badge live"; }
+    else { badge.textContent = "📱 Saved on this device only"; badge.className = "notice-badge local"; }
+  }
+  if (localNote) localNote.style.display = (NOTICES_SOURCE === "sheet") ? "none" : "block";
+
+  if (!CURRENT_NOTICES.length){
+    box.innerHTML = '<p style="font-size:.85rem;color:var(--ink-soft)">No notices yet.</p>';
+    return;
+  }
+  box.innerHTML = CURRENT_NOTICES.map(n=>
+    '<div class="notice-item">'+
+      '<div class="nco">📌</div>'+
+      '<div><h4>'+esc(n.title)+'</h4><div class="nmeta">'+esc(n.date)+' · '+esc(n.for||'All classes')+'</div></div>'+
+      '<button class="btn ghost small ndel" onclick="deleteNotice(\''+n.id+'\')">Delete</button>'+
+    '</div>'
+  ).join("");
+}
+
+async function deleteNotice(id){
+  if (!confirm("Delete this notice?")) return;
+
+  if (NOTICES_SOURCE === "sheet" && CONFIG.noticesSheetUrl){
+    try{
+      await fetch(CONFIG.noticesSheetUrl, {
+        method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain"},
+        body: JSON.stringify({ action:"delete", id, passcode: CONFIG.noticesAdminPasscode })
+      });
+      await new Promise(r=>setTimeout(r, 1000));
+      await loadNotices();
+    }catch(err){
+      alert("Could not delete — check your internet connection and try again.");
+    }
+    return;
+  }
+
+  const notices = loadLocalNotices().filter(n=>n.id!==id);
+  saveLocalNotices(notices);
+  await loadNotices();
+}
+
+function exportNoticesForWebsite(){
+  const notices = loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const box = $("#notice-export-result");
+  if (!notices.length){
+    box.innerHTML = '<div class="alert warn">No notices to export yet — add one first.</div>';
+    return;
+  }
+  const lines = notices.map(n =>
+    '    { date:"'+n.date+'", title:'+JSON.stringify(n.title)+', details:'+JSON.stringify(n.details)+', for:'+JSON.stringify(n.for||'All classes')+' }'
+  ).join(",\n");
+  const script = "noticesFallback: [\n" + lines + "\n  ],";
+  box.innerHTML =
+    '<div class="alert ok">Copy this and send it to whoever maintains the website — it replaces the '+
+    '<code>noticesFallback</code> block in CONFIG so every visitor sees these notices.</div>'+
+    '<div class="notice-export-box" id="notice-export-text">'+esc(script)+'</div>'+
+    '<button class="btn ghost small" style="margin-top:8px" onclick="copyNoticeExport()">📋 Copy</button>';
+}
+function copyNoticeExport(){
+  const text = $("#notice-export-text").innerText;
+  navigator.clipboard?.writeText(text).then(()=>{
+    alert("Copied. Send this to whoever maintains the website.");
+  }).catch(()=>{
+    alert("Could not copy automatically — please select and copy the text manually.");
+  });
+}
+function copyNoticeScript(){
+  const text = $("#notice-script-text").innerText;
+  navigator.clipboard?.writeText(text).then(()=>{
+    alert("Script copied. Paste it into Extensions → Apps Script on the notices Google Sheet.");
+  }).catch(()=>{
+    alert("Could not copy automatically — please select and copy the text manually.");
+  });
+}
+function toggleNoticeSetup(){
+  const body = $("#notice-setup-body");
+  const arrow = $("#notice-setup-arrow");
+  const open = body.classList.toggle("open");
+  arrow.textContent = open ? "▾" : "▸";
+}
 </script>
 
 <script>

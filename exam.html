@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exam Manager — Rajoi Bagan LP School</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17324E;--soft:#5A7793;--leaf:#1F6B4A;--leaf-soft:#A9CDB9;
+  --red:#C8102E;--pencil:#F2B705;--rule:#CADDEC;--paper:#FFFDF5;
+  --radius:14px;--shadow:0 2px 0 rgba(23,50,78,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--paper);
+  background-image:linear-gradient(to bottom,transparent 31px,var(--rule) 31px,var(--rule) 32px,transparent 32px);
+  background-size:100% 32px;
+  font-family:"Karla",sans-serif;color:var(--ink);font-size:16px;line-height:1.6;
+}
+
+/* LOCK SCREEN */
+#lock-screen{
+  position:fixed;inset:0;z-index:200;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+#lock-screen.hidden{display:none}
+.lock-card{
+  background:#fff;border-radius:20px;padding:36px 32px;
+  max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center;
+}
+.lock-card img{width:56px;height:56px;border-radius:50%;object-fit:contain;margin-bottom:14px}
+.lock-card h1{font-family:"Baloo 2",sans-serif;font-size:1.3rem;margin-bottom:4px;color:var(--ink)}
+.lock-card p.lsub{color:var(--soft);font-size:.88rem;margin-bottom:22px}
+.lock-field{margin-bottom:14px;text-align:left}
+.lock-field label{display:block;font-weight:700;font-size:.78rem;margin-bottom:5px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.lock-field input{
+  width:100%;border:2px solid var(--rule);border-radius:10px;
+  padding:12px 14px;font:inherit;font-size:1.05rem;color:var(--ink);
+  background:#fff;outline:none;text-align:center;letter-spacing:.15em;font-weight:700;
+}
+.lock-field input:focus{border-color:var(--leaf)}
+.lock-btn{
+  width:100%;padding:13px;border-radius:11px;border:none;
+  background:var(--leaf);color:#fff;font:inherit;font-weight:700;
+  font-size:1rem;cursor:pointer;margin-top:6px;
+}
+.lock-btn:hover{background:#175539}
+.lock-err{background:#FEE2E2;color:#7F1D1D;border-radius:8px;padding:9px 12px;font-size:.84rem;margin-top:12px;display:none}
+.lock-err.show{display:block}
+.lock-ok{background:#DFF7E2;color:#14532D;border-radius:8px;padding:9px 12px;font-size:.84rem;margin-top:12px;display:none}
+.lock-ok.show{display:block}
+.lock-foot{margin-top:18px;font-size:.78rem;color:var(--soft)}
+.lock-foot a{color:var(--leaf);font-weight:700;text-decoration:none}
+.lock-step{display:none}
+.lock-step.active{display:block}
+.otp-boxes{display:flex;gap:8px;justify-content:center;margin-bottom:6px}
+.otp-boxes input{width:44px!important;height:52px;padding:0!important;font-size:1.3rem!important}
+#lock-app{display:none}
+#lock-app.unlocked{display:block}
+
+/* APP CHROME */
+.topbar{
+  background:rgba(255,253,245,.94);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);padding:0 20px;
+  display:flex;align-items:center;gap:12px;min-height:60px;
+  position:sticky;top:0;z-index:40;
+}
+.topbar img{width:36px;height:36px;border-radius:50%;object-fit:contain}
+.topbar b{font-family:"Baloo 2",sans-serif;font-size:1.05rem}
+.topbar span{font-size:.72rem;color:var(--soft);text-transform:uppercase;letter-spacing:.1em}
+.topbar .tb-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.topbar a{font-size:.85rem;color:var(--leaf);text-decoration:none;font-weight:700}
+.lock-out-btn{
+  background:none;border:1px solid var(--rule);border-radius:8px;
+  padding:6px 12px;font:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;
+}
+.lock-out-btn:hover{border-color:var(--red);color:var(--red)}
+
+.tabs{
+  display:flex;background:#fff;border-bottom:2px solid var(--rule);
+  overflow-x:auto;position:sticky;top:60px;z-index:39;
+}
+.tab{
+  flex:0 0 auto;padding:13px 18px;font-weight:700;font-size:.85rem;
+  color:var(--soft);border-bottom:3px solid transparent;
+  cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:7px;
+}
+.tab.active{color:var(--ink);border-bottom-color:var(--leaf)}
+.tab .n{
+  width:20px;height:20px;border-radius:50%;background:var(--rule);
+  color:var(--ink);font-size:.72rem;display:grid;place-items:center;flex:none;
+}
+.tab.active .n{background:var(--leaf);color:#fff}
+
+.main{max-width:960px;margin:0 auto;padding:28px 18px 72px}
+.panel{display:none}.panel.active{display:block}
+h2{font-family:"Baloo 2",sans-serif;font-size:1.5rem;margin-bottom:4px}
+.sub{color:var(--soft);font-size:.9rem;margin-bottom:22px}
+
+.field{margin-bottom:16px}
+.field label{
+  display:block;font-weight:700;font-size:.8rem;margin-bottom:5px;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--soft);
+}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid var(--rule);border-radius:10px;
+  padding:10px 14px;font:inherit;font-size:.96rem;color:var(--ink);
+  background:#fff;outline:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--leaf)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:560px){.row2,.row3{grid-template-columns:1fr}}
+
+.btn{
+  display:inline-block;padding:11px 20px;border-radius:11px;
+  font:inherit;font-weight:700;font-size:.95rem;cursor:pointer;
+  border:2px solid var(--ink);background:var(--ink);color:#fff;
+}
+.btn.green{background:var(--leaf);border-color:var(--leaf)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.red{background:var(--red);border-color:var(--red)}
+.btn.small{padding:7px 14px;font-size:.85rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;align-items:center}
+
+.card{
+  background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden;
+}
+.card-head{
+  background:var(--leaf);color:#fff;padding:13px 18px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.card-head h3{font-family:"Baloo 2",sans-serif;font-size:1rem;margin:0}
+.card-body{padding:16px 18px}
+
+.exam-item{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border-bottom:1px solid var(--rule);cursor:pointer;
+}
+.exam-item:last-child{border-bottom:0}
+.exam-item:hover{background:#F5FAF7}
+.exam-item .eco{font-size:1.5rem;flex:none}
+.exam-item h4{font-family:"Baloo 2",sans-serif;font-size:.95rem;margin:0 0 2px}
+.exam-item .emeta{font-size:.8rem;color:var(--soft)}
+.exam-item .earr{margin-left:auto;color:var(--leaf);font-size:1.2rem}
+
+.stbl{width:100%;border-collapse:collapse;font-size:.9rem}
+.stbl th,.stbl td{
+  padding:9px 10px;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap;
+}
+.stbl thead th{
+  background:var(--paper);font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--soft);
+}
+.stbl tbody tr:last-child td{border-bottom:0}
+.stbl tbody tr:hover td{background:#F5FAF7}
+.stbl tbody tr.absent-row td{opacity:.45}
+.stbl input[type=number]{
+  width:60px;border:1px solid var(--rule);border-radius:7px;
+  padding:6px 8px;font:inherit;font-size:.95rem;font-weight:700;
+  text-align:center;color:var(--leaf);background:#fff;outline:none;
+}
+.stbl input[type=number]:disabled{background:#F3F4F6;color:#9CA3AF}
+.stbl input[type=number]:focus{border-color:var(--leaf)}
+
+.grade{display:inline-block;border-radius:99px;padding:3px 10px;font-size:.73rem;font-weight:700;letter-spacing:.05em}
+.gA{background:#DCFCE7;color:#14532D}
+.gB{background:#DBEAFE;color:#1E3A8A}
+.gC{background:#FEF9C3;color:#713F12}
+.gD{background:#FEE2E2;color:#991B1B}
+.gF{background:#F3F4F6;color:#374151}
+.gAbs{background:#F3F4F6;color:#9CA3AF}
+
+.att-toggle{display:inline-flex;border-radius:99px;overflow:hidden;border:1px solid var(--rule)}
+.att-btn{
+  border:none;background:#fff;padding:5px 12px;font:inherit;font-size:.78rem;
+  font-weight:700;cursor:pointer;color:var(--soft);
+}
+.att-btn.p-active{background:#DCFCE7;color:#14532D}
+.att-btn.a-active{background:#FEE2E2;color:#7F1D1D}
+
+.q-row{
+  display:grid;grid-template-columns:2fr 1fr auto;
+  gap:10px;align-items:center;padding:8px 0;
+  border-bottom:1px solid var(--rule);
+}
+.q-row:last-child{border-bottom:0}
+.q-row input{
+  border:1px solid var(--rule);border-radius:8px;padding:8px 10px;
+  font:inherit;font-size:.9rem;color:var(--ink);background:#fff;outline:none;width:100%;
+}
+.q-row input[type=number]{width:70px}
+.del-q{background:none;border:none;color:var(--red);font-size:1.2rem;cursor:pointer;padding:4px 8px;border-radius:6px}
+.del-q:hover{background:#FEE2E2}
+
+.alert{border-radius:10px;padding:11px 15px;font-size:.9rem;margin-bottom:14px}
+.alert.info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+.alert.ok{background:#DFF7E2;border:1px solid #82CFAA;color:#14532D}
+.alert.warn{background:#FFF8C5;border:1px solid #D4A72C;color:#713F12}
+.alert.err{background:#FEE2E2;border:1px solid #FCA5A5;color:#7F1D1D}
+
+.summary-strip{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+  background:var(--rule);border:1px solid var(--rule);
+  border-radius:var(--radius);overflow:hidden;margin-bottom:20px;
+}
+.sbox{background:#fff;padding:14px 10px;text-align:center}
+.sbox b{display:block;font-family:"Baloo 2",sans-serif;font-size:1.5rem;color:var(--leaf);line-height:1}
+.sbox span{font-size:.72rem;color:var(--soft)}
+@media(max-width:640px){.summary-strip{grid-template-columns:1fr 1fr 1fr}}
+
+#report-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:99;overflow-y:auto;padding:16px;
+}
+#report-overlay.open{display:block}
+.rpt-wrap{max-width:660px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden}
+.rpt-actions{background:#f6f8fa;padding:12px 18px;display:flex;justify-content:flex-end;gap:10px;border-bottom:1px solid var(--rule)}
+.rpt{padding:26px 30px;font-family:"Karla",sans-serif;font-size:13.5px;color:#000;background:#fff}
+.rpt-hdr{display:flex;align-items:center;gap:14px;border-bottom:3px solid #1F6B4A;padding-bottom:12px;margin-bottom:18px}
+.rpt-hdr img{width:60px;height:60px;border-radius:50%;object-fit:contain}
+.rpt-hdr h1{font-family:"Baloo 2",sans-serif;font-size:19px;color:#1F6B4A;margin:0 0 2px}
+.rpt-hdr p{margin:0;font-size:12px;color:#555}
+.rpt-banner{text-align:center;background:#1F6B4A;color:#fff;padding:7px;border-radius:7px;margin-bottom:18px;font-family:"Baloo 2",sans-serif;font-size:14px;letter-spacing:.04em}
+.rpt-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px;margin-bottom:18px;font-size:12.5px}
+.rpt-info .k{font-weight:700;color:#555;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
+.rpt-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:18px}
+.rpt-tbl th,.rpt-tbl td{border:1px solid #ddd;padding:6px 10px}
+.rpt-tbl th{background:#F1F7F3;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.rpt-tbl .tot{background:#F1F7F3;font-weight:700}
+.rpt-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;text-align:center}
+.rsb{border:2px solid #CADDEC;border-radius:9px;padding:10px 6px}
+.rsb b{font-family:"Baloo 2",sans-serif;font-size:22px;color:#1F6B4A;display:block}
+.rsb span{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.05em}
+.rpt-sign{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:26px;font-size:12px;text-align:center}
+.rpt-sign .sl{border-top:1px solid #000;padding-top:5px;margin-top:26px}
+.rpt-foot{border-top:1px solid #ddd;padding-top:8px;font-size:11px;color:#999;text-align:center;margin-top:10px}
+
+/* Question Paper overlay (reuses .rpt* visual language) */
+#qp-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:99;overflow-y:auto;padding:16px;
+}
+#qp-overlay.open{display:block}
+.qp-wrap{max-width:700px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden}
+.qp-actions{background:#f6f8fa;padding:12px 18px;display:flex;justify-content:flex-end;gap:10px;border-bottom:1px solid var(--rule)}
+.qp{padding:28px 32px;font-family:"Karla",sans-serif;font-size:14px;color:#000;background:#fff}
+.qp-hdr{display:flex;align-items:center;gap:14px;border-bottom:3px solid #1F6B4A;padding-bottom:12px;margin-bottom:16px}
+.qp-hdr img{width:60px;height:60px;border-radius:50%;object-fit:contain}
+.qp-hdr h1{font-family:"Baloo 2",sans-serif;font-size:19px;color:#1F6B4A;margin:0 0 2px}
+.qp-hdr p{margin:0;font-size:12px;color:#555}
+.qp-banner{text-align:center;background:#1F6B4A;color:#fff;padding:7px;border-radius:7px;margin-bottom:16px;font-family:"Baloo 2",sans-serif;font-size:14px;letter-spacing:.04em}
+.qp-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin-bottom:14px;font-size:13px;border-bottom:1px solid #ddd;padding-bottom:14px}
+.qp-meta div{display:flex;justify-content:space-between}
+.qp-meta .k{font-weight:700;color:#333}
+.qp-fillins{display:flex;justify-content:space-between;gap:18px;margin-bottom:18px;font-size:13px}
+.qp-fillins span{border-bottom:1px solid #000;flex:1;padding-bottom:3px}
+.qp-instructions{
+  background:#FFF8E1;border:1px solid #F2B705;border-radius:8px;
+  padding:9px 14px;margin-bottom:18px;font-size:12.5px;color:#5c4500;
+}
+.qp-instructions b{color:#3d2f00}
+.qp-qlist{list-style:none;margin:0;padding:0}
+.qp-qitem{
+  display:flex;justify-content:space-between;gap:14px;
+  padding:12px 0;border-bottom:1px dashed #ddd;
+}
+.qp-qitem:last-child{border-bottom:0}
+.qp-qnum{font-weight:700;color:#1F6B4A;flex:none;width:26px}
+.qp-qtext{flex:1;line-height:1.55}
+.qp-qmarks{flex:none;font-weight:700;color:#555;white-space:nowrap;font-size:12.5px}
+.qp-totalrow{
+  display:flex;justify-content:space-between;margin-top:16px;
+  padding-top:12px;border-top:2px solid #1F6B4A;font-weight:700;
+}
+.qp-foot{border-top:1px solid #ddd;padding-top:8px;font-size:11px;color:#999;text-align:center;margin-top:20px}
+
+@media print{
+  body,html{background:#fff!important;background-image:none!important}
+  .topbar,.tabs,.main,#lock-screen{display:none!important}
+}
+body.printing-report .topbar,body.printing-report .tabs,body.printing-report .main{display:none!important}
+body.printing-report #report-overlay{display:block!important;position:static!important;background:none!important;padding:0!important;overflow:visible!important}
+body.printing-report .rpt-wrap{border-radius:0!important}
+body.printing-report .rpt-actions{display:none!important}
+body.printing-qp .topbar,body.printing-qp .tabs,body.printing-qp .main{display:none!important}
+body.printing-qp #qp-overlay{display:block!important;position:static!important;background:none!important;padding:0!important;overflow:visible!important}
+body.printing-qp .qp-wrap{border-radius:0!important}
+body.printing-qp .qp-actions{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="lock-screen">
+  <div class="lock-card">
+    <img src="school-logo.png" alt="Logo" onerror="this.style.display='none'">
+    <h1>Exam Manager</h1>
+    <p class="lsub">Rajoi Bagan LP School &middot; Restricted to school administration</p>
+
+    <div class="lock-step active" id="lock-step-1">
+      <div class="lock-field">
+        <label>Admin passcode</label>
+        <input type="password" id="admin-passcode" maxlength="10" placeholder="Enter passcode" autocomplete="off">
+      </div>
+      <button class="lock-btn" onclick="checkPasscode()">Continue &rarr;</button>
+      <div class="lock-err" id="passcode-err">Incorrect passcode. Please try again.</div>
+      <p class="lock-foot">Forgot the passcode? Contact the Head Master.</p>
+    </div>
+
+    <div class="lock-step" id="lock-step-2">
+      <p class="lsub" id="otp-sent-msg" style="margin-bottom:16px">A 6-digit code has been sent.</p>
+      <div class="lock-field">
+        <label>Enter the 6-digit code</label>
+        <div class="otp-boxes">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+          <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+        </div>
+      </div>
+      <button class="lock-btn" onclick="checkOtp()">Unlock &rarr;</button>
+      <div class="lock-err" id="otp-err">Incorrect code. Please try again.</div>
+      <div class="lock-ok" id="otp-ok">Code sent again.</div>
+      <p class="lock-foot"><a href="#" onclick="resendOtp();return false">Resend code</a> &nbsp;&middot;&nbsp;
+        <a href="#" onclick="backToStep1();return false">&larr; Back</a></p>
+    </div>
+  </div>
+</div>
+
+<div id="lock-app">
+
+<div class="topbar">
+  <img src="school-logo.png" alt="Logo" onerror="this.style.display='none'">
+  <div><b>Exam Manager</b><br><span>Rajoi Bagan LP School</span></div>
+  <div class="tb-right">
+    <a href="index.html">Home</a>
+    <button class="lock-out-btn" onclick="lockOut()">Lock</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-exams"   onclick="goTab('exams')"  ><span class="n">1</span>Exams</div>
+  <div class="tab"        id="tab-marks"   onclick="goTab('marks')"  ><span class="n">2</span>Attendance &amp; Marks</div>
+  <div class="tab"        id="tab-results" onclick="goTab('results')"><span class="n">3</span>Results &amp; Cards</div>
+</div>
+
+<div class="main">
+
+<div class="panel active" id="panel-exams">
+  <h2>Exams</h2>
+  <p class="sub">Create an exam and add its questions. Then mark attendance and enter marks in the next tab.</p>
+
+  <div class="card">
+    <div class="card-head"><h3>Create new exam</h3></div>
+    <div class="card-body">
+      <div class="row2">
+        <div class="field"><label>Exam name</label>
+          <input id="e-name" type="text" placeholder="e.g. Unit Test 1 — Term 1"></div>
+        <div class="field"><label>Subject</label>
+          <input id="e-subj" type="text" placeholder="e.g. Mathematics"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Class</label>
+          <select id="e-class">
+            <option value="">Select</option>
+            <option>Pre-Primary</option><option>Class I</option><option>Class II</option>
+            <option>Class III</option><option>Class IV</option><option>Class V</option>
+          </select></div>
+        <div class="field"><label>Exam date</label>
+          <input id="e-date" type="date"></div>
+        <div class="field"><label>Total marks</label>
+          <input id="e-total" type="number" min="1" max="200" placeholder="e.g. 50"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Time allowed <span style="text-transform:none;font-weight:400">(optional, shown on question paper)</span></label>
+          <input id="e-duration" type="text" placeholder="e.g. 1 hour 30 minutes"></div>
+        <div class="field"><label>Instructions <span style="text-transform:none;font-weight:400">(optional, shown on question paper)</span></label>
+          <input id="e-instructions" type="text" placeholder="e.g. Answer all questions. Write neatly."></div>
+      </div>
+
+      <label style="font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);display:block;margin-bottom:10px">
+        Questions &amp; marks per question</label>
+      <div id="q-list"></div>
+      <button class="btn ghost small" style="margin-top:10px" onclick="addQuestion()">+ Add question</button>
+
+      <div class="btn-row">
+        <button class="btn green" onclick="saveExam()">Save exam &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Baloo 2',sans-serif;margin:24px 0 12px">Saved exams</h3>
+  <div class="card"><div id="exam-list"><p style="padding:16px;color:var(--soft);font-size:.9rem">No exams yet. Create one above.</p></div></div>
+</div>
+
+<div class="panel" id="panel-marks">
+  <h2>Attendance &amp; Marks</h2>
+  <p class="sub">Select an exam. Mark who was present, then enter marks for present students. Absent students are recorded automatically.</p>
+
+  <div class="field" style="max-width:380px">
+    <label>Select exam</label>
+    <select id="m-exam-sel" onchange="loadMarkSheet()">
+      <option value="">Choose an exam&hellip;</option>
+    </select>
+  </div>
+
+  <div id="mark-sheet"></div>
+</div>
+
+<div class="panel" id="panel-results">
+  <h2>Results &amp; Report Cards</h2>
+  <p class="sub">View final results for any saved exam. Print individual report cards or export to CSV for Google Sheets.</p>
+
+  <div class="field" style="max-width:380px">
+    <label>Select exam</label>
+    <select id="r-exam-sel" onchange="loadResults()">
+      <option value="">Choose an exam&hellip;</option>
+    </select>
+  </div>
+
+  <div id="results-view"></div>
+</div>
+
+</div>
+</div>
+
+<div id="report-overlay">
+  <div class="rpt-wrap">
+    <div class="rpt-actions">
+      <button class="btn ghost small" onclick="closeReport()">&#10005; Close</button>
+      <button class="btn green small" onclick="printReport()">Print / Save PDF</button>
+    </div>
+    <div class="rpt" id="rpt-body"></div>
+  </div>
+</div>
+
+<div id="qp-overlay">
+  <div class="qp-wrap">
+    <div class="qp-actions">
+      <button class="btn ghost small" onclick="closeQP()">&#10005; Close</button>
+      <button class="btn green small" onclick="printQP()">Print / Save PDF</button>
+    </div>
+    <div class="qp" id="qp-body"></div>
+  </div>
+</div>
+
+<script>
+const ACCESS = {
+  passcode: "RAJOI2026",
+  emailjs: {
+    publicKey:  "",
+    serviceId:  "",
+    templateId: "",
+    adminEmail: "office@rajoibaganschool.in"
+  },
+  sessionMinutes: 120
+};
+
+let pendingOtp = null;
+
+function checkSession(){
+  const until = sessionStorage.getItem('rb_exam_unlocked_until');
+  if(until && Date.now() < parseInt(until)){
+    unlockApp();
+    return true;
+  }
+  return false;
+}
+
+function checkPasscode(){
+  const val = document.getElementById('admin-passcode').value.trim();
+  const err = document.getElementById('passcode-err');
+  if(val !== ACCESS.passcode){
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  if(ACCESS.emailjs.publicKey && ACCESS.emailjs.serviceId && ACCESS.emailjs.templateId){
+    sendOtpEmail();
+  } else {
+    unlockApp();
+  }
+}
+
+function sendOtpEmail(){
+  pendingOtp = String(Math.floor(100000 + Math.random()*900000));
+  document.getElementById('otp-sent-msg').textContent =
+    'A 6-digit code has been sent to ' + ACCESS.emailjs.adminEmail;
+  document.getElementById('lock-step-1').classList.remove('active');
+  document.getElementById('lock-step-2').classList.add('active');
+  document.querySelector('.otp-digit').focus();
+
+  if(!window.emailjs){
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+    s.onload = ()=>{ window.emailjs.init(ACCESS.emailjs.publicKey); doSend(); };
+    document.head.appendChild(s);
+  } else { doSend(); }
+
+  function doSend(){
+    emailjs.send(ACCESS.emailjs.serviceId, ACCESS.emailjs.templateId, {
+      to_email: ACCESS.emailjs.adminEmail,
+      otp_code: pendingOtp
+    }).catch(function(){
+      document.getElementById('otp-err').textContent = 'Could not send email. Check your internet connection.';
+      document.getElementById('otp-err').classList.add('show');
+    });
+  }
+}
+
+function resendOtp(){
+  sendOtpEmail();
+  document.getElementById('otp-ok').classList.add('show');
+  setTimeout(function(){document.getElementById('otp-ok').classList.remove('show');}, 3000);
+}
+
+function backToStep1(){
+  document.getElementById('lock-step-2').classList.remove('active');
+  document.getElementById('lock-step-1').classList.add('active');
+  document.getElementById('admin-passcode').value='';
+}
+
+function checkOtp(){
+  const digits = Array.from(document.querySelectorAll('.otp-digit')).map(function(i){return i.value;}).join('');
+  const err = document.getElementById('otp-err');
+  if(digits.length!==6 || digits!==pendingOtp){
+    err.classList.add('show'); return;
+  }
+  err.classList.remove('show');
+  unlockApp();
+}
+
+document.querySelectorAll('.otp-digit').forEach(function(inp,i,arr){
+  inp.addEventListener('input',function(){
+    inp.value = inp.value.replace(/[^0-9]/g,'');
+    if(inp.value && arr[i+1]) arr[i+1].focus();
+  });
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='Backspace' && !inp.value && arr[i-1]) arr[i-1].focus();
+  });
+});
+
+function unlockApp(){
+  document.getElementById('lock-screen').classList.add('hidden');
+  document.getElementById('lock-app').classList.add('unlocked');
+  const until = Date.now() + ACCESS.sessionMinutes*60*1000;
+  sessionStorage.setItem('rb_exam_unlocked_until', until);
+}
+
+function lockOut(){
+  sessionStorage.removeItem('rb_exam_unlocked_until');
+  location.reload();
+}
+
+checkSession();
+
+const STUDENTS = {"Pre-Primary":[{"roll":1,"name":"Rohit Agarwala"},{"roll":2,"name":"Lashmi Mahli"},{"roll":3,"name":"Deb Mahli"},{"roll":4,"name":"Madhobi Nayak"},{"roll":5,"name":"Losmi Karmakar"},{"roll":6,"name":"Arpona Bawri"},{"roll":7,"name":"Switee Mahli"},{"roll":8,"name":"Bondona Guwala"},{"roll":9,"name":"Bebi Mahli"},{"roll":10,"name":"Arnab Mahli"},{"roll":11,"name":"Risna Karmakar"},{"roll":12,"name":"Roshmi Mahli"},{"roll":13,"name":"Anshuman Karmokar"},{"roll":14,"name":"Luhit Tasa"},{"roll":15,"name":"Abhi Mahli"},{"roll":16,"name":"Rima Rajput"},{"roll":17,"name":"Rishab Nayak"},{"roll":18,"name":"Mahir Karmakar"},{"roll":19,"name":"Sweety Karmakar"},{"roll":20,"name":"Dharitri Nayak"},{"roll":21,"name":"Rihan Pantanti"}],"Class I":[{"roll":1,"name":"Shruti Karmakar"},{"roll":2,"name":"Kartik Pator"},{"roll":3,"name":"Gaurav Bhumij"},{"roll":4,"name":"Bidya Mahali"},{"roll":5,"name":"Manab Mahali"},{"roll":6,"name":"Vishakha Mahli"},{"roll":7,"name":"Amaira Tanti"},{"roll":8,"name":"Borun Mahly"},{"roll":9,"name":"Ruhit Mirda"},{"roll":10,"name":"Amrita Naik"},{"roll":11,"name":"Rajbir Nayak"},{"roll":12,"name":"Sarva Karmakar"},{"roll":13,"name":"Barun Pantanti"},{"roll":14,"name":"Achintya Nayak"},{"roll":15,"name":"Binita Mahli"},{"roll":16,"name":"Parinita Mahli"},{"roll":17,"name":"Anisha Karmakar"},{"roll":18,"name":"Monjit Tanti"},{"roll":19,"name":"Arpita Bedia"},{"roll":20,"name":"Om Nayak"},{"roll":21,"name":"Bibek Tanti"},{"roll":22,"name":"Purab Manki"},{"roll":23,"name":"Sanjana Nayak"},{"roll":24,"name":"Pronamika Mahli"},{"roll":25,"name":"Gayatri Tasa"},{"roll":26,"name":"Amarjit Karmakar"},{"roll":27,"name":"Sahil Nayak"},{"roll":28,"name":"Pokhila Karmakar"},{"roll":29,"name":"Nitya Nayak"},{"roll":30,"name":"Ranjir Mahli"},{"roll":31,"name":"Dipankar Bedia"},{"roll":32,"name":"Shikha Manki"},{"roll":33,"name":"Karan Dutta"},{"roll":34,"name":"Suman Mahli"},{"roll":35,"name":"Kiran Mahly"},{"roll":36,"name":"Adit Nayak"},{"roll":37,"name":"Khushi Naik"}],"Class II":[{"roll":1,"name":"Anish Nayak"},{"roll":2,"name":"Riya Mahli"},{"roll":3,"name":"Arhaan Mahli"},{"roll":4,"name":"Arush Naik"},{"roll":5,"name":"Mahmud Ahmed"},{"roll":6,"name":"Omprakash Rajak"},{"roll":7,"name":"Lashmi Nayak"},{"roll":8,"name":"Benkar Tanti"},{"roll":9,"name":"Samir Mahli"},{"roll":10,"name":"Sita Mahli"},{"roll":11,"name":"Suman Mahli"},{"roll":12,"name":"Pranjal Nayak"},{"roll":13,"name":"Sonam Mahli"},{"roll":14,"name":"Nikhil Mahli"},{"roll":15,"name":"Nandini Pator"},{"roll":16,"name":"Gopi Pator"},{"roll":17,"name":"Bishnushri Karmakar"},{"roll":18,"name":"Parikshit Bhumij"},{"roll":19,"name":"Sharat Karmakar"},{"roll":20,"name":"Netik Khodal"},{"roll":21,"name":"Cahmapa Nayak"},{"roll":22,"name":"Juned Ali"},{"roll":23,"name":"Boisnabnayak"},{"roll":24,"name":"Sangita Nayak"},{"roll":25,"name":"Lucky Naik"},{"roll":26,"name":"Swarthi Mahli"},{"roll":27,"name":"Suhani Mahli"},{"roll":28,"name":"Mehak Karmakar"},{"roll":29,"name":"Robin Nayak"},{"roll":30,"name":"Arohi Kumar"},{"roll":31,"name":"Rihan Mahli"}],"Class III":[{"roll":1,"name":"Biraj Tassa"},{"roll":2,"name":"Rima Pantanti"},{"roll":3,"name":"Prakash Nayak"},{"roll":4,"name":"Hirumoni Mahli"},{"roll":5,"name":"Basundhara Pator"},{"roll":6,"name":"Sanjana Pator"},{"roll":7,"name":"Arman Mahli"},{"roll":8,"name":"Anurag Mahli"},{"roll":9,"name":"Ashik Mahli"},{"roll":10,"name":"Lakshmi Mahli"},{"roll":11,"name":"Dipmala Pantanti"},{"roll":12,"name":"Dipika Mahli"},{"roll":13,"name":"Sunali Karmakar"},{"roll":14,"name":"Naira Karmakar"},{"roll":15,"name":"Rupahi Rajput"},{"roll":16,"name":"Pompi Bhumij"},{"roll":17,"name":"Sagarika Dutta"},{"roll":18,"name":"Mausumi Naik"},{"roll":19,"name":"Sibam Kalandi"},{"roll":20,"name":"Purab Rajput"},{"roll":21,"name":"Amrita Naik"},{"roll":22,"name":"Santoshi Karmakar"},{"roll":23,"name":"Anamika Gusai"},{"roll":24,"name":"Krishna Khudal"},{"roll":25,"name":"Mousumi Mahli"},{"roll":26,"name":"Pompi Nayak"}],"Class IV":[{"roll":1,"name":"Kartik Guwala"},{"roll":2,"name":"Krishna Pantanti"},{"roll":3,"name":"Hemantee Mahli"},{"roll":4,"name":"Khushi Nayak"},{"roll":5,"name":"Satyam Rai"},{"roll":6,"name":"Abhijit Kumar"},{"roll":7,"name":"Suraj Bhumiz"},{"roll":8,"name":"Subham Pator"},{"roll":9,"name":"Sneha Rajput"},{"roll":10,"name":"Sanjit Nayak"},{"roll":11,"name":"Abantika Bedia"},{"roll":12,"name":"Babu Nayak"},{"roll":13,"name":"Sunami Mahli"},{"roll":14,"name":"Arohi Mahli"},{"roll":15,"name":"Debangi Manki"},{"roll":16,"name":"Gaurav Naik"},{"roll":17,"name":"Priyanshi Agarwalla"},{"roll":18,"name":"Ujjal Nayak"},{"roll":19,"name":"Ishani Nayak"},{"roll":20,"name":"Amit Karmakar"},{"roll":21,"name":"Junmoni Urang"},{"roll":22,"name":"Gonesh Karmakar"},{"roll":23,"name":"Arosh Bhumij"},{"roll":24,"name":"Samir Karmakar"},{"roll":25,"name":"Mangita Mahli"},{"roll":26,"name":"Mahima Mahli"},{"roll":27,"name":"Monalisha Tanti"}],"Class V":[{"roll":1,"name":"Ishan Karmakar"},{"roll":2,"name":"Niharika Pantanti"},{"roll":3,"name":"Tapashree Murah"},{"roll":4,"name":"Ankita Mahli"},{"roll":5,"name":"Naina Karmakar"},{"roll":6,"name":"Janmoni Karmakar"},{"roll":7,"name":"Rontu Tasha"},{"roll":8,"name":"Anikit Mahli"},{"roll":9,"name":"Natrik Naik"},{"roll":10,"name":"Pahi Mahli"},{"roll":11,"name":"Ankur Mahli"},{"roll":12,"name":"Kisangi Manki"},{"roll":13,"name":"Mangla Mahli"},{"roll":14,"name":"Om Mahli"},{"roll":15,"name":"Bagabanta Karmakar"},{"roll":16,"name":"Ruhan Mahli"},{"roll":17,"name":"Anupom Karmakar"},{"roll":18,"name":"Dev Pator"},{"roll":19,"name":"Anisha Guwala"},{"roll":20,"name":"Dipsikha Naik"},{"roll":21,"name":"Satyanarayan Karmakar"},{"roll":22,"name":"Mohini Karmakar"},{"roll":23,"name":"Netrik Nayak"},{"roll":24,"name":"Mosomi Mahli"},{"roll":25,"name":"Mayuri Mahli"},{"roll":26,"name":"Mitali Kumar"},{"roll":27,"name":"Niharika Nayak"},{"roll":28,"name":"Jiban Pantanti"},{"roll":29,"name":"Shanti Mahli"},{"roll":30,"name":"Rupan Majhi"},{"roll":31,"name":"Satyajit Mahli"},{"roll":32,"name":"Nikhil Mahli"},{"roll":33,"name":"Anuj Nayak"},{"roll":34,"name":"Saawni Nayak"}]};
+
+let DB = { exams:{}, marks:{}, attendance:{} };
+function save(){ localStorage.setItem('rb_exam_db', JSON.stringify(DB)); }
+function load(){
+  const raw = localStorage.getItem('rb_exam_db');
+  if(raw) DB = JSON.parse(raw);
+  if(!DB.attendance) DB.attendance = {};
+}
+load();
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function getGrade(pct){
+  if(pct>=80)return'A'; if(pct>=60)return'B'; if(pct>=45)return'C'; if(pct>=33)return'D'; return'F';
+}
+const GRADE_LABEL = {A:'Excellent',B:'Good',C:'Satisfactory',D:'Needs Improvement',F:'Fail'};
+
+function goTab(name){
+  ['exams','marks','results'].forEach(function(t){
+    document.getElementById('panel-'+t).classList.toggle('active', t===name);
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+  });
+  if(name==='marks')   { populateExamSelect('m-exam-sel'); loadMarkSheet(); }
+  if(name==='results') { populateExamSelect('r-exam-sel'); loadResults(); }
+}
+
+function populateExamSelect(selId){
+  const sel = document.getElementById(selId);
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Choose an exam&hellip;</option>';
+  Object.values(DB.exams).sort(function(a,b){return b.createdAt-a.createdAt;}).forEach(function(e){
+    const opt = document.createElement('option');
+    opt.value=e.id; opt.textContent=e.name+' — '+e.class+' — '+e.subject;
+    sel.appendChild(opt);
+  });
+  if(cur) sel.value=cur;
+}
+
+let questions = [];
+function addQuestion(){ questions.push({text:'', marks:5}); renderQuestions(); }
+function removeQuestion(i){ questions.splice(i,1); renderQuestions(); }
+function renderQuestions(){
+  document.getElementById('q-list').innerHTML = questions.length
+    ? questions.map(function(q,i){ return '<div class="q-row">'+
+        '<input type="text" value="'+esc(q.text)+'" placeholder="Question '+(i+1)+' text (optional)" oninput="questions['+i+'].text=this.value">'+
+        '<input type="number" value="'+q.marks+'" min="1" max="100" oninput="questions['+i+'].marks=+this.value||1" style="width:70px">'+
+        '<button class="del-q" onclick="removeQuestion('+i+')" title="Remove">&#10005;</button></div>';
+      }).join('')
+    : '<p style="font-size:.85rem;color:var(--soft);padding:4px 0">No questions added — total marks from the Total Marks field will be used.</p>';
+}
+if(!questions.length) addQuestion();
+renderQuestions();
+
+function saveExam(){
+  const name  = document.getElementById('e-name').value.trim();
+  const subj  = document.getElementById('e-subj').value.trim();
+  const cls   = document.getElementById('e-class').value;
+  const date  = document.getElementById('e-date').value;
+  const total = parseInt(document.getElementById('e-total').value)||0;
+  const duration = document.getElementById('e-duration').value.trim();
+  const instructions = document.getElementById('e-instructions').value.trim();
+  if(!name||!subj||!cls){ alert('Please fill in exam name, subject and class.'); return; }
+  const qTotal = questions.reduce(function(a,q){return a+q.marks;},0);
+  if(questions.length && qTotal!==total && total>0){
+    if(!confirm('Question marks add up to '+qTotal+' but Total Marks is '+total+'. Save anyway?')) return;
+  }
+  const id = uid();
+  DB.exams[id] = { id:id, name:name, subject:subj, class:cls, date:date, total:total||qTotal||50,
+    duration:duration, instructions:instructions,
+    questions:questions.slice(), createdAt:Date.now() };
+  save();
+  renderExamList();
+  document.getElementById('e-name').value='';
+  document.getElementById('e-subj').value='';
+  document.getElementById('e-class').value='';
+  document.getElementById('e-date').value='';
+  document.getElementById('e-total').value='';
+  document.getElementById('e-duration').value='';
+  document.getElementById('e-instructions').value='';
+  questions=[{text:'',marks:5}]; renderQuestions();
+  alert('Exam "'+name+'" saved!');
+}
+
+function renderExamList(){
+  const box = document.getElementById('exam-list');
+  const exams = Object.values(DB.exams).sort(function(a,b){return b.createdAt-a.createdAt;});
+  if(!exams.length){ box.innerHTML='<p style="padding:16px;color:var(--soft);font-size:.9rem">No exams yet.</p>'; return; }
+  box.innerHTML = exams.map(function(e){
+    const scount = (STUDENTS[e.class]||[]).length;
+    return '<div class="exam-item" onclick="goToMarkEntry(\''+e.id+'\')">'+
+      '<div class="eco">&#128221;</div>'+
+      '<div><h4>'+esc(e.name)+'</h4>'+
+      '<div class="emeta">'+esc(e.class)+' &middot; '+esc(e.subject)+' &middot; '+e.total+' marks'+(e.date?' &middot; '+e.date:'')+' &middot; '+scount+' students</div></div>'+
+      '<div style="display:flex;align-items:center;gap:8px">'+
+      '<button class="btn green small" onclick="event.stopPropagation();showQuestionPaper(\''+e.id+'\')">&#128196; Paper</button>'+
+      '<button class="btn ghost small" onclick="event.stopPropagation();deleteExam(\''+e.id+'\')">Delete</button>'+
+      '<div class="earr">&rsaquo;</div></div></div>';
+  }).join('');
+}
+renderExamList();
+
+function deleteExam(id){
+  if(!confirm('Delete this exam and all its saved marks?')) return;
+  delete DB.exams[id]; delete DB.marks[id]; delete DB.attendance[id]; save(); renderExamList();
+}
+
+function goToMarkEntry(examId){
+  goTab('marks');
+  document.getElementById('m-exam-sel').value=examId;
+  loadMarkSheet();
+}
+
+function loadMarkSheet(){
+  const examId = document.getElementById('m-exam-sel').value;
+  const box = document.getElementById('mark-sheet');
+  if(!examId){ box.innerHTML=''; return; }
+  const exam = DB.exams[examId];
+  if(!exam){ box.innerHTML='<div class="alert err">Exam not found.</div>'; return; }
+
+  const students = STUDENTS[exam.class] || [];
+  if(!students.length){
+    box.innerHTML='<div class="alert warn">No students found for '+exam.class+' in the school register.</div>';
+    return;
+  }
+
+  if(!DB.marks[examId]) DB.marks[examId]={};
+  if(!DB.attendance[examId]) DB.attendance[examId]={};
+  const marks = DB.marks[examId];
+  const att   = DB.attendance[examId];
+
+  const hasQ = exam.questions && exam.questions.length>0;
+  let cols = hasQ
+    ? exam.questions.map(function(q,i){return '<th style="min-width:60px">Q'+(i+1)+'<br><small style="font-weight:400">('+q.marks+')</small></th>';}).join('')
+    : '<th>Marks<br><small style="font-weight:400">(/'+exam.total+')</small></th>';
+
+  let bodyRows = students.map(function(s){
+    const sid = 's'+s.roll;
+    const sm = marks[sid] || {};
+    const isPresent = att[sid] !== false;
+    const rowClass = isPresent ? '' : 'absent-row';
+    const qInputs = hasQ
+      ? exam.questions.map(function(q,qi){
+          return '<td><input type="number" min="0" max="'+q.marks+'" value="'+(sm['q'+qi]??'')+'" '+
+            'id="m-'+examId+'-'+sid+'-q'+qi+'" '+(isPresent?'':'disabled')+' '+
+            'oninput="recalcRow(\''+examId+'\',\''+sid+'\')" placeholder="—"></td>';
+        }).join('')
+      : '<td><input type="number" min="0" max="'+exam.total+'" value="'+(sm.total??'')+'" '+
+          'id="m-'+examId+'-'+sid+'-total" '+(isPresent?'':'disabled')+' '+
+          'oninput="recalcRow(\''+examId+'\',\''+sid+'\')" placeholder="—"></td>';
+    return '<tr id="row-'+sid+'" class="'+rowClass+'">'+
+      '<td>'+s.roll+'</td><td><strong>'+esc(s.name)+'</strong></td>'+
+      '<td><div class="att-toggle">'+
+      '<button class="att-btn '+(isPresent?'p-active':'')+'" id="att-p-'+sid+'" onclick="setAttendance(\''+examId+'\',\''+sid+'\',true)">Present</button>'+
+      '<button class="att-btn '+(!isPresent?'a-active':'')+'" id="att-a-'+sid+'" onclick="setAttendance(\''+examId+'\',\''+sid+'\',false)">Absent</button>'+
+      '</div></td>'+
+      qInputs+
+      '<td id="tot-'+sid+'"><strong>'+(isPresent ? (sm.total??'—') : '—')+'</strong></td>'+
+      '<td id="pct-'+sid+'">'+(isPresent ? (sm.pct!=null?sm.pct+'%':'—') : '—')+'</td>'+
+      '<td id="grd-'+sid+'">'+(isPresent ? (sm.grade?'<span class="grade g'+sm.grade+'">'+sm.grade+'</span>':'—') : '<span class="grade gAbs">Absent</span>')+'</td>'+
+      '</tr>';
+  }).join('');
+
+  box.innerHTML =
+    '<div class="alert ok" style="margin-top:8px"><strong>'+esc(exam.name)+'</strong> &nbsp;&middot;&nbsp; '+esc(exam.class)+' &nbsp;&middot;&nbsp; '+
+    esc(exam.subject)+' &nbsp;&middot;&nbsp; '+exam.total+' marks total &nbsp;&middot;&nbsp; '+students.length+' students</div>'+
+    '<div class="btn-row" style="margin-top:0;margin-bottom:16px">'+
+    '<button class="btn green small" onclick="markAllPresent(\''+examId+'\')">Mark all present</button>'+
+    '<span id="att-count-'+examId+'" style="font-size:.85rem;color:var(--soft)"></span></div>'+
+    '<div style="overflow-x:auto"><table class="stbl" id="marks-tbl"><thead><tr>'+
+    '<th>Roll</th><th>Student name</th><th style="min-width:140px">Attendance</th>'+cols+
+    '<th>Total</th><th>%</th><th>Grade</th></tr></thead><tbody>'+bodyRows+'</tbody></table></div>'+
+    '<div class="btn-row"><button class="btn green" onclick="saveMarks(\''+examId+'\')">Save attendance &amp; marks</button>'+
+    '<button class="btn ghost" onclick="goTab(\'results\');document.getElementById(\'r-exam-sel\').value=\''+examId+'\';loadResults()">View results &rarr;</button></div>';
+
+  updateAttCount(examId);
+}
+
+function updateAttCount(examId){
+  const exam = DB.exams[examId];
+  const students = STUDENTS[exam.class]||[];
+  const att = DB.attendance[examId]||{};
+  const presentCount = students.filter(function(s){return att['s'+s.roll]!==false;}).length;
+  const el = document.getElementById('att-count-'+examId);
+  if(el) el.textContent = presentCount+' of '+students.length+' marked present';
+}
+
+function markAllPresent(examId){
+  const exam = DB.exams[examId];
+  const students = STUDENTS[exam.class]||[];
+  if(!DB.attendance[examId]) DB.attendance[examId]={};
+  students.forEach(function(s){ DB.attendance[examId]['s'+s.roll] = true; });
+  save();
+  loadMarkSheet();
+}
+
+function setAttendance(examId, sid, present){
+  if(!DB.attendance[examId]) DB.attendance[examId]={};
+  DB.attendance[examId][sid] = present;
+  save();
+
+  const row = document.getElementById('row-'+sid);
+  row.classList.toggle('absent-row', !present);
+  document.getElementById('att-p-'+sid).classList.toggle('p-active', present);
+  document.getElementById('att-a-'+sid).classList.toggle('a-active', !present);
+
+  const exam = DB.exams[examId];
+  const hasQ = exam.questions && exam.questions.length>0;
+  if(hasQ){
+    exam.questions.forEach(function(q,qi){
+      const inp = document.getElementById('m-'+examId+'-'+sid+'-q'+qi);
+      if(inp) inp.disabled = !present;
+    });
+  } else {
+    const inp = document.getElementById('m-'+examId+'-'+sid+'-total');
+    if(inp) inp.disabled = !present;
+  }
+
+  if(present) recalcRow(examId, sid);
+  else {
+    document.getElementById('tot-'+sid).innerHTML='<strong>—</strong>';
+    document.getElementById('pct-'+sid).textContent='—';
+    document.getElementById('grd-'+sid).innerHTML='<span class="grade gAbs">Absent</span>';
+  }
+  updateAttCount(examId);
+}
+
+function recalcRow(examId, sid){
+  const exam = DB.exams[examId];
+  const hasQ = exam.questions && exam.questions.length>0;
+  let total = 0;
+  if(hasQ){
+    exam.questions.forEach(function(q,qi){
+      const v = parseFloat(document.getElementById('m-'+examId+'-'+sid+'-q'+qi)?.value||'');
+      if(!isNaN(v)) total += Math.min(v, q.marks);
+    });
+  } else {
+    const v = parseFloat(document.getElementById('m-'+examId+'-'+sid+'-total')?.value||'');
+    if(!isNaN(v)) total = Math.min(v, exam.total);
+  }
+  const pct = Math.round((total/exam.total)*100);
+  const grade = getGrade(pct);
+  document.getElementById('tot-'+sid).innerHTML='<strong>'+total.toFixed(total%1?1:0)+'</strong>';
+  document.getElementById('pct-'+sid).textContent=pct+'%';
+  document.getElementById('grd-'+sid).innerHTML='<span class="grade g'+grade+'">'+grade+'</span>';
+}
+
+function saveMarks(examId){
+  const exam = DB.exams[examId];
+  const students = STUDENTS[exam.class]||[];
+  const hasQ = exam.questions && exam.questions.length>0;
+  if(!DB.marks[examId]) DB.marks[examId]={};
+  if(!DB.attendance[examId]) DB.attendance[examId]={};
+  const att = DB.attendance[examId];
+
+  students.forEach(function(s){
+    const sid = 's'+s.roll;
+    const isPresent = att[sid] !== false;
+    if(!isPresent){
+      DB.marks[examId][sid] = { total:null, pct:null, grade:'Abs', absent:true };
+      return;
+    }
+    const sm = {};
+    let total = 0;
+    if(hasQ){
+      exam.questions.forEach(function(q,qi){
+        const v = parseFloat(document.getElementById('m-'+examId+'-'+sid+'-q'+qi)?.value||'');
+        sm['q'+qi] = isNaN(v)?null:Math.min(v,q.marks);
+        if(!isNaN(v)) total += sm['q'+qi];
+      });
+    } else {
+      const v = parseFloat(document.getElementById('m-'+examId+'-'+sid+'-total')?.value||'');
+      sm.total = isNaN(v)?null:Math.min(v,exam.total);
+      total = sm.total||0;
+    }
+    sm.total = parseFloat(total.toFixed(2));
+    sm.pct   = Math.round((sm.total/exam.total)*100);
+    sm.grade = getGrade(sm.pct);
+    sm.absent = false;
+    DB.marks[examId][sid] = sm;
+  });
+  save();
+  alert('Attendance and marks saved!');
+}
+
+function loadResults(){
+  const examId = document.getElementById('r-exam-sel').value;
+  const box = document.getElementById('results-view');
+  if(!examId){ box.innerHTML=''; return; }
+  const exam = DB.exams[examId];
+  if(!exam){ box.innerHTML='<div class="alert err">Exam not found.</div>'; return; }
+  const students = STUDENTS[exam.class]||[];
+  const marks    = DB.marks[examId]||{};
+
+  const recorded = students.filter(function(s){return marks['s'+s.roll];});
+  if(!recorded.length){
+    box.innerHTML='<div class="alert warn">No attendance or marks saved for this exam yet. Go to Attendance &amp; Marks to add them.</div>'; return;
+  }
+
+  const present = recorded.filter(function(s){return !marks['s'+s.roll].absent;});
+  const absent  = recorded.filter(function(s){return marks['s'+s.roll].absent;});
+  const totals  = present.map(function(s){return marks['s'+s.roll].total;});
+  const avg     = totals.length ? Math.round(totals.reduce(function(a,b){return a+b;},0)/totals.length) : 0;
+  const high    = totals.length ? Math.max.apply(null,totals) : 0;
+  const pass    = present.filter(function(s){return marks['s'+s.roll].grade!=='F';}).length;
+
+  const sortedRows = recorded.slice().sort(function(a,b){
+    const ma=marks['s'+a.roll], mb=marks['s'+b.roll];
+    if(ma.absent && !mb.absent) return 1;
+    if(!ma.absent && mb.absent) return -1;
+    return (mb.total||0)-(ma.total||0);
+  });
+
+  let tbodyRows = sortedRows.map(function(s,i){
+    const m=marks['s'+s.roll];
+    if(m.absent){
+      return '<tr style="opacity:.55"><td>'+(i+1)+'</td><td>'+s.roll+'</td><td><strong>'+esc(s.name)+'</strong></td>'+
+        '<td colspan="3" style="text-align:center">Absent</td><td><span class="grade gAbs">Abs</span></td><td>—</td></tr>';
+    }
+    return '<tr><td>'+(i+1)+'</td><td>'+s.roll+'</td><td><strong>'+esc(s.name)+'</strong></td>'+
+      '<td><strong>'+m.total+'</strong></td><td>'+exam.total+'</td><td>'+m.pct+'%</td>'+
+      '<td><span class="grade g'+m.grade+'">'+m.grade+'</span></td>'+
+      '<td><button class="btn green small" onclick="showCard(\''+examId+'\',\'s'+s.roll+'\')">Card</button></td></tr>';
+  }).join('');
+
+  box.innerHTML =
+    '<div class="alert ok"><strong>'+esc(exam.name)+'</strong> &nbsp;&middot;&nbsp; '+esc(exam.class)+' &nbsp;&middot;&nbsp; '+
+    esc(exam.subject)+' &nbsp;&middot;&nbsp; '+recorded.length+' students &nbsp;&middot;&nbsp; '+exam.total+' marks</div>'+
+    '<div class="summary-strip">'+
+    '<div class="sbox"><b>'+present.length+'</b><span>Present</span></div>'+
+    '<div class="sbox"><b>'+absent.length+'</b><span>Absent</span></div>'+
+    '<div class="sbox"><b>'+avg+'</b><span>Class average</span></div>'+
+    '<div class="sbox"><b>'+high+'</b><span>Highest</span></div>'+
+    '<div class="sbox"><b>'+pass+'</b><span>Passed</span></div></div>'+
+    '<div class="btn-row" style="margin-bottom:14px"><button class="btn" onclick="exportCSV(\''+examId+'\')">Export CSV</button></div>'+
+    '<div style="overflow-x:auto"><table class="stbl"><thead><tr><th>#</th><th>Roll</th><th>Student name</th>'+
+    '<th>Marks</th><th>/ Total</th><th>%</th><th>Grade</th><th>Card</th></tr></thead><tbody>'+tbodyRows+'</tbody></table></div>';
+}
+
+function exportCSV(examId){
+  const exam = DB.exams[examId];
+  const students = STUDENTS[exam.class]||[];
+  const marks = DB.marks[examId]||{};
+  const rows = [['Roll','Name','Class','Subject','Exam','Date','Status','Marks','Total','Percentage','Grade']];
+  students.forEach(function(s){
+    const m = marks['s'+s.roll];
+    if(!m) return;
+    if(m.absent){
+      rows.push([s.roll,s.name,exam.class,exam.subject,exam.name,exam.date||'','Absent','','','','']);
+    } else {
+      rows.push([s.roll,s.name,exam.class,exam.subject,exam.name,exam.date||'','Present',m.total,exam.total,m.pct+'%',m.grade]);
+    }
+  });
+  const csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=exam.name.replace(/\s+/g,'_')+'_results.csv';
+  a.click();
+}
+
+function showCard(examId, sid){
+  const exam = DB.exams[examId];
+  const student = (STUDENTS[exam.class]||[]).find(function(s){return ('s'+s.roll)===sid;});
+  const m = (DB.marks[examId]||{})[sid];
+  if(!student||!m||m.absent){ alert('No marks found for this student (or student was absent).'); return; }
+
+  const hasQ = exam.questions && exam.questions.length>0;
+  const qRows = hasQ ? exam.questions.map(function(q,qi){
+    return '<tr><td>Q'+(qi+1)+'</td><td>'+esc(q.text||'Question '+(qi+1))+'</td>'+
+      '<td style="text-align:center">'+q.marks+'</td>'+
+      '<td style="text-align:center;font-weight:700;color:#1F6B4A">'+(m['q'+qi]??'—')+'</td></tr>';
+  }).join('') : '';
+
+  document.getElementById('rpt-body').innerHTML =
+    '<div class="rpt-hdr"><img src="school-logo.png" alt="" onerror="this.style.display=\'none\'">'+
+    '<div><h1>Rajoi Bagan LP School</h1><p>&#2480;&#2494;&#2460;&#2503; &#2476;&#2494;&#2455;&#2494;&#2472; &#2474;&#2509;&#2480;&#2494;&#2469;&#2478;&#2495;&#2453; &#2476;&#2495;&#2470;&#2509;&#2479;&#2494;&#2482;&#2527;</p>'+
+    '<p>Rajoi, Central Jorhat &middot; Assam &middot; UDISE: 18170117702</p></div></div>'+
+    '<div class="rpt-banner">PROGRESS REPORT CARD</div>'+
+    '<div class="rpt-info">'+
+    '<div><div class="k">Student name</div><div><strong>'+esc(student.name)+'</strong></div></div>'+
+    '<div><div class="k">Roll number</div><div>'+student.roll+'</div></div>'+
+    '<div><div class="k">Class</div><div>'+esc(exam.class)+'</div></div>'+
+    '<div><div class="k">Exam name</div><div>'+esc(exam.name)+'</div></div>'+
+    '<div><div class="k">Subject</div><div>'+esc(exam.subject)+'</div></div>'+
+    '<div><div class="k">Exam date</div><div>'+esc(exam.date||'—')+'</div></div></div>'+
+    (hasQ?('<table class="rpt-tbl"><thead><tr><th>#</th><th>Question</th><th style="text-align:center">Max</th><th style="text-align:center">Obtained</th></tr></thead><tbody>'+
+      qRows+'<tr class="tot"><td colspan="2"><strong>TOTAL</strong></td><td style="text-align:center"><strong>'+exam.total+'</strong></td>'+
+      '<td style="text-align:center;color:#1F6B4A"><strong>'+m.total+'</strong></td></tr></tbody></table>'):'')+
+    '<div class="rpt-summary"><div class="rsb"><b>'+m.total+'/'+exam.total+'</b><span>Marks</span></div>'+
+    '<div class="rsb"><b>'+m.pct+'%</b><span>Percentage</span></div>'+
+    '<div class="rsb"><b style="font-size:26px">'+m.grade+'</b><span>'+GRADE_LABEL[m.grade]+'</span></div></div>'+
+    '<div class="rpt-sign"><div><div class="sl">Class Teacher</div></div><div><div class="sl">Head Master</div></div>'+
+    '<div><div class="sl">Parent / Guardian</div></div></div>'+
+    '<div class="rpt-foot">Rajoi Bagan LP School Exam System &middot; '+
+    new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})+' &middot; Computer-generated document</div>';
+
+  document.getElementById('report-overlay').classList.add('open');
+}
+
+function closeReport(){ document.getElementById('report-overlay').classList.remove('open'); }
+function printReport(){
+  document.body.classList.add('printing-report');
+  window.print();
+  setTimeout(function(){document.body.classList.remove('printing-report');}, 1000);
+}
+
+function showQuestionPaper(examId){
+  const exam = DB.exams[examId];
+  if(!exam){ alert('Exam not found.'); return; }
+
+  const hasQ = exam.questions && exam.questions.length>0 && exam.questions.some(function(q){return q.text&&q.text.trim();});
+  const qMarksTotal = hasQ ? exam.questions.reduce(function(a,q){return a+(q.marks||0);},0) : 0;
+  const displayTotal = hasQ ? (qMarksTotal||exam.total) : exam.total;
+
+  let qListHtml;
+  if(hasQ){
+    qListHtml = '<ol class="qp-qlist">'+exam.questions.map(function(q,i){
+      return '<li class="qp-qitem">'+
+        '<span class="qp-qnum">'+(i+1)+'.</span>'+
+        '<span class="qp-qtext">'+(esc(q.text)||'—')+'</span>'+
+        '<span class="qp-qmarks">['+q.marks+' '+(q.marks===1?'mark':'marks')+']</span>'+
+        '</li>';
+    }).join('')+'</ol>'+
+    '<div class="qp-totalrow"><span>Total</span><span>'+displayTotal+' marks</span></div>';
+  } else {
+    qListHtml = '<p style="color:#666;font-size:13px;padding:14px 0">'+
+      '(No individual questions were entered for this exam &mdash; write the questions here by hand, or add them in the Exams tab before printing.)</p>'+
+      '<div class="qp-totalrow"><span>Total</span><span>'+exam.total+' marks</span></div>';
+  }
+
+  document.getElementById('qp-body').innerHTML =
+    '<div class="qp-hdr"><img src="school-logo.png" alt="" onerror="this.style.display=\'none\'">'+
+    '<div><h1>Rajoi Bagan LP School</h1><p>&#2480;&#2494;&#2460;&#2503; &#2476;&#2494;&#2455;&#2494;&#2472; &#2474;&#2509;&#2480;&#2494;&#2469;&#2478;&#2495;&#2453; &#2476;&#2495;&#2470;&#2509;&#2479;&#2494;&#2482;&#2527;</p>'+
+    '<p>Rajoi, Central Jorhat &middot; Assam &middot; UDISE: 18170117702</p></div></div>'+
+    '<div class="qp-banner">QUESTION PAPER</div>'+
+    '<div class="qp-meta">'+
+      '<div><span class="k">Class</span><span>'+esc(exam.class)+'</span></div>'+
+      '<div><span class="k">Subject</span><span>'+esc(exam.subject)+'</span></div>'+
+      '<div><span class="k">Full Marks</span><span>'+displayTotal+'</span></div>'+
+      '<div><span class="k">Time Allowed</span><span>'+(esc(exam.duration)||'—')+'</span></div>'+
+      '<div><span class="k">Exam</span><span>'+esc(exam.name)+'</span></div>'+
+      '<div><span class="k">Date</span><span>'+(esc(exam.date)||'—')+'</span></div>'+
+    '</div>'+
+    '<div class="qp-fillins"><span>Name: &nbsp;</span><span>Roll No: &nbsp;</span></div>'+
+    (exam.instructions ? '<div class="qp-instructions"><b>Instructions:</b> '+esc(exam.instructions)+'</div>' : '')+
+    qListHtml+
+    '<div class="qp-foot">Rajoi Bagan LP School &middot; Prepared '+
+    new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})+
+    ' &middot; Computer-generated question paper</div>';
+
+  document.getElementById('qp-overlay').classList.add('open');
+}
+
+function closeQP(){ document.getElementById('qp-overlay').classList.remove('open'); }
+function printQP(){
+  document.body.classList.add('printing-qp');
+  window.print();
+  setTimeout(function(){document.body.classList.remove('printing-qp');}, 1000);
+}
+</script>
+</body>
+</html>
