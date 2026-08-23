@@ -290,17 +290,15 @@ section.block{ padding:54px 0 0; }
   background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius);
   padding:22px 24px; margin-top:22px; box-shadow:var(--shadow-tag);
 }
-.notice-admin-panel .alert{
-  border-radius:10px; padding:11px 15px; font-size:.9rem; margin-bottom:0;
-}
-.notice-admin-panel .alert.err{ background:#FEE2E2; border:1px solid #FCA5A5; color:#7F1D1D; }
-.notice-admin-panel .alert.ok{ background:#DFF7E2; border:1px solid #82CFAA; color:#14532D; }
-.notice-admin-panel .alert.warn{ background:#FEF9C3; border:1px solid #EAB308; color:#713F12; }
-.notice-admin-panel .alert.info{ background:#DBEAFE; border:1px solid #93C5FD; color:#1E3A8A; }
-[data-theme="dark"] .notice-admin-panel .alert.err{ background:#3A1B1B; color:#FCA5A5; border-color:#5C2626; }
-[data-theme="dark"] .notice-admin-panel .alert.ok{ background:#123321; color:#82CFAA; border-color:#1F4A34; }
-[data-theme="dark"] .notice-admin-panel .alert.warn{ background:#3D3312; color:#FDE68A; border-color:#5C4A15; }
-[data-theme="dark"] .notice-admin-panel .alert.info{ background:#152A4A; color:#93C5FD; border-color:#1E3A6A; }
+.alert{ border-radius:10px; padding:11px 15px; font-size:.9rem; margin-bottom:0; }
+.alert.err{ background:#FEE2E2; border:1px solid #FCA5A5; color:#7F1D1D; }
+.alert.ok{ background:#DFF7E2; border:1px solid #82CFAA; color:#14532D; }
+.alert.warn{ background:#FEF9C3; border:1px solid #EAB308; color:#713F12; }
+.alert.info{ background:#DBEAFE; border:1px solid #93C5FD; color:#1E3A8A; }
+[data-theme="dark"] .alert.err{ background:#3A1B1B; color:#FCA5A5; border-color:#5C2626; }
+[data-theme="dark"] .alert.ok{ background:#123321; color:#82CFAA; border-color:#1F4A34; }
+[data-theme="dark"] .alert.warn{ background:#3D3312; color:#FDE68A; border-color:#5C4A15; }
+[data-theme="dark"] .alert.info{ background:#152A4A; color:#93C5FD; border-color:#1E3A6A; }
 .notice-admin-panel .alert a{ color:inherit; }
 .mini-spin{
   display:inline-block; width:12px; height:12px; border-radius:50%;
@@ -1448,7 +1446,7 @@ function saveLocalNotices(arr){
    CORS/redirect quirks — a script tag is never subject to CORS, so
    this works every time fetch() has been unreliable. */
 function jsonp(url, params, timeoutMs){
-  timeoutMs = timeoutMs || 10000;
+  timeoutMs = timeoutMs || 20000; // longer, mobile networks/redirect chains can be slow
   return new Promise((resolve, reject)=>{
     const cbName = "rbCb_" + Date.now().toString(36) + Math.random().toString(36).slice(2);
     const script = document.createElement("script");
@@ -1496,6 +1494,15 @@ async function loadNotices(){
     CURRENT_NOTICES = [];
     NOTICES_SOURCE = "fallback";
     renderNotices(CONFIG.noticesFallback);
+    // if a live Sheet IS configured but we still ended up here, the connection
+    // failed on this device/browser — say so plainly instead of going quiet
+    if (CONFIG.noticesSheetUrl){
+      const box = $("#notice-list");
+      box.insertAdjacentHTML("afterbegin",
+        '<div class="alert warn" style="margin-bottom:16px">'+
+        'Could not reach the live notice board on this device or browser — showing older notices instead. '+
+        'Try reloading, or open the site in a different browser (e.g. Chrome) to check.</div>');
+    }
   }
   renderSavedNoticesList();
 }
