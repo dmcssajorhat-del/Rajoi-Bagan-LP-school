@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notice Board — Technical Reference (for future setup only)</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 20px;color:#17324E;line-height:1.6}
+  h1{font-size:1.4rem} h2{font-size:1.1rem;margin-top:2rem}
+  code{background:#F1F1F1;padding:2px 6px;border-radius:4px;font-family:monospace}
+  pre{background:#1E1E1E;color:#D4D4D4;padding:16px;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.6}
+  .note{background:#FFF8E1;border:1px solid #F2B705;border-radius:8px;padding:12px 16px;margin:16px 0}
+</style>
+</head>
+<body>
+<h1>Notice Board — Technical Reference</h1>
+<p><strong>This file is for whoever maintains the website — not for daily notice-publishing.</strong>
+The live site's "Manage notices" panel is kept simple on purpose. This page holds the one-time
+setup details, in case the Google Sheet connection ever needs to be reconnected or redeployed.</p>
+
+<div class="note">
+  <strong>Already working?</strong> If Chrome shows live notices correctly right now, you don't
+  need anything on this page. Keep it only for future reference.
+</div>
+
+<h2>Current setup</h2>
+<ul>
+  <li>Google Sheet columns (row 1): <code>Date | Title | Details | For | ID</code></li>
+  <li>Admin passcode is set in <code>index.html</code> → CONFIG → <code>noticesAdminPasscode</code></li>
+  <li>Live Sheet URL is set in CONFIG → <code>noticesSheetUrl</code></li>
+</ul>
+
+<h2>Known limitation</h2>
+<p>Firefox blocks this specific Google Apps Script technique due to a strict CORS/redirect
+security rule Firefox enforces (confirmed via Console: <em>"CORS header Access-Control-Allow-Origin
+missing, Status 302"</em>). Chrome, Edge, Safari, and mobile browsers are unaffected. This is a
+known limitation of Google Apps Script itself, not a bug in the website. Use Chrome to manage
+notices; other visitors safely see the site's fallback notices if their browser can't connect.</p>
+
+<h2>If the Sheet connection needs to be redeployed</h2>
+<ol>
+  <li>Open the Google Sheet → <strong>Extensions → Apps Script</strong></li>
+  <li>Delete everything in the editor, paste the script below</li>
+  <li>Change <code>RAJOI2026</code> to match <code>noticesAdminPasscode</code> in CONFIG</li>
+  <li><strong>Deploy → Manage deployments → ✏️ → Version: New version → Deploy</strong></li>
+  <li>The Web app URL does not change — no need to touch <code>noticesSheetUrl</code> again</li>
+</ol>
+
+<pre>function doGet(e) {
+  var action = (e.parameter.action || "list");
+  var callback = e.parameter.callback;
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var result;
+
+  if (action === "list") {
+    var rows = sheet.getDataRange().getValues();
+    var out = [];
+    for (var i = 1; i < rows.length; i++) {
+      if (!rows[i][1]) continue;
+      out.push({
+        id: rows[i][4] ? String(rows[i][4]) : String(i),
+        date: fmtDate_(rows[i][0]), title: rows[i][1],
+        details: rows[i][2], "for": rows[i][3]
+      });
+    }
+    result = out;
+  } else if (action === "add" || action === "delete") {
+    if (e.parameter.passcode !== "RAJOI2026") {
+      result = { ok:false, error:"wrong passcode" };
+    } else if (action === "add") {
+      var id = Utilities.getUuid();
+      sheet.appendRow([e.parameter.date, e.parameter.title, e.parameter.details, e.parameter.for_, id]);
+      result = { ok:true, id:id };
+    } else {
+      var rows2 = sheet.getDataRange().getValues();
+      for (var j = 1; j < rows2.length; j++) {
+        if (String(rows2[j][4]) === String(e.parameter.id)) { sheet.deleteRow(j + 1); break; }
+      }
+      result = { ok:true };
+    }
+  } else {
+    result = { ok:false, error:"unknown action" };
+  }
+
+  var json = JSON.stringify(result);
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + json + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+}
+function fmtDate_(v){
+  if (Object.prototype.toString.call(v) === "[object Date]")
+    return Utilities.formatDate(v, "GMT", "yyyy-MM-dd");
+  return String(v);
+}</pre>
+
+<h2>Monthly safety net</h2>
+<p>Once a month, open "Manage notices" in Chrome, publish any pending notices, and consider
+asking whoever maintains the site to update the fallback notices baked into CONFIG →
+<code>noticesFallback</code>, so anything shown to a blocked visitor stays reasonably current.</p>
+
+</body>
+</html>

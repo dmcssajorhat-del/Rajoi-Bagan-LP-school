@@ -323,39 +323,10 @@ section.block{ padding:54px 0 0; }
   overflow-x:auto; white-space:pre;
 }
 
-.notice-device-note{
-  margin-top:20px; background:var(--paper-deep); border-radius:10px;
-  padding:14px 16px; font-size:.86rem;
-}
-.notice-device-note b{ display:block; margin-bottom:6px; font-family:"Baloo 2",sans-serif; font-size:.92rem; }
-.notice-device-note p{ margin:0 0 8px; color:var(--ink); }
 .notice-export-box{
   background:#1E1E1E; color:#D4D4D4; border-radius:10px; padding:14px;
   font-family:monospace; font-size:.76rem; line-height:1.6; overflow-x:auto;
   white-space:pre; max-height:260px; overflow-y:auto;
-}
-.notice-badge{
-  display:inline-block; border-radius:99px; padding:4px 12px;
-  font-size:.72rem; font-weight:700; letter-spacing:.04em;
-  background:var(--paper-deep); color:var(--ink-soft);
-}
-.notice-badge.live{ background:#DCFCE7; color:#14532D; }
-.notice-badge.local{ background:#FEF9C3; color:#713F12; }
-[data-theme="dark"] .notice-badge.live{ background:#123321; color:#82CFAA; }
-[data-theme="dark"] .notice-badge.local{ background:#3D3312; color:#FDE68A; }
-.notice-setup{ margin-top:16px; border-top:1px dashed var(--rule); padding-top:14px; }
-.notice-setup-toggle{
-  background:none; border:none; color:var(--ink-soft); font:inherit;
-  font-size:.85rem; font-weight:700; cursor:pointer; padding:0;
-}
-.notice-setup-toggle:hover{ color:var(--leaf); }
-.notice-setup-body{ display:none; margin-top:14px; }
-.notice-setup-body.open{ display:block; }
-.notice-setup-body ol{ margin:0 0 14px 20px; font-size:.9rem; color:var(--ink); }
-.notice-setup-body li{ margin-bottom:8px; }
-.notice-script-box{
-  background:#1E1E1E; color:#D4D4D4; border-radius:10px; padding:16px;
-  font-family:monospace; font-size:.76rem; line-height:1.55; overflow-x:auto; white-space:pre;
 }
 .notice-copy-box{
   background:var(--paper-deep); border:1px solid var(--rule); border-radius:10px;
@@ -801,95 +772,8 @@ footer.site a{ color:var(--ink); }
         <div id="notice-submit-result" style="margin-top:14px"></div>
 
         <div class="notice-saved-section">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-            <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Notices from this panel</p>
-            <span id="notice-source-badge" class="notice-badge">checking…</span>
-          </div>
+          <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Notices you've added</p>
           <div id="notice-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">No notices yet.</p></div>
-        </div>
-
-        <!-- shown only when NOT connected to a live Sheet -->
-        <div class="notice-device-note" id="notice-local-note">
-          <b>⚠ These notices are only visible on this device</b>
-          <p>A parent opening the website on their own phone will not see them until they're
-             published properly. Click <strong>Export for website</strong> and send the result
-             to whoever maintains the website.</p>
-          <button class="btn ghost small" onclick="exportNoticesForWebsite()">📋 Export for website</button>
-          <div id="notice-export-result" style="margin-top:10px"></div>
-        </div>
-
-        <div class="notice-setup">
-          <button class="notice-setup-toggle" id="notice-setup-toggle" onclick="toggleNoticeSetup()">
-            <span id="notice-setup-arrow">▸</span> <span id="notice-setup-status">Connect a live Google Sheet (one-time setup)</span>
-          </button>
-          <div class="notice-setup-body" id="notice-setup-body">
-            <p style="font-size:.9rem;margin-bottom:10px">
-              This makes <strong>Publish notice</strong> above write straight to the Sheet and
-              update the board immediately — no export, no Google Form, nothing else to do.
-            </p>
-            <ol>
-              <li>Google Sheet with 5 column headers in row 1: <code>Date | Title | Details | For | ID</code></li>
-              <li><strong>Extensions → Apps Script.</strong> Delete anything already there, paste the script below.</li>
-              <li>Change <code>RAJOI2026</code> near the top to match <code>noticesAdminPasscode</code> in CONFIG.</li>
-              <li><strong>Deploy → New deployment → Web app → Who has access: Anyone → Deploy.</strong> Approve permissions when asked.</li>
-              <li>Copy the Web app URL → paste into <code>noticesSheetUrl</code> in CONFIG → re-upload <code>index.html</code> to GitHub.</li>
-            </ol>
-            <div class="tip" style="background:#DFF7E2;border:1px solid #82CFAA;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.86rem;color:#14532D">
-              <strong>Already set this up before and it didn't work?</strong> This script is
-              different from earlier attempts — it uses a technique called JSONP that avoids the
-              browser security rule that kept blocking us. Delete the old script completely and
-              paste this one in fresh, then redeploy as a <strong>new version</strong>.
-            </div>
-            <div class="notice-script-box" id="notice-script-text">function doGet(e) {
-  var action = (e.parameter.action || "list");
-  var callback = e.parameter.callback;
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var result;
-
-  if (action === "list") {
-    var rows = sheet.getDataRange().getValues();
-    var out = [];
-    for (var i = 1; i < rows.length; i++) {
-      if (!rows[i][1]) continue;
-      out.push({
-        id: rows[i][4] ? String(rows[i][4]) : String(i),
-        date: fmtDate_(rows[i][0]), title: rows[i][1],
-        details: rows[i][2], "for": rows[i][3]
-      });
-    }
-    result = out;
-  } else if (action === "add" || action === "delete") {
-    if (e.parameter.passcode !== "RAJOI2026") {
-      result = { ok:false, error:"wrong passcode" };
-    } else if (action === "add") {
-      var id = Utilities.getUuid();
-      sheet.appendRow([e.parameter.date, e.parameter.title, e.parameter.details, e.parameter.for_, id]);
-      result = { ok:true, id:id };
-    } else {
-      var rows2 = sheet.getDataRange().getValues();
-      for (var j = 1; j < rows2.length; j++) {
-        if (String(rows2[j][4]) === String(e.parameter.id)) { sheet.deleteRow(j + 1); break; }
-      }
-      result = { ok:true };
-    }
-  } else {
-    result = { ok:false, error:"unknown action" };
-  }
-
-  var json = JSON.stringify(result);
-  if (callback) {
-    return ContentService.createTextOutput(callback + "(" + json + ")")
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
-}
-function fmtDate_(v){
-  if (Object.prototype.toString.call(v) === "[object Date]")
-    return Utilities.formatDate(v, "GMT", "yyyy-MM-dd");
-  return String(v);
-}</div>
-            <button class="btn ghost small" style="margin-top:10px" onclick="copyNoticeScript()">📋 Copy script</button>
-          </div>
         </div>
       </div>
     </div>
@@ -1521,8 +1405,7 @@ async function loadNotices(){
       const box = $("#notice-list");
       box.insertAdjacentHTML("afterbegin",
         '<div class="alert warn" style="margin-bottom:16px">'+
-        'Could not reach the live notice board on this device or browser — showing older notices instead. '+
-        'Try reloading, or open the site in a different browser (e.g. Chrome) to check.</div>');
+        'Showing recent notices — the latest updates could not load just now. Try reloading, or checking in Chrome.</div>');
     }
   }
   renderSavedNoticesList();
@@ -1636,19 +1519,14 @@ async function submitNotice(){
         action:"add", date, title, details, for_: forWhom, passcode: CONFIG.noticesAdminPasscode
       });
       if (!data || !data.ok){
-        resultBox.innerHTML = '<div class="alert err">The Sheet rejected this — '+
-          (data && data.error === "wrong passcode"
-            ? 'the passcode in the deployed script does not match <code>noticesAdminPasscode</code> in CONFIG.'
-            : esc((data && data.error) || "unknown error")) +
-          '</div>';
+        resultBox.innerHTML = '<div class="alert err">Something went wrong publishing this notice. Please try again in a minute.</div>';
         return;
       }
-      await loadNotices();   // ← pulls the fresh list straight back from the Sheet and redraws the board
+      await loadNotices();   // pulls the fresh list straight back and redraws the board
       resultBox.innerHTML = '<div class="alert ok">✓ Published — visible to everyone now.</div>';
       $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
     }catch(err){
-      resultBox.innerHTML = '<div class="alert err">Could not reach the Google Sheet. Check the Web app URL '+
-        'and that it was deployed as a <strong>new version</strong> after the script last changed.</div>';
+      resultBox.innerHTML = '<div class="alert err">Could not publish right now. If you are using Firefox, please switch to Chrome and try again.</div>';
     }finally{
       publishBtn.disabled = false;
     }
@@ -1685,15 +1563,7 @@ function copyRow(elId){
 
 function renderSavedNoticesList(){
   const box = $("#notice-saved-list");
-  const badge = $("#notice-source-badge");
-  const localNote = $("#notice-local-note");
   if (!box) return;
-
-  if (badge){
-    if (NOTICES_SOURCE === "sheet"){ badge.textContent = "🌐 Live — everyone sees these"; badge.className = "notice-badge live"; }
-    else { badge.textContent = "📱 Saved on this device only"; badge.className = "notice-badge local"; }
-  }
-  if (localNote) localNote.style.display = (NOTICES_SOURCE === "sheet") ? "none" : "block";
 
   const list = (NOTICES_SOURCE === "sheet") ? CURRENT_NOTICES : loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
   if (!list.length){
@@ -1719,14 +1589,12 @@ async function deleteNotice(id){
     try{
       const data = await jsonp(CONFIG.noticesSheetUrl, { action:"delete", id, passcode: CONFIG.noticesAdminPasscode });
       if (!data || !data.ok){
-        alert("The Sheet rejected this delete — " + ((data && data.error === "wrong passcode")
-          ? "the passcode in the deployed script does not match noticesAdminPasscode in CONFIG."
-          : ((data && data.error) || "unknown error")));
+        alert("Could not delete this notice. Please try again.");
         return;
       }
-      await loadNotices();   // redisplay the fresh list after deleting
+      await loadNotices();
     }catch(err){
-      alert("Could not reach the Google Sheet. Check your internet connection and try again.");
+      alert("Could not reach the notice board. Check your internet connection and try again.");
     }
     return;
   }
@@ -1740,6 +1608,7 @@ async function deleteNotice(id){
 function exportNoticesForWebsite(){
   const notices = loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
   const box = $("#notice-export-result");
+  if (!box) return;
   if (!notices.length){
     box.innerHTML = '<div class="alert warn">No notices to export yet — add one first.</div>';
     return;
@@ -1749,8 +1618,7 @@ function exportNoticesForWebsite(){
   ).join(",\n");
   const script = "noticesFallback: [\n" + lines + "\n  ],";
   box.innerHTML =
-    '<div class="alert ok">Copy this and send it to whoever maintains the website — it replaces the '+
-    '<code>noticesFallback</code> block in CONFIG so every visitor sees these notices.</div>'+
+    '<div class="alert ok">Copy this and send it to whoever maintains the website.</div>'+
     '<div class="notice-export-box" id="notice-export-text">'+esc(script)+'</div>'+
     '<button class="btn ghost small" style="margin-top:8px" onclick="copyNoticeExport()">📋 Copy</button>';
 }
@@ -1761,20 +1629,6 @@ function copyNoticeExport(){
   }).catch(()=>{
     alert("Could not copy automatically — please select and copy the text manually.");
   });
-}
-function copyNoticeScript(){
-  const text = $("#notice-script-text").innerText;
-  navigator.clipboard?.writeText(text).then(()=>{
-    alert("Script copied. Paste it into Extensions → Apps Script on the notices Google Sheet.");
-  }).catch(()=>{
-    alert("Could not copy automatically — please select and copy the text manually.");
-  });
-}
-function toggleNoticeSetup(){
-  const body = $("#notice-setup-body");
-  const arrow = $("#notice-setup-arrow");
-  const open = body.classList.toggle("open");
-  arrow.textContent = open ? "▾" : "▸";
 }
 </script>
 
