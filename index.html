@@ -1351,7 +1351,9 @@ let NOTICES_SOURCE = "fallback"; // "sheet" | "local" | "fallback"
 async function tryLoadViaJsonp(){
   try{
     const items = await jsonp(CONFIG.noticesSheetUrl, { action:"list" });
-    return Array.isArray(items) ? items : null;
+    if (Array.isArray(items)) return items;
+    console.warn("JSONP responded, but not with a notice list — got this instead:", items);
+    return null;
   }catch(err){
     console.warn("JSONP notice load failed, will try a direct fetch instead:", err);
     return null;
