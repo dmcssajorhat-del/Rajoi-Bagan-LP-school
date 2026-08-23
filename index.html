@@ -1374,11 +1374,16 @@ async function loadNotices(){
      device) → notices saved on this device only (like Saved Exams) →
      the sample notices baked into the site.
 
-     Two different techniques are tried against the Sheet, in order —
-     if a browser or an extension blocks one, the other often still
-     gets through, since they work in completely different ways. */
+     Two different techniques are tried against the Sheet — and if
+     neither works the first time (Google's side can be briefly slow
+     to respond), the whole pair is tried again once more before
+     giving up, since a short delay usually clears this up on its own. */
   if (CONFIG.noticesSheetUrl){
-    const items = await tryLoadViaJsonp() || await tryLoadViaFetch();
+    let items = await tryLoadViaJsonp() || await tryLoadViaFetch();
+    if (!items){
+      await new Promise(r=>setTimeout(r, 1500));
+      items = await tryLoadViaJsonp() || await tryLoadViaFetch();
+    }
     if (items){
       CURRENT_NOTICES = items.map(n=>({
         id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
@@ -1399,13 +1404,15 @@ async function loadNotices(){
     CURRENT_NOTICES = [];
     NOTICES_SOURCE = "fallback";
     renderNotices(CONFIG.noticesFallback);
-    // if a live Sheet IS configured but we still ended up here, the connection
-    // failed on this device/browser — say so plainly instead of going quiet
+    // if a live Sheet IS configured but we still ended up here, both
+    // attempts failed — say so plainly, with a one-tap way to try again
     if (CONFIG.noticesSheetUrl){
       const box = $("#notice-list");
       box.insertAdjacentHTML("afterbegin",
-        '<div class="alert warn" style="margin-bottom:16px">'+
-        'Showing recent notices — the latest updates could not load just now. Try reloading, or checking in Chrome.</div>');
+        '<div class="alert warn" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">'+
+        '<span>Showing recent notices — could not load the latest just now.</span>'+
+        '<button class="btn ghost small" onclick="loadNotices()" style="flex:none">🔄 Try again</button>'+
+        '</div>');
     }
   }
   renderSavedNoticesList();
