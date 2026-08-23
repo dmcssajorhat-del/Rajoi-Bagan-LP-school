@@ -1464,25 +1464,46 @@ function jsonp(url, params, timeoutMs){
 let CURRENT_NOTICES = [];   // whatever is currently on screen, from whichever source
 let NOTICES_SOURCE = "fallback"; // "sheet" | "local" | "fallback"
 
+async function tryLoadViaJsonp(){
+  try{
+    const items = await jsonp(CONFIG.noticesSheetUrl, { action:"list" });
+    return Array.isArray(items) ? items : null;
+  }catch(err){
+    console.warn("JSONP notice load failed, will try a direct fetch instead:", err);
+    return null;
+  }
+}
+async function tryLoadViaFetch(){
+  try{
+    const res = await fetch(CONFIG.noticesSheetUrl + "?action=list", {cache:"no-store"});
+    if (!res.ok) return null;
+    const items = await res.json();
+    return Array.isArray(items) ? items : null;
+  }catch(err){
+    console.warn("Direct fetch notice load also failed:", err);
+    return null;
+  }
+}
+
 async function loadNotices(){
   /* Priority: a connected live Google Sheet (visible to everyone, every
      device) → notices saved on this device only (like Saved Exams) →
-     the sample notices baked into the site. */
+     the sample notices baked into the site.
+
+     Two different techniques are tried against the Sheet, in order —
+     if a browser or an extension blocks one, the other often still
+     gets through, since they work in completely different ways. */
   if (CONFIG.noticesSheetUrl){
-    try{
-      const items = await jsonp(CONFIG.noticesSheetUrl, { action:"list" });
-      if (Array.isArray(items)){
-        CURRENT_NOTICES = items.map(n=>({
-          id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
-          details:(n.details||"").trim(), for:(n.for||"").trim()
-        })).filter(n=>n.title).sort((a,b)=>new Date(b.date)-new Date(a.date));
-        NOTICES_SOURCE = "sheet";
-        renderNotices(CURRENT_NOTICES.length ? CURRENT_NOTICES : CONFIG.noticesFallback);
-        renderSavedNoticesList();
-        return;
-      }
-    }catch(err){
-      console.warn("Live notice sheet did not load, using local/fallback instead:", err);
+    const items = await tryLoadViaJsonp() || await tryLoadViaFetch();
+    if (items){
+      CURRENT_NOTICES = items.map(n=>({
+        id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
+        details:(n.details||"").trim(), for:(n.for||"").trim()
+      })).filter(n=>n.title).sort((a,b)=>new Date(b.date)-new Date(a.date));
+      NOTICES_SOURCE = "sheet";
+      renderNotices(CURRENT_NOTICES.length ? CURRENT_NOTICES : CONFIG.noticesFallback);
+      renderSavedNoticesList();
+      return;
     }
   }
   const local = loadLocalNotices();
