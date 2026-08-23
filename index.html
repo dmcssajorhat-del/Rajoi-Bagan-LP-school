@@ -787,100 +787,103 @@ footer.site a{ color:var(--ink); }
           <button class="btn ghost small" onclick="lockNoticeAdmin()">🔒 Lock</button>
         </div>
 
-        <!-- SIMPLE PATH — shown once a Google Form link is set up -->
-        <div id="notice-form-path" style="display:none">
-          <p style="font-size:.95rem;margin-bottom:14px">
-            To add a notice, fill in the short form — it takes under a minute and needs no
-            technical knowledge. It appears on the board within a few seconds of submitting.
-          </p>
-          <div class="btn-row" style="margin-top:0">
-            <a class="btn green" id="notice-form-link" href="#" target="_blank" rel="noopener">📝 Open the notice form →</a>
-            <button class="btn ghost" onclick="loadNotices()">🔄 I've submitted — refresh the board</button>
+        <div class="row2">
+          <div class="field"><label>Date</label>
+            <input type="date" id="na-date"></div>
+          <div class="field"><label>For (which classes)</label>
+            <input type="text" id="na-for" placeholder="e.g. All classes"></div>
+        </div>
+        <div class="field"><label>Title</label>
+          <input type="text" id="na-title" placeholder="e.g. School closed for Durga Puja"></div>
+        <div class="field"><label>Details</label>
+          <textarea id="na-details" rows="3" placeholder="A sentence or two with the full details."></textarea></div>
+        <div class="btn-row">
+          <button class="btn green" id="notice-publish-btn" onclick="submitNotice()">Publish notice →</button>
+        </div>
+        <div id="notice-submit-result" style="margin-top:14px"></div>
+
+        <div class="notice-saved-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Notices from this panel</p>
+            <span id="notice-source-badge" class="notice-badge">checking…</span>
           </div>
-          <div class="notice-device-note" style="margin-top:18px">
-            <b>To remove a notice</b>
-            <p>Open the Google Sheet directly and delete that row. There is no "delete" button
-               on the website for live notices, on purpose — it keeps this whole system simple
-               and reliable.</p>
-          </div>
+          <div id="notice-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">No notices yet.</p></div>
         </div>
 
-        <!-- FALLBACK PATH — used until the Form is set up -->
-        <div id="notice-local-path">
-          <div class="row2">
-            <div class="field"><label>Date</label>
-              <input type="date" id="na-date"></div>
-            <div class="field"><label>For (which classes)</label>
-              <input type="text" id="na-for" placeholder="e.g. All classes"></div>
-          </div>
-          <div class="field"><label>Title</label>
-            <input type="text" id="na-title" placeholder="e.g. School closed for Durga Puja"></div>
-          <div class="field"><label>Details</label>
-            <textarea id="na-details" rows="3" placeholder="A sentence or two with the full details."></textarea></div>
-          <div class="btn-row">
-            <button class="btn green" onclick="submitNotice()">Publish notice →</button>
-          </div>
-          <div id="notice-submit-result" style="margin-top:14px"></div>
-
-          <div class="notice-saved-section">
-            <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Saved notices — visible on this device</p>
-            <div id="notice-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">No notices added from this device yet.</p></div>
-          </div>
-
-          <div class="notice-device-note">
-            <b>⚠ These notices are only visible on this device</b>
-            <p>A parent opening the website on their own phone will not see them until they're
-               published properly. Click <strong>Export for website</strong> and send the result
-               to whoever maintains the website, or ask them to set up the simple notice form
-               below (10 minutes, one time, no more copy-paste ever again).</p>
-            <button class="btn ghost small" onclick="exportNoticesForWebsite()">📋 Export for website</button>
-            <div id="notice-export-result" style="margin-top:10px"></div>
-          </div>
+        <!-- shown only when NOT connected to a live Sheet -->
+        <div class="notice-device-note" id="notice-local-note">
+          <b>⚠ These notices are only visible on this device</b>
+          <p>A parent opening the website on their own phone will not see them until they're
+             published properly. Click <strong>Export for website</strong> and send the result
+             to whoever maintains the website.</p>
+          <button class="btn ghost small" onclick="exportNoticesForWebsite()">📋 Export for website</button>
+          <div id="notice-export-result" style="margin-top:10px"></div>
         </div>
 
         <div class="notice-setup">
           <button class="notice-setup-toggle" id="notice-setup-toggle" onclick="toggleNoticeSetup()">
-            <span id="notice-setup-arrow">▸</span> Set up the simple notice form (one-time, 10 minutes)
+            <span id="notice-setup-arrow">▸</span> <span id="notice-setup-status">Connect a live Google Sheet (one-time setup)</span>
           </button>
           <div class="notice-setup-body" id="notice-setup-body">
             <p style="font-size:.9rem;margin-bottom:10px">
-              This replaces typing notices into the website with just <strong>filling a Google
-              Form</strong> — no code, no deployments, nothing that can silently fail.
+              This makes <strong>Publish notice</strong> above write straight to the Sheet and
+              update the board immediately — no export, no Google Form, nothing else to do.
             </p>
             <ol>
-              <li>Go to <code>forms.google.com</code> → <strong>+ Blank</strong>. Name it "Rajoi Bagan Notice Form".</li>
-              <li>Add four questions, each set to <strong>Short answer</strong> (Details can be <strong>Paragraph</strong>): <code>Date</code>, <code>Title</code>, <code>Details</code>, <code>For</code>.</li>
-              <li>Click the <strong>Responses</strong> tab at the top → click the green Sheets icon → <strong>Create a new spreadsheet</strong>. This becomes the sheet the website reads from.</li>
-              <li>Click <strong>Send</strong> (top right) → click the <strong>🔗 link icon</strong> → copy the short link.</li>
-              <li>Paste that link into <code>noticesFormUrl</code> in CONFIG.</li>
-              <li>Open the new response Sheet Apps Script created (<strong>Extensions → Apps Script</strong> from that sheet), delete anything there, paste the script below, save.</li>
-              <li><strong>Deploy → New deployment → Web app → Who has access: Anyone → Deploy.</strong> Approve permissions once when asked — this only needs read access, so it's a shorter approval than before.</li>
-              <li>Copy the Web app URL → paste into <code>noticesSheetUrl</code> in CONFIG. Re-upload <code>index.html</code> to GitHub.</li>
+              <li>Google Sheet with 5 column headers in row 1: <code>Date | Title | Details | For | ID</code></li>
+              <li><strong>Extensions → Apps Script.</strong> Delete anything already there, paste the script below.</li>
+              <li>Change <code>RAJOI2026</code> near the top to match <code>noticesAdminPasscode</code> in CONFIG.</li>
+              <li><strong>Deploy → New deployment → Web app → Who has access: Anyone → Deploy.</strong> Approve permissions when asked.</li>
+              <li>Copy the Web app URL → paste into <code>noticesSheetUrl</code> in CONFIG → re-upload <code>index.html</code> to GitHub.</li>
             </ol>
             <div class="tip" style="background:#DFF7E2;border:1px solid #82CFAA;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.86rem;color:#14532D">
-              <strong>Why this is simpler than before:</strong> this script only ever <em>reads</em>
-              the sheet — it never writes to it. Google Forms handles all the writing, and Forms is
-              something everybody already knows how to use. There's no passcode-in-the-script, no
-              write permissions to approve, no "new version" step to remember.
+              <strong>Already set this up before and it didn't work?</strong> This script is
+              different from earlier attempts — it uses a technique called JSONP that avoids the
+              browser security rule that kept blocking us. Delete the old script completely and
+              paste this one in fresh, then redeploy as a <strong>new version</strong>.
             </div>
             <div class="notice-script-box" id="notice-script-text">function doGet(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName("Form Responses 1") || ss.getSheets()[0];
-  var rows = sheet.getDataRange().getValues();
-  var out = [];
-  for (var i = 1; i < rows.length; i++) {
-    // Form columns: Timestamp | Date | Title | Details | For
-    if (!rows[i][2]) continue;
-    out.push({
-      id: String(i),
-      date: fmtDate_(rows[i][1]),
-      title: rows[i][2],
-      details: rows[i][3],
-      "for": rows[i][4]
-    });
+  var action = (e.parameter.action || "list");
+  var callback = e.parameter.callback;
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var result;
+
+  if (action === "list") {
+    var rows = sheet.getDataRange().getValues();
+    var out = [];
+    for (var i = 1; i < rows.length; i++) {
+      if (!rows[i][1]) continue;
+      out.push({
+        id: rows[i][4] ? String(rows[i][4]) : String(i),
+        date: fmtDate_(rows[i][0]), title: rows[i][1],
+        details: rows[i][2], "for": rows[i][3]
+      });
+    }
+    result = out;
+  } else if (action === "add" || action === "delete") {
+    if (e.parameter.passcode !== "RAJOI2026") {
+      result = { ok:false, error:"wrong passcode" };
+    } else if (action === "add") {
+      var id = Utilities.getUuid();
+      sheet.appendRow([e.parameter.date, e.parameter.title, e.parameter.details, e.parameter.for_, id]);
+      result = { ok:true, id:id };
+    } else {
+      var rows2 = sheet.getDataRange().getValues();
+      for (var j = 1; j < rows2.length; j++) {
+        if (String(rows2[j][4]) === String(e.parameter.id)) { sheet.deleteRow(j + 1); break; }
+      }
+      result = { ok:true };
+    }
+  } else {
+    result = { ok:false, error:"unknown action" };
   }
-  return ContentService.createTextOutput(JSON.stringify(out))
-    .setMimeType(ContentService.MimeType.JSON);
+
+  var json = JSON.stringify(result);
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + json + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
 }
 function fmtDate_(v){
   if (Object.prototype.toString.call(v) === "[object Date]")
@@ -1439,6 +1442,27 @@ function saveLocalNotices(arr){
   try{ localStorage.setItem("rb_notices", JSON.stringify(arr)); }catch(e){}
 }
 
+/* ── JSONP ─────────────────────────────────────────────────────────
+   Talks to the Apps Script Web App via a <script> tag instead of
+   fetch(). This is the classic, reliable workaround for Apps Script's
+   CORS/redirect quirks — a script tag is never subject to CORS, so
+   this works every time fetch() has been unreliable. */
+function jsonp(url, params, timeoutMs){
+  timeoutMs = timeoutMs || 10000;
+  return new Promise((resolve, reject)=>{
+    const cbName = "rbCb_" + Date.now().toString(36) + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    let done = false;
+    function cleanup(){ delete window[cbName]; script.remove(); clearTimeout(timer); }
+    window[cbName] = (data)=>{ if(done) return; done=true; cleanup(); resolve(data); };
+    const timer = setTimeout(()=>{ if(done) return; done=true; cleanup(); reject(new Error("timeout")); }, timeoutMs);
+    const qs = new URLSearchParams(Object.assign({}, params, {callback:cbName}));
+    script.src = url + "?" + qs.toString();
+    script.onerror = ()=>{ if(done) return; done=true; cleanup(); reject(new Error("script load error")); };
+    document.head.appendChild(script);
+  });
+}
+
 let CURRENT_NOTICES = [];   // whatever is currently on screen, from whichever source
 let NOTICES_SOURCE = "fallback"; // "sheet" | "local" | "fallback"
 
@@ -1448,9 +1472,7 @@ async function loadNotices(){
      the sample notices baked into the site. */
   if (CONFIG.noticesSheetUrl){
     try{
-      const res = await fetch(CONFIG.noticesSheetUrl + "?action=list", {cache:"no-store"});
-      if(!res.ok) throw new Error(res.status);
-      const items = await res.json();
+      const items = await jsonp(CONFIG.noticesSheetUrl, { action:"list" });
       if (Array.isArray(items)){
         CURRENT_NOTICES = items.map(n=>({
           id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
@@ -1555,18 +1577,8 @@ function checkNoticePasscode(){
 function showNoticeForm(){
   $("#notice-admin-lock").style.display = "none";
   $("#notice-admin-form").style.display = "block";
-
-  if (CONFIG.noticesFormUrl){
-    $("#notice-form-path").style.display = "block";
-    $("#notice-local-path").style.display = "none";
-    $("#notice-form-link").href = CONFIG.noticesFormUrl;
-  } else {
-    $("#notice-form-path").style.display = "none";
-    $("#notice-local-path").style.display = "block";
-    const dateField = $("#na-date");
-    if (!dateField.value) dateField.value = new Date().toISOString().slice(0,10);
-    renderSavedNoticesList();
-  }
+  const dateField = $("#na-date");
+  if (!dateField.value) dateField.value = new Date().toISOString().slice(0,10);
   loadNotices();
 }
 function lockNoticeAdmin(){
@@ -1580,14 +1592,42 @@ async function submitNotice(){
   const details = $("#na-details").value.trim();
   const forWhom = $("#na-for").value.trim() || "All classes";
   const resultBox = $("#notice-submit-result");
+  const publishBtn = $("#notice-publish-btn");
 
   if (!date || !title){
     resultBox.innerHTML = '<div class="alert err">Please fill in at least the date and title.</div>';
     return;
   }
 
-  // saved on this device only, like an exam — the "Export for website" button
-  // below sends this to whoever maintains the site to publish for real
+  if (CONFIG.noticesSheetUrl){
+    // ── push to the live Google Sheet, then redisplay the fresh list ──
+    resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Publishing…</div>';
+    publishBtn.disabled = true;
+    try{
+      const data = await jsonp(CONFIG.noticesSheetUrl, {
+        action:"add", date, title, details, for_: forWhom, passcode: CONFIG.noticesAdminPasscode
+      });
+      if (!data || !data.ok){
+        resultBox.innerHTML = '<div class="alert err">The Sheet rejected this — '+
+          (data && data.error === "wrong passcode"
+            ? 'the passcode in the deployed script does not match <code>noticesAdminPasscode</code> in CONFIG.'
+            : esc((data && data.error) || "unknown error")) +
+          '</div>';
+        return;
+      }
+      await loadNotices();   // ← pulls the fresh list straight back from the Sheet and redraws the board
+      resultBox.innerHTML = '<div class="alert ok">✓ Published — visible to everyone now.</div>';
+      $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
+    }catch(err){
+      resultBox.innerHTML = '<div class="alert err">Could not reach the Google Sheet. Check the Web app URL '+
+        'and that it was deployed as a <strong>new version</strong> after the script last changed.</div>';
+    }finally{
+      publishBtn.disabled = false;
+    }
+    return;
+  }
+
+  // no live sheet configured — save on this device, like an exam
   const noticeObj = { id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date, title, details, for: forWhom };
   const notices = loadLocalNotices();
   notices.push(noticeObj);
@@ -1617,17 +1657,26 @@ function copyRow(elId){
 
 function renderSavedNoticesList(){
   const box = $("#notice-saved-list");
+  const badge = $("#notice-source-badge");
+  const localNote = $("#notice-local-note");
   if (!box) return;
-  const notices = loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if (!notices.length){
-    box.innerHTML = '<p style="font-size:.85rem;color:var(--ink-soft)">No notices added from this device yet.</p>';
+
+  if (badge){
+    if (NOTICES_SOURCE === "sheet"){ badge.textContent = "🌐 Live — everyone sees these"; badge.className = "notice-badge live"; }
+    else { badge.textContent = "📱 Saved on this device only"; badge.className = "notice-badge local"; }
+  }
+  if (localNote) localNote.style.display = (NOTICES_SOURCE === "sheet") ? "none" : "block";
+
+  const list = (NOTICES_SOURCE === "sheet") ? CURRENT_NOTICES : loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if (!list.length){
+    box.innerHTML = '<p style="font-size:.85rem;color:var(--ink-soft)">No notices yet.</p>';
     return;
   }
-  box.innerHTML = notices.map((n,i)=>
+  box.innerHTML = list.map((n,i)=>
     '<div class="notice-item">'+
       '<div class="nco">📌</div>'+
       '<div style="flex:1"><h4>'+esc(n.title)+'</h4><div class="nmeta">'+esc(n.date)+' · '+esc(n.for||'All classes')+'</div>'+
-        '<div class="notice-copy-row" id="copy-row-'+i+'" style="display:none">'+esc([n.date,n.title,n.details,n.for||'All classes'].join("\t"))+'</div>'+
+        '<div class="notice-copy-row" id="copy-row-'+i+'" style="display:none">'+esc([n.date,n.title,n.details||'',n.for||'All classes'].join("\t"))+'</div>'+
       '</div>'+
       '<button class="btn ghost small" onclick="copyRow(\'copy-row-'+i+'\')" title="Copy for the Google Sheet">📋</button>'+
       '<button class="btn ghost small ndel" onclick="deleteNotice(\''+n.id+'\')">Delete</button>'+
@@ -1636,7 +1685,24 @@ function renderSavedNoticesList(){
 }
 
 async function deleteNotice(id){
-  if (!confirm("Delete this notice from this device?")) return;
+  if (!confirm("Delete this notice?")) return;
+
+  if (NOTICES_SOURCE === "sheet" && CONFIG.noticesSheetUrl){
+    try{
+      const data = await jsonp(CONFIG.noticesSheetUrl, { action:"delete", id, passcode: CONFIG.noticesAdminPasscode });
+      if (!data || !data.ok){
+        alert("The Sheet rejected this delete — " + ((data && data.error === "wrong passcode")
+          ? "the passcode in the deployed script does not match noticesAdminPasscode in CONFIG."
+          : ((data && data.error) || "unknown error")));
+        return;
+      }
+      await loadNotices();   // redisplay the fresh list after deleting
+    }catch(err){
+      alert("Could not reach the Google Sheet. Check your internet connection and try again.");
+    }
+    return;
+  }
+
   const notices = loadLocalNotices().filter(n=>n.id!==id);
   saveLocalNotices(notices);
   await loadNotices();
