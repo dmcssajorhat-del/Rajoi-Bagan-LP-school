@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Exam Manager — Rajoi Bagan LP School</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Karla:wght@400;500;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#17324E;--soft:#5A7793;--leaf:#1F6B4A;--leaf-soft:#A9CDB9;
@@ -17,7 +17,7 @@ body{
   background:var(--paper);
   background-image:linear-gradient(to bottom,transparent 31px,var(--rule) 31px,var(--rule) 32px,transparent 32px);
   background-size:100% 32px;
-  font-family:"Karla",sans-serif;color:var(--ink);font-size:16px;line-height:1.6;
+  font-family:"Karla","Noto Sans Bengali",sans-serif;color:var(--ink);font-size:16px;line-height:1.6;
 }
 
 /* LOCK SCREEN */
@@ -221,7 +221,7 @@ h2{font-family:"Baloo 2",sans-serif;font-size:1.5rem;margin-bottom:4px}
 #report-overlay.open{display:block}
 .rpt-wrap{max-width:660px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden}
 .rpt-actions{background:#f6f8fa;padding:12px 18px;display:flex;justify-content:flex-end;gap:10px;border-bottom:1px solid var(--rule)}
-.rpt{padding:26px 30px;font-family:"Karla",sans-serif;font-size:13.5px;color:#000;background:#fff}
+.rpt{padding:26px 30px;font-family:"Karla","Noto Sans Bengali",sans-serif;font-size:13.5px;color:#000;background:#fff}
 .rpt-hdr{display:flex;align-items:center;gap:14px;border-bottom:3px solid #1F6B4A;padding-bottom:12px;margin-bottom:18px}
 .rpt-hdr img{width:60px;height:60px;border-radius:50%;object-fit:contain}
 .rpt-hdr h1{font-family:"Baloo 2",sans-serif;font-size:19px;color:#1F6B4A;margin:0 0 2px}
@@ -249,7 +249,7 @@ h2{font-family:"Baloo 2",sans-serif;font-size:1.5rem;margin-bottom:4px}
 #qp-overlay.open{display:block}
 .qp-wrap{max-width:700px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden}
 .qp-actions{background:#f6f8fa;padding:12px 18px;display:flex;justify-content:flex-end;gap:10px;border-bottom:1px solid var(--rule)}
-.qp{padding:28px 32px;font-family:"Karla",sans-serif;font-size:14px;color:#000;background:#fff}
+.qp{padding:28px 32px;font-family:"Karla","Noto Sans Bengali",sans-serif;font-size:14px;color:#000;background:#fff}
 .qp-hdr{display:flex;align-items:center;gap:14px;border-bottom:3px solid #1F6B4A;padding-bottom:12px;margin-bottom:16px}
 .qp-hdr img{width:60px;height:60px;border-radius:50%;object-fit:contain}
 .qp-hdr h1{font-family:"Baloo 2",sans-serif;font-size:19px;color:#1F6B4A;margin:0 0 2px}
@@ -381,12 +381,14 @@ body.printing-qp .qp-actions{display:none!important}
       <div class="row2">
         <div class="field"><label>Time allowed <span style="text-transform:none;font-weight:400">(optional, shown on question paper)</span></label>
           <input id="e-duration" type="text" placeholder="e.g. 1 hour 30 minutes"></div>
-        <div class="field"><label>Instructions <span style="text-transform:none;font-weight:400">(optional, shown on question paper)</span></label>
-          <input id="e-instructions" type="text" placeholder="e.g. Answer all questions. Write neatly."></div>
+        <div class="field"><label>Instructions <span style="text-transform:none;font-weight:400">(optional, shown on question paper — English or Assamese)</span></label>
+          <input id="e-instructions" type="text" placeholder="e.g. Answer all questions. Write neatly. / সকলো প্ৰশ্নৰ উত্তৰ দিয়ক।"></div>
       </div>
 
-      <label style="font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);display:block;margin-bottom:10px">
+      <label style="font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);display:block;margin-bottom:6px">
         Questions &amp; marks per question</label>
+      <p style="font-size:.82rem;color:var(--soft);margin-bottom:10px">
+        Write each question in English or Assamese (অসমীয়া) — whichever the exam is set in.</p>
       <div id="q-list"></div>
       <button class="btn ghost small" style="margin-top:10px" onclick="addQuestion()">+ Add question</button>
 
@@ -606,7 +608,7 @@ function removeQuestion(i){ questions.splice(i,1); renderQuestions(); }
 function renderQuestions(){
   document.getElementById('q-list').innerHTML = questions.length
     ? questions.map(function(q,i){ return '<div class="q-row">'+
-        '<input type="text" value="'+esc(q.text)+'" placeholder="Question '+(i+1)+' text (optional)" oninput="questions['+i+'].text=this.value">'+
+        '<input type="text" value="'+esc(q.text)+'" placeholder="Question '+(i+1)+' — English or Assamese (অসমীয়া)" oninput="questions['+i+'].text=this.value">'+
         '<input type="number" value="'+q.marks+'" min="1" max="100" oninput="questions['+i+'].marks=+this.value||1" style="width:70px">'+
         '<button class="del-q" onclick="removeQuestion('+i+')" title="Remove">&#10005;</button></div>';
       }).join('')
