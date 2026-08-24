@@ -766,9 +766,18 @@ footer.site a{ color:var(--ink); }
           <input type="text" id="na-title" placeholder="e.g. School closed for Durga Puja"></div>
         <div class="field"><label>Details</label>
           <textarea id="na-details" rows="3" placeholder="A sentence or two with the full details."></textarea></div>
-        <div class="btn-row">
+
+        <div class="btn-row" id="notice-two-step-buttons">
+          <button class="btn green" id="notice-push-btn" onclick="pushNoticeToSheet()">1️⃣ Push to Google Sheet</button>
+          <button class="btn ghost" id="notice-sync-btn" onclick="syncNotices()">2️⃣ Sync &amp; show latest</button>
+        </div>
+        <p style="font-size:.82rem;color:var(--ink-soft);margin-top:8px" id="notice-two-step-hint">
+          Step 1 sends this notice to the Sheet. Step 2 pulls the latest list back and updates the board below.</p>
+
+        <div class="btn-row" id="notice-local-buttons" style="display:none">
           <button class="btn green" id="notice-publish-btn" onclick="submitNotice()">Publish notice →</button>
         </div>
+
         <div id="notice-submit-result" style="margin-top:14px"></div>
 
         <div class="notice-saved-section">
@@ -1499,11 +1508,66 @@ function showNoticeForm(){
   $("#notice-admin-form").style.display = "block";
   const dateField = $("#na-date");
   if (!dateField.value) dateField.value = new Date().toISOString().slice(0,10);
+
+  const sheetMode = !!CONFIG.noticesSheetUrl;
+  $("#notice-two-step-buttons").style.display = sheetMode ? "flex" : "none";
+  $("#notice-two-step-hint").style.display = sheetMode ? "block" : "none";
+  $("#notice-local-buttons").style.display = sheetMode ? "none" : "flex";
+
   loadNotices();
 }
 function lockNoticeAdmin(){
   sessionStorage.removeItem("rb_notice_unlocked_until");
   closeNoticeAdmin();
+}
+
+/* ── STEP 1 — push this one notice to the Google Sheet ────────────── */
+async function pushNoticeToSheet(){
+  const date = $("#na-date").value;
+  const title = $("#na-title").value.trim();
+  const details = $("#na-details").value.trim();
+  const forWhom = $("#na-for").value.trim() || "All classes";
+  const resultBox = $("#notice-submit-result");
+  const pushBtn = $("#notice-push-btn");
+
+  if (!date || !title){
+    resultBox.innerHTML = '<div class="alert err">Please fill in at least the date and title.</div>';
+    return;
+  }
+
+  resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Sending to the Sheet…</div>';
+  pushBtn.disabled = true;
+  try{
+    const data = await jsonp(CONFIG.noticesSheetUrl, {
+      action:"add", date, title, details, for_: forWhom, passcode: CONFIG.noticesAdminPasscode
+    });
+    if (!data || !data.ok){
+      resultBox.innerHTML = '<div class="alert err">Could not send this notice to the Sheet. Please try Step 1 again.</div>';
+      return;
+    }
+    resultBox.innerHTML = '<div class="alert ok">✓ Sent to the Google Sheet. Now click <strong>Step 2 — Sync &amp; show latest</strong> below to update the board.</div>';
+    $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
+  }catch(err){
+    resultBox.innerHTML = '<div class="alert err">Could not reach the Google Sheet. Check your internet connection and try Step 1 again.</div>';
+  }finally{
+    pushBtn.disabled = false;
+  }
+}
+
+/* ── STEP 2 — pull the latest list back and redraw the board ──────── */
+async function syncNotices(){
+  const resultBox = $("#notice-submit-result");
+  const syncBtn = $("#notice-sync-btn");
+  resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Syncing…</div>';
+  syncBtn.disabled = true;
+  const beforeSource = NOTICES_SOURCE;
+  await loadNotices();
+  syncBtn.disabled = false;
+  if (NOTICES_SOURCE === "sheet"){
+    resultBox.innerHTML = '<div class="alert ok">✓ Synced — the board below now shows the latest notices.</div>';
+  } else {
+    resultBox.innerHTML = '<div class="alert err">Could not sync just now. The board below is showing older notices — try Step 2 again in a moment.</div>';
+  }
 }
 
 async function submitNotice(){
