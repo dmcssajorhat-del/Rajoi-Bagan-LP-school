@@ -767,22 +767,20 @@ footer.site a{ color:var(--ink); }
         <div class="field"><label>Details</label>
           <textarea id="na-details" rows="3" placeholder="A sentence or two with the full details."></textarea></div>
 
-        <div class="btn-row" id="notice-two-step-buttons">
-          <button class="btn green" id="notice-push-btn" onclick="pushNoticeToSheet()">1️⃣ Push to Google Sheet</button>
-          <button class="btn ghost" id="notice-sync-btn" onclick="syncNotices()">2️⃣ Sync &amp; show latest</button>
+        <div class="btn-row">
+          <button class="btn green" id="notice-publish-btn" onclick="submitNotice()">+ Add notice</button>
         </div>
-        <p style="font-size:.82rem;color:var(--ink-soft);margin-top:8px" id="notice-two-step-hint">
-          Step 1 sends this notice to the Sheet. Step 2 pulls the latest list back and updates the board below.</p>
-
-        <div class="btn-row" id="notice-local-buttons" style="display:none">
-          <button class="btn green" id="notice-publish-btn" onclick="submitNotice()">Publish notice →</button>
-        </div>
-
         <div id="notice-submit-result" style="margin-top:14px"></div>
 
         <div class="notice-saved-section">
-          <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Notices you've added</p>
-          <div id="notice-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">No notices yet.</p></div>
+          <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">All current notices</p>
+          <div id="notice-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">Loading…</p></div>
+        </div>
+
+        <div class="notice-device-note" style="display:block;margin-top:20px;background:var(--paper-deep);border-radius:10px;padding:14px 16px;font-size:.86rem">
+          <b style="display:block;margin-bottom:6px;font-family:'Baloo 2',sans-serif;font-size:.92rem">Make these notices visible to everyone</b>
+          <p style="margin:0 0 10px;color:var(--ink)">Add or remove notices above, then download the file below and upload it to GitHub — same as any other website update. Once uploaded, every visitor sees it, on every computer and browser, reliably.</p>
+          <button class="btn green" onclick="downloadNoticesJson()">📥 Download notices.json</button>
         </div>
       </div>
     </div>
@@ -1381,20 +1379,36 @@ async function tryLoadViaFetch(){
 }
 
 async function loadNotices(){
-  /* Priority: a connected live Google Sheet (visible to everyone, every
-     device) → notices saved on this device only (like Saved Exams) →
-     the sample notices baked into the site.
+  /* Priority:
+     1. notices.json — a plain file sitting on this same website. A browser
+        never blocks a request to its own site, so this is the reliable
+        path that works everywhere, on every computer, every time.
+     2. A connected Google Sheet, tried silently in the background as a
+        bonus — if it happens to work, great, but nothing depends on it.
+     3. Notices saved on this device only (like Saved Exams).
+     4. The sample notices baked into the site — the final safety net. */
 
-     Two different techniques are tried against the Sheet — and if
-     neither works the first time (Google's side can be briefly slow
-     to respond), the whole pair is tried again once more before
-     giving up, since a short delay usually clears this up on its own. */
-  if (CONFIG.noticesSheetUrl){
-    let items = await tryLoadViaJsonp() || await tryLoadViaFetch();
-    if (!items){
-      await new Promise(r=>setTimeout(r, 1500));
-      items = await tryLoadViaJsonp() || await tryLoadViaFetch();
+  try{
+    const res = await fetch("notices.json", {cache:"no-store"});
+    if (res.ok){
+      const items = await res.json();
+      if (Array.isArray(items) && items.length){
+        CURRENT_NOTICES = items.map(n=>({
+          id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
+          details:(n.details||"").trim(), for:(n.for||"").trim()
+        })).filter(n=>n.title).sort((a,b)=>new Date(b.date)-new Date(a.date));
+        NOTICES_SOURCE = "published";
+        renderNotices(CURRENT_NOTICES);
+        renderSavedNoticesList();
+        return;
+      }
     }
+  }catch(err){
+    console.warn("notices.json not found or unreadable, trying other sources:", err);
+  }
+
+  if (CONFIG.noticesSheetUrl){
+    const items = await tryLoadViaJsonp() || await tryLoadViaFetch();
     if (items){
       CURRENT_NOTICES = items.map(n=>({
         id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
@@ -1406,6 +1420,7 @@ async function loadNotices(){
       return;
     }
   }
+
   const local = loadLocalNotices();
   if (local.length){
     CURRENT_NOTICES = local.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -1415,16 +1430,6 @@ async function loadNotices(){
     CURRENT_NOTICES = [];
     NOTICES_SOURCE = "fallback";
     renderNotices(CONFIG.noticesFallback);
-    // if a live Sheet IS configured but we still ended up here, both
-    // attempts failed — say so plainly, with a one-tap way to try again
-    if (CONFIG.noticesSheetUrl){
-      const box = $("#notice-list");
-      box.insertAdjacentHTML("afterbegin",
-        '<div class="alert warn" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">'+
-        '<span>Showing recent notices — could not load the latest just now.</span>'+
-        '<button class="btn ghost small" onclick="loadNotices()" style="flex:none">🔄 Try again</button>'+
-        '</div>');
-    }
   }
   renderSavedNoticesList();
 }
@@ -1503,142 +1508,70 @@ function checkNoticePasscode(){
   sessionStorage.setItem("rb_notice_unlocked_until", Date.now() + 120*60*1000); // 2 hours
   showNoticeForm();
 }
-function showNoticeForm(){
+async function showNoticeForm(){
   $("#notice-admin-lock").style.display = "none";
   $("#notice-admin-form").style.display = "block";
   const dateField = $("#na-date");
   if (!dateField.value) dateField.value = new Date().toISOString().slice(0,10);
 
-  const sheetMode = !!CONFIG.noticesSheetUrl;
-  $("#notice-two-step-buttons").style.display = sheetMode ? "flex" : "none";
-  $("#notice-two-step-hint").style.display = sheetMode ? "block" : "none";
-  $("#notice-local-buttons").style.display = sheetMode ? "none" : "flex";
-
-  loadNotices();
+  // Make sure the editable list starts from whatever is actually published
+  // right now, not an empty or stale local draft — this is what prevents
+  // "download and upload" from accidentally erasing older notices.
+  await loadNotices();
+  if (!loadLocalNotices().length && CURRENT_NOTICES.length){
+    saveLocalNotices(CURRENT_NOTICES.map(n=>({ id:n.id||(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date:n.date, title:n.title, details:n.details, for:n.for })));
+  }
+  renderSavedNoticesList();
 }
 function lockNoticeAdmin(){
   sessionStorage.removeItem("rb_notice_unlocked_until");
   closeNoticeAdmin();
 }
 
-/* ── STEP 1 — push this one notice to the Google Sheet ────────────── */
-async function pushNoticeToSheet(){
+function submitNotice(){
   const date = $("#na-date").value;
   const title = $("#na-title").value.trim();
   const details = $("#na-details").value.trim();
   const forWhom = $("#na-for").value.trim() || "All classes";
   const resultBox = $("#notice-submit-result");
-  const pushBtn = $("#notice-push-btn");
 
   if (!date || !title){
     resultBox.innerHTML = '<div class="alert err">Please fill in at least the date and title.</div>';
     return;
   }
 
-  resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Sending to the Sheet…</div>';
-  pushBtn.disabled = true;
-  try{
-    const data = await jsonp(CONFIG.noticesSheetUrl, {
-      action:"add", date, title, details, for_: forWhom, passcode: CONFIG.noticesAdminPasscode
-    });
-    if (!data || !data.ok){
-      resultBox.innerHTML = '<div class="alert err">Could not send this notice to the Sheet. Please try Step 1 again.</div>';
-      return;
-    }
-    resultBox.innerHTML = '<div class="alert ok">✓ Sent to the Google Sheet. Now click <strong>Step 2 — Sync &amp; show latest</strong> below to update the board.</div>';
-    $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
-  }catch(err){
-    resultBox.innerHTML = '<div class="alert err">Could not reach the Google Sheet. Check your internet connection and try Step 1 again.</div>';
-  }finally{
-    pushBtn.disabled = false;
-  }
-}
-
-/* ── STEP 2 — pull the latest list back and redraw the board ──────── */
-async function syncNotices(){
-  const resultBox = $("#notice-submit-result");
-  const syncBtn = $("#notice-sync-btn");
-  resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Syncing…</div>';
-  syncBtn.disabled = true;
-  const beforeSource = NOTICES_SOURCE;
-  await loadNotices();
-  syncBtn.disabled = false;
-  if (NOTICES_SOURCE === "sheet"){
-    resultBox.innerHTML = '<div class="alert ok">✓ Synced — the board below now shows the latest notices.</div>';
-  } else {
-    resultBox.innerHTML = '<div class="alert err">Could not sync just now. The board below is showing older notices — try Step 2 again in a moment.</div>';
-  }
-}
-
-async function submitNotice(){
-  const date = $("#na-date").value;
-  const title = $("#na-title").value.trim();
-  const details = $("#na-details").value.trim();
-  const forWhom = $("#na-for").value.trim() || "All classes";
-  const resultBox = $("#notice-submit-result");
-  const publishBtn = $("#notice-publish-btn");
-
-  if (!date || !title){
-    resultBox.innerHTML = '<div class="alert err">Please fill in at least the date and title.</div>';
-    return;
-  }
-
-  if (CONFIG.noticesSheetUrl){
-    // ── push to the live Google Sheet, then redisplay the fresh list ──
-    resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Publishing…</div>';
-    publishBtn.disabled = true;
-    try{
-      const data = await jsonp(CONFIG.noticesSheetUrl, {
-        action:"add", date, title, details, for_: forWhom, passcode: CONFIG.noticesAdminPasscode
-      });
-      if (!data || !data.ok){
-        resultBox.innerHTML = '<div class="alert err">Something went wrong publishing this notice. Please try again in a minute.</div>';
-        return;
-      }
-      await loadNotices();   // pulls the fresh list straight back and redraws the board
-      resultBox.innerHTML = '<div class="alert ok">✓ Published — visible to everyone now.</div>';
-      $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
-    }catch(err){
-      resultBox.innerHTML = '<div class="alert err">Could not publish right now. If you are using Firefox, please switch to Chrome and try again.</div>';
-    }finally{
-      publishBtn.disabled = false;
-    }
-    return;
-  }
-
-  // no live sheet configured — save on this device, like an exam
   const noticeObj = { id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date, title, details, for: forWhom };
   const notices = loadLocalNotices();
   notices.push(noticeObj);
   saveLocalNotices(notices);
-  await loadNotices();
   renderSavedNoticesList();
 
-  resultBox.innerHTML =
-    '<div class="alert ok">✓ Saved on this device.</div>'+
-    '<div style="margin-top:12px;background:var(--paper-deep);border-radius:10px;padding:12px 14px">'+
-      '<b style="font-size:.85rem;display:block;margin-bottom:6px">Want it visible to everyone right now?</b>'+
-      '<p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:8px">Copy this row, open the Google Sheet, paste it into a new row — one click, no retyping.</p>'+
-      '<div class="notice-copy-row" id="copy-row-latest">'+esc([date,title,details,forWhom].join("\t"))+'</div>'+
-      '<button class="btn ghost small" style="margin-top:8px" onclick="copyRow(\'copy-row-latest\')">📋 Copy row for the Sheet</button>'+
-    '</div>';
+  resultBox.innerHTML = '<div class="alert ok">✓ Added to the list below. Add more if you like, then click <strong>Download notices.json</strong> when ready.</div>';
   $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
 }
 
-function copyRow(elId){
-  const text = $("#"+elId).innerText;
-  navigator.clipboard?.writeText(text).then(()=>{
-    alert("Copied! Open the Google Sheet, click the first empty cell in a new row, and paste (Ctrl+V). It fills all four columns at once.");
-  }).catch(()=>{
-    alert("Could not copy automatically — please select and copy the text manually.");
-  });
+function downloadNoticesJson(){
+  const notices = loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if (!notices.length){
+    $("#notice-submit-result").innerHTML = '<div class="alert warn">No notices to download yet — add at least one first.</div>';
+    return;
+  }
+  const clean = notices.map(n => ({ date:n.date, title:n.title, details:n.details||"", for:n.for||"All classes" }));
+  const blob = new Blob([JSON.stringify(clean, null, 2)], { type:"application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "notices.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  $("#notice-submit-result").innerHTML =
+    '<div class="alert ok">✓ Downloaded. Now upload this file to GitHub — Add file → Upload files → replace the old notices.json → Commit changes. Live for everyone within a minute or two.</div>';
 }
 
 function renderSavedNoticesList(){
   const box = $("#notice-saved-list");
   if (!box) return;
 
-  const list = (NOTICES_SOURCE === "sheet") ? CURRENT_NOTICES : loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const list = loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
   if (!list.length){
     box.innerHTML = '<p style="font-size:.85rem;color:var(--ink-soft)">No notices yet.</p>';
     return;
@@ -1647,61 +1580,17 @@ function renderSavedNoticesList(){
     '<div class="notice-item">'+
       '<div class="nco">📌</div>'+
       '<div style="flex:1"><h4>'+esc(n.title)+'</h4><div class="nmeta">'+esc(n.date)+' · '+esc(n.for||'All classes')+'</div>'+
-        '<div class="notice-copy-row" id="copy-row-'+i+'" style="display:none">'+esc([n.date,n.title,n.details||'',n.for||'All classes'].join("\t"))+'</div>'+
       '</div>'+
-      '<button class="btn ghost small" onclick="copyRow(\'copy-row-'+i+'\')" title="Copy for the Google Sheet">📋</button>'+
       '<button class="btn ghost small ndel" onclick="deleteNotice(\''+n.id+'\')">Delete</button>'+
     '</div>'
   ).join("");
 }
 
-async function deleteNotice(id){
-  if (!confirm("Delete this notice?")) return;
-
-  if (NOTICES_SOURCE === "sheet" && CONFIG.noticesSheetUrl){
-    try{
-      const data = await jsonp(CONFIG.noticesSheetUrl, { action:"delete", id, passcode: CONFIG.noticesAdminPasscode });
-      if (!data || !data.ok){
-        alert("Could not delete this notice. Please try again.");
-        return;
-      }
-      await loadNotices();
-    }catch(err){
-      alert("Could not reach the notice board. Check your internet connection and try again.");
-    }
-    return;
-  }
-
+function deleteNotice(id){
+  if (!confirm("Remove this notice from the list? (You'll still need to download and upload the file for this to take effect on the website.)")) return;
   const notices = loadLocalNotices().filter(n=>n.id!==id);
   saveLocalNotices(notices);
-  await loadNotices();
   renderSavedNoticesList();
-}
-
-function exportNoticesForWebsite(){
-  const notices = loadLocalNotices().slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
-  const box = $("#notice-export-result");
-  if (!box) return;
-  if (!notices.length){
-    box.innerHTML = '<div class="alert warn">No notices to export yet — add one first.</div>';
-    return;
-  }
-  const lines = notices.map(n =>
-    '    { date:"'+n.date+'", title:'+JSON.stringify(n.title)+', details:'+JSON.stringify(n.details)+', for:'+JSON.stringify(n.for||'All classes')+' }'
-  ).join(",\n");
-  const script = "noticesFallback: [\n" + lines + "\n  ],";
-  box.innerHTML =
-    '<div class="alert ok">Copy this and send it to whoever maintains the website.</div>'+
-    '<div class="notice-export-box" id="notice-export-text">'+esc(script)+'</div>'+
-    '<button class="btn ghost small" style="margin-top:8px" onclick="copyNoticeExport()">📋 Copy</button>';
-}
-function copyNoticeExport(){
-  const text = $("#notice-export-text").innerText;
-  navigator.clipboard?.writeText(text).then(()=>{
-    alert("Copied. Send this to whoever maintains the website.");
-  }).catch(()=>{
-    alert("Could not copy automatically — please select and copy the text manually.");
-  });
 }
 </script>
 
