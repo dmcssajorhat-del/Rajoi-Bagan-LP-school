@@ -1,26 +1,5 @@
 [
-  {
-    "date": "2026-08-26",
-    "title": "RAKHI",
-    "details": "RAKSHA BANDHAN BY ALL STUDENTS",
-    "for": "ALL CLASSES"
-  },
-  {
-    "date": "2026-08-24",
-    "title": "EXTRA VACATION FOR HOT WHEATHER",
-    "details": "DUE HOT SUMMAR",
-    "for": "ALL CLASSES"
-  },
-  {
-    "date": "2026-08-23",
-    "title": "HOT SUMMER",
-    "details": "HOT SUMMER",
-    "for": "1 CLASS"
-  },
-  {
-    "date": "2026-08-22",
-    "title": "EXTAR VACATION",
-    "details": "SFS",
-    "for": "ALL CLASSES"
-  }
+  { "date": "2026-08-14", "title": "Independence Day — flag hoisting", "details": "Flag hoisting at 8:00 am on 15 August. Children may come in white. No classes that day.", "for": "All classes" },
+  { "date": "2026-08-05", "title": "Parent meeting for Classes IV and V", "details": "Class teachers will meet parents about JNV entrance preparation and the extra holiday classes.", "for": "Class IV & V" },
+  { "date": "2026-07-28", "title": "Pre-primary admissions open", "details": "Parents may collect a form from the school or send an enquiry through this website.", "for": "New parents" }
 ]
