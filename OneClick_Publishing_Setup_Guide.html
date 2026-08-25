@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One-Click Notice Publishing — Setup Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17324E; --soft:#5A7793; --leaf:#1F6B4A; --red:#C8102E;
+  --rule:#CADDEC; --pencil:#F2B705; --gh-dark:#0D1117; --gh-btn:#2DA44E; --gh-border:#30363D;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#EAEEF2;font-family:"Karla",sans-serif;color:var(--ink);line-height:1.6;font-size:15px}
+.page{max-width:900px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,.13)}
+.hdr{background:var(--ink);color:#fff;padding:28px 36px 22px}
+.hdr h1{font-family:"Baloo 2",sans-serif;font-size:24px;font-weight:800;margin:0 0 4px}
+.hdr p{color:#B9C7D3;font-size:14px}
+.tag{display:inline-block;border-radius:99px;padding:3px 11px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--leaf);color:#fff;margin-left:10px;vertical-align:middle}
+.intro{background:#F1F7F3;border-bottom:1px solid var(--rule);padding:18px 36px;font-size:14px}
+.intro b{font-family:"Baloo 2",sans-serif}
+.steps{padding:8px 36px 36px}
+.step{display:grid;grid-template-columns:44px 1fr;gap:0 20px;margin:30px 0 0;align-items:start}
+.snum{width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:18px;display:grid;place-items:center;flex:none;box-shadow:0 2px 0 rgba(23,50,78,.2)}
+.sbody h2{font-family:"Baloo 2",sans-serif;font-size:17px;font-weight:800;margin:8px 0 9px;color:var(--ink)}
+.sbody p{font-size:14px;margin-bottom:10px;color:#3D4A58}
+.sbody ol,.sbody ul{font-size:14px;padding-left:20px;color:#3D4A58;margin-bottom:10px}
+.sbody li{margin-bottom:6px}
+.div{border:none;border-top:1px dashed var(--rule);margin:26px 0}
+code{background:#F6F8FA;border:1px solid #D0D7DE;border-radius:5px;padding:2px 7px;font-family:monospace;font-size:12.5px;color:var(--red)}
+.warn{background:#FFF8C5;border:1px solid #D4A72C;border-left:4px solid #D4A72C;border-radius:8px;padding:12px 16px;margin:14px 0;font-size:13.5px}
+.tip{background:#DFF7E2;border:1px solid #82CFAA;border-left:4px solid var(--leaf);border-radius:8px;padding:12px 16px;margin:14px 0;font-size:13.5px}
+.warn strong,.tip strong{font-family:"Baloo 2",sans-serif;font-size:15px}
+
+/* GitHub-style mockup */
+.mock{border:1px solid #D0D7DE;border-radius:10px;overflow:hidden;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.mock-bar{display:flex;align-items:center;gap:6px;background:#F6F8FA;padding:8px 12px;border-bottom:1px solid #D0D7DE}
+.mock-dot{width:9px;height:9px;border-radius:50%}
+.mock-bar .url{margin-left:10px;background:#fff;border-radius:14px;padding:4px 12px;font-size:11px;color:#5F6368;flex:1;font-family:monospace}
+.gh-form{background:#fff;padding:20px}
+.gh-form h3{font-size:16px;margin-bottom:16px;color:#1F2328}
+.gfield{margin-bottom:16px}
+.gfield label{display:block;font-size:13px;color:#1F2328;font-weight:600;margin-bottom:5px}
+.gfield .hint{font-size:12px;color:#656D76;margin-bottom:6px}
+.ginput{border:1px solid #D0D7DE;border-radius:6px;padding:8px 12px;font-size:13px;color:#1F2328;background:#fff}
+.ginput.filled{color:#1F2328;font-weight:600}
+.gselect{border:1px solid #D0D7DE;border-radius:6px;padding:8px 12px;font-size:13px;color:#1F2328;background:#fff;display:flex;justify-content:space-between;align-items:center}
+.gselect.hl{border-color:var(--gh-btn);background:#F1F8F4}
+.gbtn{display:inline-block;background:var(--gh-btn);color:#fff;border-radius:6px;padding:8px 20px;font-size:13px;font-weight:600;margin-top:4px}
+.gcheck{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;border-bottom:1px solid #EAEEF2}
+.gcheck.hl{background:#F1F8F4;border-radius:6px;padding:8px 10px}
+
+/* Apps Script editor mockup */
+.script-editor{background:#1E1E1E;color:#D4D4D4}
+.script-toolbar{background:#F8F9FA;padding:8px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #D0D7DE}
+.script-toolbar .gicon{width:26px;height:26px;border-radius:5px;background:#4285F4;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800}
+.script-body{padding:16px;font-family:monospace;font-size:11px;line-height:1.7;white-space:pre}
+.kw{color:#569CD6}.fn{color:#DCDCAA}.str{color:#CE9178}.com{color:#6A9955}
+
+.foot{background:#F6F8FA;border-top:1px solid #D0D7DE;padding:14px 36px;font-size:12.5px;color:var(--soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media(max-width:640px){
+  .hdr,.steps{padding-left:18px;padding-right:18px}
+  .intro{padding:16px 18px}
+  .step{grid-template-columns:36px 1fr;gap:0 14px}
+  .snum{width:36px;height:36px;font-size:15px}
+  .foot{padding:12px 18px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <h1>🚀 True One-Click Notice Publishing <span class="tag">One-time · Free</span></h1>
+  <p>Rajoi Bagan LP School · This is the last setup — after this, publishing never needs any technical step again</p>
+</div>
+
+<div class="intro">
+  <b>What this achieves:</b> right now, "Publish notice" either needs a Google Sheet sync
+  (unreliable on some computers) or a manual file download. After this setup — about 10
+  minutes, done once — a teacher types a notice, clicks one button, and it's live for
+  everyone within about a minute. Nothing to download. Nothing to upload. Ever again.
+</div>
+
+<div class="steps">
+
+<!-- STEP 1 -->
+<div class="step">
+  <div class="snum">1</div>
+  <div class="sbody">
+    <h2>Create a GitHub access key</h2>
+    <p>Signed in as <code>dmcssajorhat-del</code> on <code>github.com</code>, go directly to:</p>
+    <div class="mock"><div class="mock-bar"><span class="mock-dot" style="background:#FF5F57"></span><span class="mock-dot" style="background:#FEBC2E"></span><span class="mock-dot" style="background:#28C840"></span>
+      <span class="url">github.com/settings/tokens?type=beta</span></div></div>
+    <p>Click <strong>Generate new token</strong> (top right, green button).</p>
+
+    <div class="gh-form">
+      <h3>New fine-grained personal access token</h3>
+      <div class="gfield">
+        <label>Token name</label>
+        <div class="hint">What is this token for?</div>
+        <div class="ginput filled">Notice Board Publisher</div>
+      </div>
+      <div class="gfield">
+        <label>Expiration</label>
+        <div class="gselect">90 days ▾</div>
+        <div class="hint">Pick the longest option available (often up to 1 year). We'll cover what to do when it expires.</div>
+      </div>
+      <div class="gfield">
+        <label>Repository access</label>
+        <div class="gselect hl">Only select repositories ▾</div>
+      </div>
+      <div class="gfield">
+        <label>Selected repositories</label>
+        <div class="gselect hl">Rajoi-Bagan-LP-school ▾</div>
+      </div>
+      <div class="gfield">
+        <label>Repository permissions</label>
+        <div class="hint">Scroll down, find <strong>Contents</strong>, set it to:</div>
+        <div class="gselect hl">Access: Read and write ▾</div>
+      </div>
+      <div class="gbtn">Generate token</div>
+    </div>
+
+    <div class="warn">
+      <strong>⚠ Copy the token immediately</strong><br>
+      GitHub shows it to you exactly once, starting with <code>github_pat_...</code>. If you
+      navigate away before copying it, you'll have to generate a new one. Paste it somewhere
+      safe temporarily — a Notes app, a draft email to yourself — you'll need it in Step 3.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 2 -->
+<div class="step">
+  <div class="snum">2</div>
+  <div class="sbody">
+    <h2>Create the Apps Script project</h2>
+    <p>Go to <code>sheets.google.com</code>, click <strong>+ Blank</strong> to make any new
+       spreadsheet — its only job is to host the script, so the name doesn't matter.</p>
+    <p>In that new sheet: <strong>Extensions → Apps Script</strong>. A code editor opens with
+       some placeholder text — select it all (Ctrl+A) and delete it.</p>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 3 -->
+<div class="step">
+  <div class="snum">3</div>
+  <div class="sbody">
+    <h2>Paste the script and add your token</h2>
+    <p>Go to your website → <strong>🔒 Manage notices</strong> → unlock with the passcode →
+       scroll down → <strong>Set up one-click publishing</strong> → <strong>📋 Copy script</strong>.
+       Paste it into the empty Apps Script editor.</p>
+
+    <div class="mock">
+      <div class="script-toolbar"><div class="gicon">&lt;/&gt;</div><div style="font-size:13px;color:#202124">Untitled project</div></div>
+      <div class="script-body"><span class="kw">var</span> GITHUB_OWNER = <span class="str">"dmcssajorhat-del"</span>;
+<span class="kw">var</span> GITHUB_REPO  = <span class="str">"Rajoi-Bagan-LP-school"</span>;
+<span class="kw">var</span> GITHUB_PATH  = <span class="str">"notices.json"</span>;
+<span class="kw">var</span> PASSCODE     = <span class="str">"RAJOI2026"</span>; <span class="com">// ← change this line</span>
+
+<span class="kw">function</span> <span class="fn">doGet</span>(e) {
+  <span class="com">// ...reads the passcode, then adds or deletes a notice</span>
+}</div>
+    </div>
+
+    <p>Find the line with <code>"RAJOI2026"</code> near the top and change it to match
+       whatever <code>noticesAdminPasscode</code> is set to in your website's CONFIG.</p>
+
+    <p>Now add your token from Step 1, kept separately and safely:</p>
+    <ol>
+      <li>Click the ⚙️ <strong>Project Settings</strong> icon in the left sidebar</li>
+      <li>Scroll to <strong>Script Properties</strong> → <strong>Add script property</strong></li>
+      <li>Property: <code>GITHUB_TOKEN</code> &nbsp; Value: paste your <code>github_pat_...</code> token</li>
+      <li>Click <strong>Save script properties</strong></li>
+    </ol>
+
+    <div class="tip">
+      <strong>✓ Why this is safer than before</strong><br>
+      The token lives only here, inside Google's own servers — never inside the website's code,
+      never visible to anyone visiting the site. Even if someone views your website's source
+      code, this key is nowhere in it.
+    </div>
+
+    <p>Click the 💾 save icon, name the project something like <strong>"Notice Publisher"</strong>.</p>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 4 -->
+<div class="step">
+  <div class="snum">4</div>
+  <div class="sbody">
+    <h2>Deploy as a Web App</h2>
+    <p><strong>Deploy → New deployment</strong> → gear icon next to "Select type" → <strong>Web app</strong>.</p>
+    <ul>
+      <li>Execute as: <strong>Me</strong></li>
+      <li>Who has access: <strong>Anyone</strong></li>
+    </ul>
+    <p>Click <strong>Deploy</strong>. Approve the permissions when Google asks — choose your
+       account, click <strong>Advanced</strong> if it warns the app isn't verified, then
+       <strong>Go to Notice Publisher (unsafe)</strong>, then <strong>Allow</strong>. This
+       warning is normal for any script you write yourself.</p>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 5 -->
+<div class="step">
+  <div class="snum">5</div>
+  <div class="sbody">
+    <h2>Copy the Web app URL into the website</h2>
+    <p>After deploying, copy the link shown — starts with
+       <code>https://script.google.com/macros/s/.../exec</code>.</p>
+    <ol>
+      <li>Open <code>index.html</code> from the website's files</li>
+      <li>Find <code>noticesPublishUrl: ""</code> near the top of CONFIG</li>
+      <li>Paste the link between the quotes</li>
+      <li>Save the file, then upload it to GitHub once — Add file → Upload files → Commit changes</li>
+    </ol>
+    <div class="tip">
+      <strong>✓ How to know it worked</strong><br>
+      Open the website, unlock <strong>Manage notices</strong>. If you see just one clean
+      <strong>📢 Publish notice</strong> button — no Download button, no setup warning — the
+      connection is live. Publish a test notice and check it on a different device after a minute.
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- STEP 6 — WHAT ABOUT EXPIRY -->
+<div class="step">
+  <div class="snum">6</div>
+  <div class="sbody">
+    <h2>When the token eventually expires</h2>
+    <p>Fine-grained GitHub tokens expire after the period chosen in Step 1 (commonly up to a
+       year). When it does, publishing will simply stop working one day — nothing breaks
+       badly, "Publish notice" just starts showing an error.</p>
+    <p>To fix it: repeat Step 1 to generate a fresh token, then repeat the small part of Step 3
+       that updates the <code>GITHUB_TOKEN</code> Script Property — the rest of the setup
+       (the script, the deployment, the website) stays exactly as it is.</p>
+  </div>
+</div>
+
+</div><!-- end steps -->
+
+<div class="foot">
+  <span>Rajoi Bagan LP School · Rajoi, Central Jorhat, Assam</span>
+  <span>Cost: ₹0 · Setup time: ~10 minutes, once</span>
+</div>
+
+</div>
+</body>
+</html>

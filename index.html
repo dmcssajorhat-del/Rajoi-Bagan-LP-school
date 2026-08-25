@@ -328,6 +328,27 @@ section.block{ padding:54px 0 0; }
   font-family:monospace; font-size:.76rem; line-height:1.6; overflow-x:auto;
   white-space:pre; max-height:260px; overflow-y:auto;
 }
+.notice-device-note{
+  margin-top:20px; background:var(--paper-deep); border-radius:10px;
+  padding:14px 16px; font-size:.86rem;
+}
+.notice-device-note b{ display:block; margin-bottom:6px; font-family:"Baloo 2",sans-serif; font-size:.92rem; }
+.notice-device-note p{ margin:0 0 8px; color:var(--ink); }
+.notice-setup{ margin-top:16px; border-top:1px dashed var(--rule); padding-top:14px; }
+.notice-setup-toggle{
+  background:none; border:none; color:var(--ink-soft); font:inherit;
+  font-size:.85rem; font-weight:700; cursor:pointer; padding:0;
+}
+.notice-setup-toggle:hover{ color:var(--leaf); }
+.notice-setup-body{ display:none; margin-top:14px; }
+.notice-setup-body.open{ display:block; }
+.notice-setup-body ol{ margin:0 0 14px 20px; font-size:.9rem; color:var(--ink); }
+.notice-setup-body li{ margin-bottom:8px; }
+.notice-script-box{
+  background:#1E1E1E; color:#D4D4D4; border-radius:10px; padding:16px;
+  font-family:monospace; font-size:.74rem; line-height:1.55; overflow-x:auto; white-space:pre;
+  max-height:400px; overflow-y:auto;
+}
 .notice-copy-box{
   background:var(--paper-deep); border:1px solid var(--rule); border-radius:10px;
   padding:14px 16px; font-size:.86rem; margin-top:10px; white-space:pre-wrap; font-family:monospace;
@@ -767,20 +788,125 @@ footer.site a{ color:var(--ink); }
         <div class="field"><label>Details</label>
           <textarea id="na-details" rows="3" placeholder="A sentence or two with the full details."></textarea></div>
 
-        <div class="btn-row">
-          <button class="btn green" id="notice-publish-btn" onclick="submitNotice()">+ Add notice</button>
+        <div class="btn-row" id="notice-publish-row">
+          <button class="btn green" id="notice-publish-btn" onclick="submitNotice()">📢 Publish notice</button>
         </div>
         <div id="notice-submit-result" style="margin-top:14px"></div>
 
         <div class="notice-saved-section">
-          <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">All current notices</p>
+          <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Current notices on the website</p>
           <div id="notice-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">Loading…</p></div>
         </div>
 
-        <div class="notice-device-note" style="display:block;margin-top:20px;background:var(--paper-deep);border-radius:10px;padding:14px 16px;font-size:.86rem">
-          <b style="display:block;margin-bottom:6px;font-family:'Baloo 2',sans-serif;font-size:.92rem">Make these notices visible to everyone</b>
-          <p style="margin:0 0 10px;color:var(--ink)">Add or remove notices above, then download the file below and upload it to GitHub — same as any other website update. Once uploaded, every visitor sees it, on every computer and browser, reliably.</p>
-          <button class="btn green" onclick="downloadNoticesJson()">📥 Download notices.json</button>
+        <!-- shown only if noticesPublishUrl isn't configured yet -->
+        <div class="notice-device-note" id="notice-fallback-note" style="display:none">
+          <b>⚠ One-click publishing isn't set up yet</b>
+          <p>For now, notices are saved on this device only. Download the file below and send it
+             to whoever maintains the website, or complete the one-time setup below so
+             <strong>Publish notice</strong> works instantly for everyone, every time.</p>
+          <button class="btn ghost small" onclick="downloadNoticesJson()">📥 Download notices.json</button>
+        </div>
+
+        <div class="notice-setup" id="notice-setup-wrap" style="display:none">
+          <button class="notice-setup-toggle" id="notice-setup-toggle" onclick="toggleNoticeSetup()">
+            <span id="notice-setup-arrow">▸</span> Set up one-click publishing (one-time, ~10 minutes)
+          </button>
+          <div class="notice-setup-body" id="notice-setup-body">
+            <p style="font-size:.9rem;margin-bottom:10px">
+              This makes <strong>Publish notice</strong> above fully automatic — one click, live for
+              everyone within about a minute, nothing to download or upload, ever.
+            </p>
+            <ol>
+              <li>Go to <code>github.com/settings/tokens?type=beta</code> → <strong>Generate new token</strong>.
+                  Give it access to only the <code>Rajoi-Bagan-LP-school</code> repository, with
+                  <strong>Contents: Read and write</strong> permission. Copy the token — it's shown once.</li>
+              <li>Make a Google Sheet (any blank one) → <strong>Extensions → Apps Script</strong>.
+                  Delete anything already there, paste the script below.</li>
+              <li>Click the ⚙️ <strong>Project Settings</strong> icon (left sidebar) → <strong>Script Properties</strong>
+                  → <strong>Add script property</strong> → Name: <code>GITHUB_TOKEN</code>, Value: paste the token from Step 1.</li>
+              <li>Change <code>RAJOI2026</code> near the top of the script to match <code>noticesAdminPasscode</code> in CONFIG.</li>
+              <li><strong>Deploy → New deployment → Web app → Who has access: Anyone → Deploy.</strong> Approve permissions when asked.</li>
+              <li>Copy the Web app URL → paste into <code>noticesPublishUrl</code> in CONFIG → re-upload <code>index.html</code> to GitHub, once, by hand — this is the only manual upload ever needed.</li>
+            </ol>
+            <div class="tip" style="background:#DFF7E2;border:1px solid #82CFAA;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.86rem;color:#14532D">
+              <strong>Why this is different from before:</strong> this script writes straight to
+              <code>notices.json</code> in the website's own files using GitHub's own API — no Google
+              Sheet, no live reading step for visitors, nothing for a browser to block. The token
+              is stored safely on Google's servers, never visible in the website's code.
+            </div>
+            <div class="notice-script-box" id="notice-script-text">var GITHUB_OWNER = "dmcssajorhat-del";
+var GITHUB_REPO  = "Rajoi-Bagan-LP-school";
+var GITHUB_PATH  = "notices.json";
+var PASSCODE     = "RAJOI2026";
+
+function doGet(e) {
+  var callback = e.parameter.callback;
+  var result;
+  if (e.parameter.passcode !== PASSCODE) {
+    result = { ok:false, error:"wrong passcode" };
+  } else if (e.parameter.action === "publish") {
+    result = addNotice_(e.parameter);
+  } else if (e.parameter.action === "delete") {
+    result = deleteNotice_(e.parameter.title, e.parameter.date);
+  } else {
+    result = { ok:false, error:"unknown action" };
+  }
+  var json = JSON.stringify(result);
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + json + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+}
+
+function githubToken_() {
+  return PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
+}
+function apiUrl_() {
+  return "https://api.github.com/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO + "/contents/" + GITHUB_PATH;
+}
+function getCurrentFile_() {
+  var resp = UrlFetchApp.fetch(apiUrl_(), {
+    headers: { Authorization: "token " + githubToken_(), Accept: "application/vnd.github+json" },
+    muteHttpExceptions: true
+  });
+  var data = JSON.parse(resp.getContentText());
+  var content = Utilities.newBlob(Utilities.base64Decode(data.content.replace(/\n/g,""))).getDataAsString();
+  return { sha: data.sha, notices: JSON.parse(content) };
+}
+function commitFile_(notices, sha, message) {
+  var payload = {
+    message: message,
+    content: Utilities.base64Encode(JSON.stringify(notices, null, 2)),
+    sha: sha,
+    branch: "main"
+  };
+  var resp = UrlFetchApp.fetch(apiUrl_(), {
+    method: "put",
+    headers: { Authorization: "token " + githubToken_(), Accept: "application/vnd.github+json" },
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+  var code = resp.getResponseCode();
+  return code >= 200 && code < 300;
+}
+function addNotice_(p) {
+  try {
+    var file = getCurrentFile_();
+    file.notices.unshift({ date: p.date, title: p.title, details: p.details, "for": p.for_ });
+    return { ok: commitFile_(file.notices, file.sha, "Add notice: " + p.title) };
+  } catch (err) { return { ok:false, error: String(err) }; }
+}
+function deleteNotice_(title, date) {
+  try {
+    var file = getCurrentFile_();
+    file.notices = file.notices.filter(function(n){ return !(n.title === title && n.date === date); });
+    return { ok: commitFile_(file.notices, file.sha, "Remove notice: " + title) };
+  } catch (err) { return { ok:false, error: String(err) }; }
+}</div>
+            <button class="btn ghost small" style="margin-top:10px" onclick="copyNoticeScript()">📋 Copy script</button>
+          </div>
         </div>
       </div>
     </div>
@@ -972,24 +1098,21 @@ const CONFIG = {
      via the "🔒 Manage notices" button. Change this before publishing. */
   noticesAdminPasscode: "RAJOI2026",
 
-  /* ---- NOTICE BOARD — LIVE SYNC (optional, recommended) -----------
-     Leave empty and notices work fine, but only on the device that
-     added them (like Saved Exams) — an Export button lets the admin
-     send updates to be baked into the site by hand.
+  /* ---- NOTICE BOARD — TRUE ONE-CLICK PUBLISHING (optional, recommended) --
+     Leave empty and "Manage notices" saves on this device only, with a
+     Download button as a manual fallback.
 
      Paste a deployed Google Apps Script Web App URL here instead, and
-     every notice becomes instantly visible to every visitor on every
-     device — no export, no re-uploading. One-time setup, a few
-     minutes. Full steps are inside the "Manage notices" panel on the
-     site itself, or ask for Notice_Board_Setup_Guide.html. */
-  noticesSheetUrl: "https://script.google.com/macros/s/AKfycbzrYqft4b5K_VZOP998EC00pE6BBo0EhPh8FzZsgbGmuvd0B_ZSZ2qASg_ZCHKwCNBVxg/exec",
+     the "Publish notice" button becomes fully automatic: one click,
+     and it's visible to every visitor within about a minute — nothing
+     to download, nothing to upload, nothing for a teacher to do beyond
+     typing the notice and clicking one button.
 
-  /* ---- NOTICE BOARD — HOW STAFF ADD A NOTICE ----------------------
-     The simple, reliable way: paste a Google Form link here. Staff
-     open it, fill four boxes, submit — done. No code, nothing that
-     can silently fail. Leave empty to use the on-page form instead
-     (saves to this device only, with an Export button). */
-  noticesFormUrl: "",
+     How it works: this Apps Script writes directly to notices.json in
+     the GitHub repository using GitHub's own API, which is what the
+     website actually reads. There's no Google Sheet involved anymore.
+     Full setup steps are inside the "Manage notices" panel itself. */
+  noticesPublishUrl: "",
 
   /* ---- ADMISSION FORM FROM GOOGLE FORMS ---------------------------
      Google Form → Send → <> (embed) → copy the src="..." URL here. */
@@ -1353,40 +1476,16 @@ function jsonp(url, params, timeoutMs){
 }
 
 let CURRENT_NOTICES = [];   // whatever is currently on screen, from whichever source
-let NOTICES_SOURCE = "fallback"; // "sheet" | "local" | "fallback"
-
-async function tryLoadViaJsonp(){
-  try{
-    const items = await jsonp(CONFIG.noticesSheetUrl, { action:"list" });
-    if (Array.isArray(items)) return items;
-    console.warn("JSONP responded, but not with a notice list — got this instead:", items);
-    return null;
-  }catch(err){
-    console.warn("JSONP notice load failed, will try a direct fetch instead:", err);
-    return null;
-  }
-}
-async function tryLoadViaFetch(){
-  try{
-    const res = await fetch(CONFIG.noticesSheetUrl + "?action=list", {cache:"no-store"});
-    if (!res.ok) return null;
-    const items = await res.json();
-    return Array.isArray(items) ? items : null;
-  }catch(err){
-    console.warn("Direct fetch notice load also failed:", err);
-    return null;
-  }
-}
+let NOTICES_SOURCE = "fallback"; // "published" | "local" | "fallback"
 
 async function loadNotices(){
   /* Priority:
      1. notices.json — a plain file sitting on this same website. A browser
         never blocks a request to its own site, so this is the reliable
         path that works everywhere, on every computer, every time.
-     2. A connected Google Sheet, tried silently in the background as a
-        bonus — if it happens to work, great, but nothing depends on it.
-     3. Notices saved on this device only (like Saved Exams).
-     4. The sample notices baked into the site — the final safety net. */
+     2. Notices saved on this device only (like Saved Exams) — used only
+        if notices.json can't be found at all (very rare).
+     3. The sample notices baked into the site — the final safety net. */
 
   try{
     const res = await fetch("notices.json", {cache:"no-store"});
@@ -1405,20 +1504,6 @@ async function loadNotices(){
     }
   }catch(err){
     console.warn("notices.json not found or unreadable, trying other sources:", err);
-  }
-
-  if (CONFIG.noticesSheetUrl){
-    const items = await tryLoadViaJsonp() || await tryLoadViaFetch();
-    if (items){
-      CURRENT_NOTICES = items.map(n=>({
-        id:String(n.id||""), date:(n.date||"").trim(), title:(n.title||"").trim(),
-        details:(n.details||"").trim(), for:(n.for||"").trim()
-      })).filter(n=>n.title).sort((a,b)=>new Date(b.date)-new Date(a.date));
-      NOTICES_SOURCE = "sheet";
-      renderNotices(CURRENT_NOTICES.length ? CURRENT_NOTICES : CONFIG.noticesFallback);
-      renderSavedNoticesList();
-      return;
-    }
   }
 
   const local = loadLocalNotices();
@@ -1514,10 +1599,12 @@ async function showNoticeForm(){
   const dateField = $("#na-date");
   if (!dateField.value) dateField.value = new Date().toISOString().slice(0,10);
 
-  // Make sure the editable list starts from whatever is actually published
-  // right now, not an empty or stale local draft — this is what prevents
-  // "download and upload" from accidentally erasing older notices.
+  const oneClick = !!CONFIG.noticesPublishUrl;
+  $("#notice-fallback-note").style.display = oneClick ? "none" : "block";
+  $("#notice-setup-wrap").style.display = oneClick ? "none" : "block";
+
   await loadNotices();
+  // keep a local mirror in sync too, so the Download fallback never loses data
   if (!loadLocalNotices().length && CURRENT_NOTICES.length){
     saveLocalNotices(CURRENT_NOTICES.map(n=>({ id:n.id||(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date:n.date, title:n.title, details:n.details, for:n.for })));
   }
@@ -1528,25 +1615,53 @@ function lockNoticeAdmin(){
   closeNoticeAdmin();
 }
 
-function submitNotice(){
+async function submitNotice(){
   const date = $("#na-date").value;
   const title = $("#na-title").value.trim();
   const details = $("#na-details").value.trim();
   const forWhom = $("#na-for").value.trim() || "All classes";
   const resultBox = $("#notice-submit-result");
+  const btn = $("#notice-publish-btn");
 
   if (!date || !title){
     resultBox.innerHTML = '<div class="alert err">Please fill in at least the date and title.</div>';
     return;
   }
 
+  if (CONFIG.noticesPublishUrl){
+    // ── the real one-click path: Apps Script writes straight to GitHub ──
+    resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Publishing…</div>';
+    btn.disabled = true;
+    try{
+      const data = await jsonp(CONFIG.noticesPublishUrl, {
+        action:"publish", date, title, details, for_: forWhom, passcode: CONFIG.noticesAdminPasscode
+      });
+      if (!data || !data.ok){
+        resultBox.innerHTML = '<div class="alert err">Could not publish just now. Please try again in a minute.</div>';
+        return;
+      }
+      resultBox.innerHTML = '<div class="alert ok">✓ Published! It will appear on the website for everyone within about a minute.</div>';
+      $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
+      // reflect it in the on-screen list right away, without waiting for the site to rebuild
+      const notices = loadLocalNotices();
+      notices.push({ id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date, title, details, for: forWhom });
+      saveLocalNotices(notices);
+      renderSavedNoticesList();
+    }catch(err){
+      resultBox.innerHTML = '<div class="alert err">Could not reach the publishing service. Check your internet connection and try again.</div>';
+    }finally{
+      btn.disabled = false;
+    }
+    return;
+  }
+
+  // fallback — no one-click publishing set up yet
   const noticeObj = { id:(Date.now().toString(36)+Math.random().toString(36).slice(2,6)), date, title, details, for: forWhom };
   const notices = loadLocalNotices();
   notices.push(noticeObj);
   saveLocalNotices(notices);
   renderSavedNoticesList();
-
-  resultBox.innerHTML = '<div class="alert ok">✓ Added to the list below. Add more if you like, then click <strong>Download notices.json</strong> when ready.</div>';
+  resultBox.innerHTML = '<div class="alert ok">✓ Added to the list below. Add more if you like, then click <strong>Download notices.json</strong> to publish.</div>';
   $("#na-title").value=""; $("#na-details").value=""; $("#na-for").value="";
 }
 
@@ -1564,7 +1679,7 @@ function downloadNoticesJson(){
   a.click();
   URL.revokeObjectURL(url);
   $("#notice-submit-result").innerHTML =
-    '<div class="alert ok">✓ Downloaded. Now upload this file to GitHub — Add file → Upload files → replace the old notices.json → Commit changes. Live for everyone within a minute or two.</div>';
+    '<div class="alert ok">✓ Downloaded. Now upload this file to GitHub — Add file → Upload files → replace the old notices.json → Commit changes.</div>';
 }
 
 function renderSavedNoticesList(){
@@ -1581,16 +1696,45 @@ function renderSavedNoticesList(){
       '<div class="nco">📌</div>'+
       '<div style="flex:1"><h4>'+esc(n.title)+'</h4><div class="nmeta">'+esc(n.date)+' · '+esc(n.for||'All classes')+'</div>'+
       '</div>'+
-      '<button class="btn ghost small ndel" onclick="deleteNotice(\''+n.id+'\')">Delete</button>'+
+      '<button class="btn ghost small ndel" onclick="deleteNotice(\''+n.id+'\',\''+esc(n.title).replace(/'/g,"\\'")+'\',\''+n.date+'\')">Delete</button>'+
     '</div>'
   ).join("");
 }
 
-function deleteNotice(id){
-  if (!confirm("Remove this notice from the list? (You'll still need to download and upload the file for this to take effect on the website.)")) return;
+async function deleteNotice(id, title, date){
+  if (!confirm("Delete this notice?")) return;
+
+  if (CONFIG.noticesPublishUrl){
+    try{
+      const data = await jsonp(CONFIG.noticesPublishUrl, { action:"delete", title, date, passcode: CONFIG.noticesAdminPasscode });
+      if (!data || !data.ok){
+        alert("Could not delete this notice just now. Please try again.");
+        return;
+      }
+      alert("Deleted. It will disappear from the website within about a minute.");
+    }catch(err){
+      alert("Could not reach the publishing service. Check your internet connection and try again.");
+    }
+  }
+
   const notices = loadLocalNotices().filter(n=>n.id!==id);
   saveLocalNotices(notices);
   renderSavedNoticesList();
+}
+
+function toggleNoticeSetup(){
+  const body = $("#notice-setup-body");
+  const arrow = $("#notice-setup-arrow");
+  const open = body.classList.toggle("open");
+  arrow.textContent = open ? "▾" : "▸";
+}
+function copyNoticeScript(){
+  const text = $("#notice-script-text").innerText;
+  navigator.clipboard?.writeText(text).then(()=>{
+    alert("Script copied. Paste it into Extensions → Apps Script on any Google Sheet.");
+  }).catch(()=>{
+    alert("Could not copy automatically — please select and copy the text manually.");
+  });
 }
 </script>
 
