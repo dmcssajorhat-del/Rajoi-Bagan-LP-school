@@ -1,6 +1,12 @@
 [
   {
     "date": "2026-08-26",
+    "title": "DirectTest",
+    "details": "Testing",
+    "for": "Allclasses"
+  },
+  {
+    "date": "2026-08-26",
     "title": "RAKHI",
     "details": "RAKSHA BANDHAN BY ALL STUDENTS",
     "for": "ALL CLASSES"
