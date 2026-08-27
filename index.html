@@ -241,6 +241,22 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
 .admissions-visual{ margin-top:20px; }
 .admissions-visual .photo-frame{ max-width:none; }
 
+.map-embed{
+  margin-top:18px; border:1px solid var(--rule); border-radius:var(--radius);
+  overflow:hidden; box-shadow:var(--shadow-tag); background:var(--surface);
+}
+.map-embed iframe{
+  display:block; width:100%; height:260px; border:0;
+  filter:saturate(.92) contrast(1.02);
+}
+[data-theme="dark"] .map-embed iframe{ filter:brightness(.85) contrast(1.05); opacity:.92; }
+.map-embed .map-foot{
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+  padding:10px 14px; font-size:.82rem; color:var(--ink-soft); border-top:1px solid var(--rule);
+}
+.map-embed .map-foot a{ color:var(--leaf); font-weight:700; text-decoration:none; }
+.map-embed .map-foot a:hover{ text-decoration:underline; }
+
 /* ---------- key figures ---------- */
 .figs{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1px;
   background:var(--rule); border:1px solid var(--rule); border-radius:var(--radius); overflow:hidden; margin-top:40px; }
@@ -932,6 +948,7 @@ function deleteNotice_(title, date) {
       <div>
         <h3 style="margin-bottom:14px">Reach the school</h3>
         <ul class="info-list" id="contact-list"></ul>
+        <div class="map-embed" id="map-embed"></div>
 
         <h3 style="margin:30px 0 12px">What to bring</h3>
         <ul class="info-list">
@@ -1084,7 +1101,10 @@ const CONFIG = {
   email:   "",
   address: "Rajoi, Central Jorhat, Jorhat, Assam",
   hours:   "Monday to Saturday, school hours",
-  mapUrl:  "https://maps.google.com/?q=Rajoi+Jorhat+Assam",
+  /* Exact GPS location of the school gate: 26°45'46.6"N 94°22'32.2"E */
+  lat: 26.762944,
+  lng: 94.375617,
+  mapUrl:  "https://maps.google.com/?q=26.762944,94.375617",
 
   headMaster: {
     name: "Niranjan Bhuyan",
@@ -1284,6 +1304,18 @@ function applyConfig(){
   rows.push(["UDISE code", esc(CONFIG.udise)]);
   rows.push(["Open", esc(CONFIG.hours)]);
   $("#contact-list").innerHTML = rows.map(r=>'<li><span class="k">'+r[0]+'</span><span class="v">'+r[1]+'</span></li>').join("");
+
+  /* map — the school's exact location, embedded, plus a link out for directions */
+  const mapBox = $("#map-embed");
+  if (mapBox && CONFIG.lat && CONFIG.lng){
+    const embedSrc = "https://maps.google.com/maps?q="+CONFIG.lat+","+CONFIG.lng+"&z=16&output=embed";
+    mapBox.innerHTML =
+      '<iframe src="'+embedSrc+'" loading="lazy" title="Map showing the exact location of '+esc(CONFIG.schoolName)+'" allowfullscreen></iframe>'+
+      '<div class="map-foot"><span>'+esc(CONFIG.address)+'</span>'+
+      '<a href="'+esc(CONFIG.mapUrl)+'" target="_blank" rel="noopener">Get directions →</a></div>';
+  } else if (mapBox){
+    mapBox.remove();
+  }
 
   /* admission form */
   $("#form-slot").innerHTML = CONFIG.formEmbedUrl
