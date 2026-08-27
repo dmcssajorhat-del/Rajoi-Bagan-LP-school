@@ -1308,9 +1308,9 @@ function applyConfig(){
   /* map — the school's exact location, embedded, plus a link out for directions */
   const mapBox = $("#map-embed");
   if (mapBox && CONFIG.lat && CONFIG.lng){
-    const embedSrc = "https://maps.google.com/maps?q="+CONFIG.lat+","+CONFIG.lng+"&z=16&output=embed";
+    const embedSrc = "https://www.google.com/maps?q="+CONFIG.lat+","+CONFIG.lng+"&z=16&output=embed";
     mapBox.innerHTML =
-      '<iframe src="'+embedSrc+'" loading="lazy" title="Map showing the exact location of '+esc(CONFIG.schoolName)+'" allowfullscreen></iframe>'+
+      '<iframe src="'+embedSrc+'" loading="lazy" frameborder="0" referrerpolicy="no-referrer-when-downgrade" title="Map showing the exact location of '+esc(CONFIG.schoolName)+'" allowfullscreen></iframe>'+
       '<div class="map-foot"><span>'+esc(CONFIG.address)+'</span>'+
       '<a href="'+esc(CONFIG.mapUrl)+'" target="_blank" rel="noopener">Get directions →</a></div>';
   } else if (mapBox){
