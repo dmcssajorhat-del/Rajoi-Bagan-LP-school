@@ -256,6 +256,7 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
 }
 .map-embed .map-foot a{ color:var(--leaf); font-weight:700; text-decoration:none; }
 .map-embed .map-foot a:hover{ text-decoration:underline; }
+.map-embed-compact iframe{ height:190px; }
 
 /* ---------- key figures ---------- */
 .figs{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1px;
@@ -679,6 +680,7 @@ footer.site a{ color:var(--ink); }
           <div class="cta-row" style="margin-top:16px">
             <a class="btn red" href="#admissions">Admissions &amp; contact</a>
           </div>
+          <div class="map-embed map-embed-compact" id="map-embed-home"></div>
         </div>
       </div>
     </section>
@@ -1305,17 +1307,19 @@ function applyConfig(){
   rows.push(["Open", esc(CONFIG.hours)]);
   $("#contact-list").innerHTML = rows.map(r=>'<li><span class="k">'+r[0]+'</span><span class="v">'+r[1]+'</span></li>').join("");
 
-  /* map — the school's exact location, embedded, plus a link out for directions */
-  const mapBox = $("#map-embed");
-  if (mapBox && CONFIG.lat && CONFIG.lng){
+  /* map — the school's exact location, embedded, plus a link out for directions.
+     Built once and dropped into every element with the map-embed class. */
+  function fillMap(el){
+    if (!el) return;
+    if (!(CONFIG.lat && CONFIG.lng)){ el.remove(); return; }
     const embedSrc = "https://www.google.com/maps?q="+CONFIG.lat+","+CONFIG.lng+"&z=16&output=embed";
-    mapBox.innerHTML =
+    el.innerHTML =
       '<iframe src="'+embedSrc+'" loading="lazy" frameborder="0" referrerpolicy="no-referrer-when-downgrade" title="Map showing the exact location of '+esc(CONFIG.schoolName)+'" allowfullscreen></iframe>'+
       '<div class="map-foot"><span>'+esc(CONFIG.address)+'</span>'+
       '<a href="'+esc(CONFIG.mapUrl)+'" target="_blank" rel="noopener">Get directions →</a></div>';
-  } else if (mapBox){
-    mapBox.remove();
   }
+  fillMap($("#map-embed"));
+  fillMap($("#map-embed-home"));
 
   /* admission form */
   $("#form-slot").innerHTML = CONFIG.formEmbedUrl
