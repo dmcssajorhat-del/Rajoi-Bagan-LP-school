@@ -827,7 +827,7 @@ footer.site a{ color:var(--ink); }
 
         <div class="notice-setup" id="notice-setup-wrap" style="display:none">
           <button class="notice-setup-toggle" id="notice-setup-toggle" onclick="toggleNoticeSetup()">
-            <span id="notice-setup-arrow">▸</span> Set up one-click publishing (one-time, ~10 minutes)
+            <span id="notice-setup-arrow">▸</span> <span id="notice-setup-status">Set up one-click publishing (one-time, ~10 minutes)</span>
           </button>
           <div class="notice-setup-body" id="notice-setup-body">
             <p style="font-size:.9rem;margin-bottom:10px">
@@ -1749,7 +1749,10 @@ async function showNoticeForm(){
 
   const oneClick = !!CONFIG.noticesPublishUrl;
   $("#notice-fallback-note").style.display = oneClick ? "none" : "block";
-  $("#notice-setup-wrap").style.display = oneClick ? "none" : "block";
+  $("#notice-setup-wrap").style.display = "block"; // always reachable — also needed to fetch updated script versions later
+  $("#notice-setup-status").textContent = oneClick
+    ? "View the script (for updates, or setting up photo uploads)"
+    : "Connect a live Google Sheet (one-time setup)";
 
   await loadNotices();
   // keep a local mirror in sync too, so the Download fallback never loses data
