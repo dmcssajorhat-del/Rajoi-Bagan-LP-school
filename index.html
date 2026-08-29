@@ -832,8 +832,16 @@ footer.site a{ color:var(--ink); }
           <div class="notice-setup-body" id="notice-setup-body">
             <p style="font-size:.9rem;margin-bottom:10px">
               This makes <strong>Publish notice</strong> above fully automatic — one click, live for
-              everyone within about a minute, nothing to download or upload, ever.
+              everyone within about a minute, nothing to download or upload, ever. The same script
+              also powers photo uploads in the Gallery's <strong>Manage gallery</strong> panel.
             </p>
+            <div class="tip" style="background:#DBEAFE;border:1px solid #93C5FD;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.86rem;color:#1E3A8A">
+              <strong>Already set up notice publishing before?</strong> You don't need to redo the
+              token or the deployment — just replace the script below (it now also handles photos),
+              save, and redeploy the existing project as a <strong>new version</strong>
+              (Deploy → Manage deployments → ✏️ → Version: New version → Deploy). The Web app URL
+              stays the same.
+            </div>
             <ol>
               <li>Go to <code>github.com/settings/tokens?type=beta</code> → <strong>Generate new token</strong>.
                   Give it access to only the <code>Rajoi-Bagan-LP-school</code> repository, with
@@ -854,7 +862,6 @@ footer.site a{ color:var(--ink); }
             </div>
             <div class="notice-script-box" id="notice-script-text">var GITHUB_OWNER = "dmcssajorhat-del";
 var GITHUB_REPO  = "Rajoi-Bagan-LP-school";
-var GITHUB_PATH  = "notices.json";
 var PASSCODE     = "RAJOI2026";
 
 function doGet(e) {
@@ -866,6 +873,8 @@ function doGet(e) {
     result = addNotice_(e.parameter);
   } else if (e.parameter.action === "delete") {
     result = deleteNotice_(e.parameter.title, e.parameter.date);
+  } else if (e.parameter.action === "deletePhoto") {
+    result = deletePhoto_(e.parameter.file);
   } else {
     result = { ok:false, error:"unknown action" };
   }
@@ -877,29 +886,41 @@ function doGet(e) {
   return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
 }
 
+// Handles photo uploads — images are too large to fit in a web address
+// (the trick used for notices), so this one part uses a normal POST instead.
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  if (data.passcode === PASSCODE && data.action === "addPhoto") {
+    addPhoto_(data);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ ok:true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function githubToken_() {
   return PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
 }
-function apiUrl_() {
-  return "https://api.github.com/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO + "/contents/" + GITHUB_PATH;
+function apiUrlFor_(path) {
+  return "https://api.github.com/repos/" + GITHUB_OWNER + "/" + GITHUB_REPO + "/contents/" + path;
 }
-function getCurrentFile_() {
-  var resp = UrlFetchApp.fetch(apiUrl_(), {
+function getFile_(path) {
+  var resp = UrlFetchApp.fetch(apiUrlFor_(path), {
     headers: { Authorization: "token " + githubToken_(), Accept: "application/vnd.github+json" },
     muteHttpExceptions: true
   });
-  var data = JSON.parse(resp.getContentText());
-  var content = Utilities.newBlob(Utilities.base64Decode(data.content.replace(/\n/g,""))).getDataAsString();
-  return { sha: data.sha, notices: JSON.parse(content) };
+  if (resp.getResponseCode() !== 200) return null;
+  return JSON.parse(resp.getContentText());
 }
-function commitFile_(notices, sha, message) {
-  var payload = {
-    message: message,
-    content: Utilities.base64Encode(JSON.stringify(notices, null, 2)),
-    sha: sha,
-    branch: "main"
-  };
-  var resp = UrlFetchApp.fetch(apiUrl_(), {
+function getJsonFile_(path) {
+  var file = getFile_(path);
+  if (!file) return { sha: null, data: [] };
+  var content = Utilities.newBlob(Utilities.base64Decode(file.content.replace(/\n/g,""))).getDataAsString();
+  return { sha: file.sha, data: JSON.parse(content) };
+}
+function commitRaw_(path, base64Content, sha, message) {
+  var payload = { message: message, content: base64Content, branch: "main" };
+  if (sha) payload.sha = sha;
+  var resp = UrlFetchApp.fetch(apiUrlFor_(path), {
     method: "put",
     headers: { Authorization: "token " + githubToken_(), Accept: "application/vnd.github+json" },
     contentType: "application/json",
@@ -909,18 +930,52 @@ function commitFile_(notices, sha, message) {
   var code = resp.getResponseCode();
   return code >= 200 && code < 300;
 }
+function commitJsonFile_(path, data, sha, message) {
+  return commitRaw_(path, Utilities.base64Encode(JSON.stringify(data, null, 2)), sha, message);
+}
+function deleteFile_(path, sha, message) {
+  var resp = UrlFetchApp.fetch(apiUrlFor_(path), {
+    method: "delete",
+    headers: { Authorization: "token " + githubToken_(), Accept: "application/vnd.github+json" },
+    contentType: "application/json",
+    payload: JSON.stringify({ message: message, sha: sha, branch: "main" }),
+    muteHttpExceptions: true
+  });
+  var code = resp.getResponseCode();
+  return code >= 200 && code < 300;
+}
+
 function addNotice_(p) {
   try {
-    var file = getCurrentFile_();
-    file.notices.unshift({ date: p.date, title: p.title, details: p.details, "for": p.for_ });
-    return { ok: commitFile_(file.notices, file.sha, "Add notice: " + p.title) };
+    var file = getJsonFile_("notices.json");
+    file.data.unshift({ date: p.date, title: p.title, details: p.details, "for": p.for_ });
+    return { ok: commitJsonFile_("notices.json", file.data, file.sha, "Add notice: " + p.title) };
   } catch (err) { return { ok:false, error: String(err) }; }
 }
 function deleteNotice_(title, date) {
   try {
-    var file = getCurrentFile_();
-    file.notices = file.notices.filter(function(n){ return !(n.title === title && n.date === date); });
-    return { ok: commitFile_(file.notices, file.sha, "Remove notice: " + title) };
+    var file = getJsonFile_("notices.json");
+    file.data = file.data.filter(function(n){ return !(n.title === title && n.date === date); });
+    return { ok: commitJsonFile_("notices.json", file.data, file.sha, "Remove notice: " + title) };
+  } catch (err) { return { ok:false, error: String(err) }; }
+}
+function addPhoto_(p) {
+  try {
+    var imgPath = "gallery-uploads/" + p.filename;
+    var okImg = commitRaw_(imgPath, p.imageBase64, null, "Add gallery photo: " + p.filename);
+    if (!okImg) return { ok:false, error:"could not save image" };
+    var manifest = getJsonFile_("gallery-uploads.json");
+    manifest.data.push({ file: imgPath, cat: p.category, caption: p.caption });
+    return { ok: commitJsonFile_("gallery-uploads.json", manifest.data, manifest.sha, "Add gallery photo: " + p.filename) };
+  } catch (err) { return { ok:false, error: String(err) }; }
+}
+function deletePhoto_(filePath) {
+  try {
+    var img = getFile_(filePath);
+    if (img) deleteFile_(filePath, img.sha, "Remove gallery photo: " + filePath);
+    var manifest = getJsonFile_("gallery-uploads.json");
+    manifest.data = manifest.data.filter(function(g){ return g.file !== filePath; });
+    return { ok: commitJsonFile_("gallery-uploads.json", manifest.data, manifest.sha, "Remove gallery photo: " + filePath) };
   } catch (err) { return { ok:false, error: String(err) }; }
 }</div>
             <button class="btn ghost small" style="margin-top:10px" onclick="copyNoticeScript()">📋 Copy script</button>
@@ -1032,12 +1087,69 @@ function deleteNotice_(title, date) {
 <!-- ============ GALLERY ============ -->
 <div class="page" id="page-gallery">
   <div class="wrap">
-    <p class="eyebrow">School life in pictures</p>
-    <h2>Gallery</h2>
-    <p class="lede" style="margin-top:10px">
-      From the kitchen garden and sports day to classroom moments, community events
-      and the Head Master&#8217;s recognitions.
-    </p>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div>
+        <p class="eyebrow">School life in pictures</p>
+        <h2>Gallery</h2>
+        <p class="lede" style="margin-top:10px">
+          From the kitchen garden and sports day to classroom moments, community events
+          and the Head Master&#8217;s recognitions.
+        </p>
+      </div>
+      <button class="btn ghost small" id="gallery-admin-btn" onclick="openGalleryAdmin()" style="flex:none;margin-top:4px">🔒 Manage gallery</button>
+    </div>
+
+    <!-- password-gated panel: hidden until unlocked, never affects public gallery below -->
+    <div id="gallery-admin-panel" class="notice-admin-panel" style="display:none">
+      <div id="gallery-admin-lock">
+        <p class="eyebrow" style="margin-bottom:10px">Staff only</p>
+        <div class="field" style="max-width:320px">
+          <label>Admin passcode</label>
+          <input type="password" id="gallery-passcode" placeholder="Enter passcode" autocomplete="off"
+            onkeydown="if(event.key==='Enter')checkGalleryPasscode()">
+        </div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn green small" onclick="checkGalleryPasscode()">Unlock →</button>
+          <button class="btn ghost small" onclick="closeGalleryAdmin()">Cancel</button>
+        </div>
+        <p class="alert err" id="gallery-passcode-err" style="display:none;margin-top:12px;max-width:400px">Incorrect passcode.</p>
+      </div>
+
+      <div id="gallery-admin-form" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <p class="eyebrow" style="margin-bottom:0">Upload a photo</p>
+          <button class="btn ghost small" onclick="lockGalleryAdmin()">🔒 Lock</button>
+        </div>
+
+        <div class="field">
+          <label>Photo</label>
+          <input type="file" id="ga-file" accept="image/*">
+        </div>
+        <div class="row2">
+          <div class="field"><label>Category</label>
+            <select id="ga-category">
+              <option value="garden">Kitchen Garden</option>
+              <option value="classroom">Classroom &amp; Learning</option>
+              <option value="events" selected>Events &amp; Activities</option>
+              <option value="awards">Awards &amp; Recognition</option>
+            </select></div>
+          <div class="field"><label>Caption (optional)</label>
+            <input type="text" id="ga-caption" placeholder="e.g. Sports Day, February 2026"></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn green" id="gallery-upload-btn" onclick="uploadGalleryPhoto()">📤 Upload photo</button>
+        </div>
+        <div id="gallery-submit-result" style="margin-top:14px"></div>
+        <p style="font-size:.82rem;color:var(--ink-soft);margin-top:6px">
+          Photos are resized automatically to keep the website fast to load. Uploading may take
+          up to a minute on a slow connection — it appears on the website within a few minutes.</p>
+
+        <div class="notice-saved-section">
+          <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Photos added by the school</p>
+          <div id="gallery-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">Loading…</p></div>
+        </div>
+      </div>
+    </div>
 
     <div class="gal-tabs" id="gal-tabs">
       <button class="gtab active" data-cat="all">All</button>
@@ -1772,6 +1884,172 @@ function copyNoticeScript(){
     alert("Could not copy automatically — please select and copy the text manually.");
   });
 }
+
+/* ================================================================
+   GALLERY — school-uploaded photos, added on top of the built-in set.
+   Uses the same Apps Script bridge as the notice board (CONFIG.noticesPublishUrl).
+   Deleting a photo only ever needs to send a short reference (its
+   filename), so that still goes through the same reliable JSONP method
+   used for notices. Uploading a photo has to send the actual image
+   data, which is far too large for that method, so it uses a normal
+   POST instead — the one part of this whole site that can't be
+   double-checked the same way everything else has been.
+   ================================================================ */
+let UPLOADED_GALLERY = [];
+
+async function loadUploadedGallery(){
+  try{
+    const res = await fetch("gallery-uploads.json", {cache:"no-store"});
+    if (res.ok){
+      const items = await res.json();
+      if (Array.isArray(items)) UPLOADED_GALLERY = items;
+    }
+  }catch(err){
+    console.warn("gallery-uploads.json not found or unreadable:", err);
+  }
+}
+
+function openGalleryAdmin(){
+  $("#gallery-admin-panel").style.display = "block";
+  const unlockedUntil = sessionStorage.getItem("rb_gallery_unlocked_until");
+  if (unlockedUntil && Date.now() < parseInt(unlockedUntil)) {
+    showGalleryForm();
+  } else {
+    $("#gallery-admin-lock").style.display = "block";
+    $("#gallery-admin-form").style.display = "none";
+    $("#gallery-passcode").focus();
+  }
+  $("#gallery-admin-panel").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+function closeGalleryAdmin(){
+  $("#gallery-admin-panel").style.display = "none";
+  $("#gallery-passcode").value = "";
+  $("#gallery-passcode-err").style.display = "none";
+}
+function checkGalleryPasscode(){
+  const val = $("#gallery-passcode").value.trim();
+  if (val !== CONFIG.noticesAdminPasscode){
+    $("#gallery-passcode-err").style.display = "block";
+    return;
+  }
+  $("#gallery-passcode-err").style.display = "none";
+  sessionStorage.setItem("rb_gallery_unlocked_until", Date.now() + 120*60*1000);
+  showGalleryForm();
+}
+async function showGalleryForm(){
+  $("#gallery-admin-lock").style.display = "none";
+  $("#gallery-admin-form").style.display = "block";
+  await loadUploadedGallery();
+  renderSavedGalleryList();
+}
+function lockGalleryAdmin(){
+  sessionStorage.removeItem("rb_gallery_unlocked_until");
+  closeGalleryAdmin();
+}
+
+function renderSavedGalleryList(){
+  const box = $("#gallery-saved-list");
+  if (!box) return;
+  if (!UPLOADED_GALLERY.length){
+    box.innerHTML = '<p style="font-size:.85rem;color:var(--ink-soft)">No photos added by the school yet.</p>';
+    return;
+  }
+  const catLabel = {garden:"Kitchen Garden",classroom:"Classroom & Learning",events:"Events & Activities",awards:"Awards & Recognition"};
+  box.innerHTML = UPLOADED_GALLERY.slice().reverse().map(function(g){
+    return '<div class="notice-item">'+
+      '<img src="'+esc(g.file)+'" alt="" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex:none">'+
+      '<div style="flex:1"><h4>'+esc(g.caption||"(no caption)")+'</h4><div class="nmeta">'+esc(catLabel[g.cat]||g.cat)+'</div></div>'+
+      '<button class="btn ghost small ndel" onclick="deleteGalleryPhoto(\''+esc(g.file)+'\')">Delete</button>'+
+      '</div>';
+  }).join("");
+}
+
+/* resize + compress in the browser before sending — keeps uploads fast
+   and reliable, and keeps the website quick to load afterwards */
+function resizeImageFile(file, maxDim, quality){
+  return new Promise(function(resolve, reject){
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = function(e){
+      img.onload = function(){
+        let w = img.width, h = img.height;
+        if (w > h && w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; }
+        else if (h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl.split(",")[1]); // strip the "data:image/jpeg;base64," prefix
+      };
+      img.onerror = function(){ reject(new Error("Could not read this image file")); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){ reject(new Error("Could not read this file")); };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadGalleryPhoto(){
+  const fileInput = $("#ga-file");
+  const category = $("#ga-category").value;
+  const caption = $("#ga-caption").value.trim();
+  const resultBox = $("#gallery-submit-result");
+  const btn = $("#gallery-upload-btn");
+
+  if (!fileInput.files || !fileInput.files[0]){
+    resultBox.innerHTML = '<div class="alert err">Please choose a photo first.</div>';
+    return;
+  }
+  if (!CONFIG.noticesPublishUrl){
+    resultBox.innerHTML = '<div class="alert err">One-click publishing isn\u2019t set up yet — see the Manage Notices panel for setup steps. The same setup powers photo uploads too.</div>';
+    return;
+  }
+
+  resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Preparing photo…</div>';
+  btn.disabled = true;
+  try{
+    const imageBase64 = await resizeImageFile(fileInput.files[0], 1400, 0.8);
+    const safeName = fileInput.files[0].name.replace(/[^a-zA-Z0-9.]+/g,"-").toLowerCase();
+    const filename = Date.now()+"-"+safeName.replace(/\.[^.]+$/,"")+".jpg";
+
+    resultBox.innerHTML = '<div class="alert info"><span class="mini-spin"></span> Uploading…</div>';
+    await fetch(CONFIG.noticesPublishUrl, {
+      method: "POST",
+      mode: "no-cors", // Apps Script's response can't be read from here — see note below the button
+      headers: {"Content-Type":"text/plain"},
+      body: JSON.stringify({
+        action: "addPhoto", passcode: CONFIG.noticesAdminPasscode,
+        filename: filename, category: category, caption: caption,
+        imageBase64: imageBase64
+      })
+    });
+    resultBox.innerHTML = '<div class="alert ok">✓ Sent. It will appear in the gallery within a few minutes — reload this page after a bit to check.</div>';
+    fileInput.value = ""; $("#ga-caption").value = "";
+    // optimistic local update, so the school's own list reflects it right away
+    UPLOADED_GALLERY.push({file:"gallery-uploads/"+filename, cat:category, caption:caption});
+    renderSavedGalleryList();
+  }catch(err){
+    resultBox.innerHTML = '<div class="alert err">Could not upload — check your internet connection and try again.</div>';
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+async function deleteGalleryPhoto(file){
+  if (!confirm("Delete this photo from the gallery?")) return;
+  if (!CONFIG.noticesPublishUrl) return;
+  try{
+    const data = await jsonp(CONFIG.noticesPublishUrl, { action:"deletePhoto", file:file, passcode: CONFIG.noticesAdminPasscode });
+    if (!data || !data.ok){
+      alert("Could not delete this photo just now. Please try again.");
+      return;
+    }
+    UPLOADED_GALLERY = UPLOADED_GALLERY.filter(function(g){ return g.file!==file; });
+    renderSavedGalleryList();
+  }catch(err){
+    alert("Could not reach the publishing service. Check your internet connection and try again.");
+  }
+}
 </script>
 
 <script>
@@ -1884,10 +2162,19 @@ var GALLERY_ITEMS = [
 ];
 
 var _galBuilt = false;
-function buildGallery(){
+async function buildGallery(){
   var grid = gid("gal-grid");
+  grid.innerHTML = '<div class="state">Loading gallery…</div>';
+
+  await loadUploadedGallery(); // fills UPLOADED_GALLERY from gallery-uploads.json, same-origin, reliable
+  var catLabel = {garden:"Kitchen Garden",classroom:"Classroom & Learning",events:"Events & Activities",awards:"Awards & Recognition"};
+  var uploaded = UPLOADED_GALLERY.map(function(g){
+    return { src:g.file, cat:g.cat, title:g.caption||catLabel[g.cat]||"", caption:"" };
+  });
+  var allItems = GALLERY_ITEMS.concat(uploaded);
+
   function renderGal(cat){
-    var items = cat === "all" ? GALLERY_ITEMS : GALLERY_ITEMS.filter(function(g){ return g.cat===cat; });
+    var items = cat === "all" ? allItems : allItems.filter(function(g){ return g.cat===cat; });
     grid.innerHTML = items.map(function(g,i){
       var wide = g.src.indexOf("school-life")>-1||g.src.indexOf("multigrade")>-1||g.src.indexOf("activities")>-1?"wide":"";
       return '<div class="gal-item '+wide+'" onclick="openLB('+JSON.stringify(g.src)+')">'+
