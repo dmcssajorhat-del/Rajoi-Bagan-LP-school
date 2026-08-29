@@ -875,6 +875,10 @@ function doGet(e) {
     result = deleteNotice_(e.parameter.title, e.parameter.date);
   } else if (e.parameter.action === "deletePhoto") {
     result = deletePhoto_(e.parameter.file);
+  } else if (e.parameter.action === "hidePhoto") {
+    result = togglePhotoVisibility_(e.parameter.file, true);
+  } else if (e.parameter.action === "showPhoto") {
+    result = togglePhotoVisibility_(e.parameter.file, false);
   } else {
     result = { ok:false, error:"unknown action" };
   }
@@ -976,6 +980,18 @@ function deletePhoto_(filePath) {
     var manifest = getJsonFile_("gallery-uploads.json");
     manifest.data = manifest.data.filter(function(g){ return g.file !== filePath; });
     return { ok: commitJsonFile_("gallery-uploads.json", manifest.data, manifest.sha, "Remove gallery photo: " + filePath) };
+  } catch (err) { return { ok:false, error: String(err) }; }
+}
+// Original built-in photos live in the website's own code, not the repo's data
+// files, so instead of deleting them this keeps a simple "hidden" list — the
+// same photo can always be brought back later with one click.
+function togglePhotoVisibility_(file, hide) {
+  try {
+    var manifest = getJsonFile_("gallery-hidden.json");
+    var idx = manifest.data.indexOf(file);
+    if (hide && idx === -1) manifest.data.push(file);
+    if (!hide && idx !== -1) manifest.data.splice(idx, 1);
+    return { ok: commitJsonFile_("gallery-hidden.json", manifest.data, manifest.sha, (hide?"Hide":"Show")+" photo: "+file) };
   } catch (err) { return { ok:false, error: String(err) }; }
 }</div>
             <button class="btn ghost small" style="margin-top:10px" onclick="copyNoticeScript()">📋 Copy script</button>
@@ -1147,6 +1163,14 @@ function deletePhoto_(filePath) {
         <div class="notice-saved-section">
           <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Photos added by the school</p>
           <div id="gallery-saved-list"><p style="font-size:.85rem;color:var(--ink-soft)">Loading…</p></div>
+        </div>
+
+        <div class="notice-saved-section">
+          <p class="eyebrow" style="margin-top:22px;margin-bottom:10px">Original school photos</p>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:10px">
+            These are built into the website itself, so instead of deleting them, hiding keeps
+            them safe — one click to bring any of them back later.</p>
+          <div id="gallery-original-list"><p style="font-size:.85rem;color:var(--ink-soft)">Loading…</p></div>
         </div>
       </div>
     </div>
@@ -1899,6 +1923,7 @@ function copyNoticeScript(){
    double-checked the same way everything else has been.
    ================================================================ */
 let UPLOADED_GALLERY = [];
+let HIDDEN_GALLERY = [];
 
 async function loadUploadedGallery(){
   try{
@@ -1909,6 +1934,17 @@ async function loadUploadedGallery(){
     }
   }catch(err){
     console.warn("gallery-uploads.json not found or unreadable:", err);
+  }
+}
+async function loadHiddenGallery(){
+  try{
+    const res = await fetch("gallery-hidden.json", {cache:"no-store"});
+    if (res.ok){
+      const items = await res.json();
+      if (Array.isArray(items)) HIDDEN_GALLERY = items;
+    }
+  }catch(err){
+    console.warn("gallery-hidden.json not found or unreadable:", err);
   }
 }
 
@@ -1942,12 +1978,47 @@ function checkGalleryPasscode(){
 async function showGalleryForm(){
   $("#gallery-admin-lock").style.display = "none";
   $("#gallery-admin-form").style.display = "block";
-  await loadUploadedGallery();
+  await Promise.all([loadUploadedGallery(), loadHiddenGallery()]);
   renderSavedGalleryList();
+  renderOriginalPhotosList();
 }
 function lockGalleryAdmin(){
   sessionStorage.removeItem("rb_gallery_unlocked_until");
   closeGalleryAdmin();
+}
+
+function renderOriginalPhotosList(){
+  const box = $("#gallery-original-list");
+  if (!box) return;
+  box.innerHTML = GALLERY_ITEMS.map(function(g){
+    const isHidden = HIDDEN_GALLERY.indexOf(g.src) !== -1;
+    return '<div class="notice-item"'+(isHidden?' style="opacity:.5"':'')+'>'+
+      '<img src="'+esc(g.src)+'" alt="" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex:none">'+
+      '<div style="flex:1"><h4>'+esc(g.title)+'</h4><div class="nmeta">'+(isHidden?"Hidden from the gallery":"Showing in the gallery")+'</div></div>'+
+      '<button class="btn ghost small" onclick="toggleBuiltInPhoto(\''+esc(g.src)+'\')">'+(isHidden?"Show again":"Hide")+'</button>'+
+      '</div>';
+  }).join("");
+}
+
+async function toggleBuiltInPhoto(src){
+  if (!CONFIG.noticesPublishUrl){
+    alert("One-click publishing isn\u2019t set up yet — see the setup section above.");
+    return;
+  }
+  const currentlyHidden = HIDDEN_GALLERY.indexOf(src) !== -1;
+  const action = currentlyHidden ? "showPhoto" : "hidePhoto";
+  try{
+    const data = await jsonp(CONFIG.noticesPublishUrl, { action:action, file:src, passcode: CONFIG.noticesAdminPasscode });
+    if (!data || !data.ok){
+      alert("Could not update this just now. Please try again.");
+      return;
+    }
+    if (currentlyHidden) HIDDEN_GALLERY = HIDDEN_GALLERY.filter(function(f){ return f!==src; });
+    else HIDDEN_GALLERY.push(src);
+    renderOriginalPhotosList();
+  }catch(err){
+    alert("Could not reach the publishing service. Check your internet connection and try again.");
+  }
 }
 
 function renderSavedGalleryList(){
@@ -2169,12 +2240,13 @@ async function buildGallery(){
   var grid = gid("gal-grid");
   grid.innerHTML = '<div class="state">Loading gallery…</div>';
 
-  await loadUploadedGallery(); // fills UPLOADED_GALLERY from gallery-uploads.json, same-origin, reliable
+  await Promise.all([loadUploadedGallery(), loadHiddenGallery()]); // same-origin, reliable
   var catLabel = {garden:"Kitchen Garden",classroom:"Classroom & Learning",events:"Events & Activities",awards:"Awards & Recognition"};
   var uploaded = UPLOADED_GALLERY.map(function(g){
     return { src:g.file, cat:g.cat, title:g.caption||catLabel[g.cat]||"", caption:"" };
   });
-  var allItems = GALLERY_ITEMS.concat(uploaded);
+  var visibleBuiltIn = GALLERY_ITEMS.filter(function(g){ return HIDDEN_GALLERY.indexOf(g.src)===-1; });
+  var allItems = visibleBuiltIn.concat(uploaded);
 
   function renderGal(cat){
     var items = cat === "all" ? allItems : allItems.filter(function(g){ return g.cat===cat; });
