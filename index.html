@@ -1143,12 +1143,14 @@ function togglePhotoVisibility_(file, hide) {
         </div>
         <div class="row2">
           <div class="field"><label>Category</label>
-            <select id="ga-category">
+            <select id="ga-category" onchange="onGalleryCategoryChange()">
               <option value="garden">Kitchen Garden</option>
               <option value="classroom">Classroom &amp; Learning</option>
               <option value="events" selected>Events &amp; Activities</option>
               <option value="awards">Awards &amp; Recognition</option>
-            </select></div>
+              <option value="__new__">+ Add new category…</option>
+            </select>
+            <input type="text" id="ga-new-category" placeholder="Type the new category name" style="display:none;margin-top:8px"></div>
           <div class="field"><label>Caption (optional)</label>
             <input type="text" id="ga-caption" placeholder="e.g. Sports Day, February 2026"></div>
         </div>
@@ -1175,13 +1177,7 @@ function togglePhotoVisibility_(file, hide) {
       </div>
     </div>
 
-    <div class="gal-tabs" id="gal-tabs">
-      <button class="gtab active" data-cat="all">All</button>
-      <button class="gtab" data-cat="garden">Kitchen Garden</button>
-      <button class="gtab" data-cat="classroom">Classroom &amp; Learning</button>
-      <button class="gtab" data-cat="events">Events &amp; Activities</button>
-      <button class="gtab" data-cat="awards">Awards &amp; Recognition</button>
-    </div>
+    <div class="gal-tabs" id="gal-tabs"></div>
 
     <div class="gal-grid" id="gal-grid"></div>
   </div>
@@ -2063,12 +2059,28 @@ function resizeImageFile(file, maxDim, quality){
   });
 }
 
+function onGalleryCategoryChange(){
+  const select = $("#ga-category");
+  const newField = $("#ga-new-category");
+  newField.style.display = select.value === "__new__" ? "block" : "none";
+  if (select.value === "__new__") newField.focus();
+}
+
 async function uploadGalleryPhoto(){
   const fileInput = $("#ga-file");
-  const category = $("#ga-category").value;
+  let category = $("#ga-category").value;
   const caption = $("#ga-caption").value.trim();
   const resultBox = $("#gallery-submit-result");
   const btn = $("#gallery-upload-btn");
+
+  if (category === "__new__"){
+    const typed = $("#ga-new-category").value.trim();
+    if (!typed){
+      resultBox.innerHTML = '<div class="alert err">Please type a name for the new category.</div>';
+      return;
+    }
+    category = typed;
+  }
 
   if (!fileInput.files || !fileInput.files[0]){
     resultBox.innerHTML = '<div class="alert err">Please choose a photo first.</div>';
@@ -2099,6 +2111,8 @@ async function uploadGalleryPhoto(){
     });
     resultBox.innerHTML = '<div class="alert ok">✓ Sent. It will appear in the gallery within a few minutes — reload this page after a bit to check.</div>';
     fileInput.value = ""; $("#ga-caption").value = "";
+    $("#ga-new-category").value = ""; $("#ga-new-category").style.display = "none";
+    $("#ga-category").value = "events";
     // optimistic local update, so the school's own list reflects it right away
     UPLOADED_GALLERY.push({file:"gallery-uploads/"+filename, cat:category, caption:caption});
     renderSavedGalleryList();
@@ -2238,15 +2252,31 @@ var GALLERY_ITEMS = [
 var _galBuilt = false;
 async function buildGallery(){
   var grid = gid("gal-grid");
+  var tabsBox = gid("gal-tabs");
   grid.innerHTML = '<div class="state">Loading gallery…</div>';
 
   await Promise.all([loadUploadedGallery(), loadHiddenGallery()]); // same-origin, reliable
   var catLabel = {garden:"Kitchen Garden",classroom:"Classroom & Learning",events:"Events & Activities",awards:"Awards & Recognition"};
   var uploaded = UPLOADED_GALLERY.map(function(g){
-    return { src:g.file, cat:g.cat, title:g.caption||catLabel[g.cat]||"", caption:"" };
+    return { src:g.file, cat:g.cat, title:g.caption||catLabel[g.cat]||g.cat||"", caption:"" };
   });
   var visibleBuiltIn = GALLERY_ITEMS.filter(function(g){ return HIDDEN_GALLERY.indexOf(g.src)===-1; });
   var allItems = visibleBuiltIn.concat(uploaded);
+
+  // Build the tab list from whatever categories actually have at least one
+  // photo right now — the 4 familiar ones in their usual order, then any
+  // school-added categories afterwards, in the order they first appear.
+  var presetOrder = ["garden","classroom","events","awards"];
+  var seen = {}, extraCats = [];
+  allItems.forEach(function(g){
+    if (presetOrder.indexOf(g.cat) === -1 && !seen[g.cat]){ seen[g.cat] = true; extraCats.push(g.cat); }
+  });
+  var tabCats = presetOrder.filter(function(c){ return allItems.some(function(g){ return g.cat===c; }); }).concat(extraCats);
+
+  tabsBox.innerHTML = '<button class="gtab active" data-cat="all">All</button>' +
+    tabCats.map(function(c){
+      return '<button class="gtab" data-cat="'+esc2(c)+'">'+esc2(catLabel[c]||c)+'</button>';
+    }).join("");
 
   function renderGal(cat){
     var items = cat === "all" ? allItems : allItems.filter(function(g){ return g.cat===cat; });
