@@ -234,6 +234,13 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
   padding:10px; box-shadow:0 3px 0 rgba(23,50,78,.10); margin:0; }
 .photo-frame img{ width:100%; height:auto; border-radius:8px; display:block; }
 .photo-frame figcaption{ font-size:.82rem; color:var(--ink-soft); padding:11px 4px 4px; margin:0; }
+.photo-frame figcaption:empty{ display:none; }
+
+.gate-mini-photo{
+  width:60px; height:60px; object-fit:cover; border-radius:12px;
+  border:1px solid var(--rule); box-shadow:0 3px 0 rgba(23,50,78,.10);
+  display:block; margin:6px 0 10px;
+}
 
 .hero-photo-frame{
   padding:0; overflow:hidden; border:1px solid var(--rule); border-radius:var(--radius);
@@ -246,6 +253,34 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
 @keyframes heroPhotoIn{
   from{ opacity:0; transform:translateY(14px) scale(.98); }
   to{ opacity:1; transform:none; }
+}
+
+.hero-photo-frame.hero-carousel{ position:relative; aspect-ratio:4/3; }
+.hc-slide{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  opacity:0; transition:opacity .7s ease;
+}
+.hc-slide.active{ opacity:1; }
+.hc-nav{
+  position:absolute; top:50%; transform:translateY(-50%); width:38px; height:38px;
+  border-radius:50%; background:rgba(23,50,78,.5); color:#fff; border:1.5px solid rgba(255,255,255,.5);
+  font-size:22px; line-height:1; cursor:pointer; display:grid; place-items:center; z-index:2;
+  transition:background .15s, transform .15s;
+}
+.hc-nav:hover{ background:rgba(23,50,78,.8); transform:translateY(-50%) scale(1.08); }
+.hc-prev{ left:10px; }
+.hc-next{ right:10px; }
+.hc-dots{
+  position:absolute; bottom:12px; left:0; right:0; display:flex; justify-content:center; gap:7px; z-index:2;
+}
+.hc-dot{
+  width:8px; height:8px; border-radius:50%; padding:0; cursor:pointer;
+  background:rgba(255,255,255,.5); border:1.5px solid rgba(255,255,255,.85);
+  transition:background .15s, transform .15s;
+}
+.hc-dot.active{ background:#fff; transform:scale(1.3); }
+@media (max-width:600px){
+  .hc-nav{ width:32px; height:32px; font-size:18px; }
 }
 
 .gate-grid{ display:grid; grid-template-columns:1.08fr .92fr; gap:40px; align-items:center; margin-top:26px; }
@@ -686,6 +721,7 @@ footer.site a{ color:var(--ink); }
         </figure>
         <div>
           <p class="eyebrow">Finding us</p>
+          <img id="gate-mini-photo" src="" alt="" class="gate-mini-photo">
           <h2>Come through the gate</h2>
           <p>The school stands just off the road at Rajoi. You will find it easily.</p>
           <p>You do not need an appointment to visit. Any school morning, walk in and ask for the
@@ -1298,7 +1334,7 @@ const CONFIG = {
   heroPhoto:        "school-gate.jpg",
   heroPhotoCaption: "",
   campusPhoto:        "school-campus.jpg",
-  campusPhotoCaption: "The school buildings and grounds, seen from just inside the gate",
+  campusPhotoCaption: "",
 
   /* ---- UDISE+ ENROLMENT RECORD ------------------------------------
      Add one line each year and the chart, the table, the class cards
@@ -1389,19 +1425,10 @@ function applyConfig(){
   if (CONFIG.phone){ tel.href = "tel:" + CONFIG.phone.replace(/\s/g,""); tel.textContent = CONFIG.phone; }
   else { tel.replaceWith("the school number"); }
 
-  /* hero: a real photograph of the school, falling back to the pen-and-ink
-     drawing if no photo has been set. No caption on purpose — the photo
-     itself is meant to be the first thing a visitor's eye lands on. */
-  $("#hero-visual").innerHTML = CONFIG.heroPhoto
-    ? '<figure class="photo-frame hero-photo-frame"><img class="hero-photo-img" src="'+esc(CONFIG.heroPhoto)+
-      '" alt="Photograph of '+esc(CONFIG.schoolName)+'" loading="eager" width="1600" height="900"></figure>'
-    : (CONFIG.sketch
-        ? '<figure class="photo-frame hero-sketch"><img class="sketch" src="'+esc(CONFIG.sketch)+
-          '" alt="Pen and ink drawing of the gate of '+esc(CONFIG.schoolName)+
-          '" width="1100" height="1057">'+
-          (CONFIG.sketchCaption?'<figcaption class="sketch-cap">'+esc(CONFIG.sketchCaption)+'</figcaption>':'')+
-          '</figure>'
-        : schoolDrawing());
+  /* hero: a rotating showcase of real school photos (gate first, then
+     gallery highlights), falling back to a single static photo or the
+     pen-and-ink drawing if there's nothing to rotate through.
+     Actually started later, once GALLERY_ITEMS below has loaded. */
 
   /* home: a real photograph of the campus, just inside the gate */
   const gp = $("#gate-photo");
@@ -1413,6 +1440,16 @@ function applyConfig(){
       : "The turquoise entrance gate of " + CONFIG.schoolName + ", with the school buildings beyond";
     $("#gate-caption").textContent = (CONFIG.campusPhoto ? CONFIG.campusPhotoCaption : CONFIG.gateCaption) || "";
   } else { gp.closest("figure").remove(); }
+
+  /* the small gate photo shown just above "Come through the gate" */
+  const gmp = $("#gate-mini-photo");
+  const gateMiniSrc = CONFIG.heroPhoto || CONFIG.gatePhoto;
+  if (gmp){
+    if (gateMiniSrc){
+      gmp.src = gateMiniSrc;
+      gmp.alt = "The gate of " + CONFIG.schoolName;
+    } else { gmp.remove(); }
+  }
 
   /* admissions: the drawing again, smaller */
   $("#admissions-visual").innerHTML = CONFIG.sketch
@@ -2335,6 +2372,83 @@ window.openLB = function(src){
   document.body.appendChild(ov);
 };
 
+async function buildHeroCarousel(){
+  const box = document.getElementById("hero-visual");
+  if (!box) return;
+
+  await Promise.all([loadUploadedGallery(), loadHiddenGallery()]);
+
+  const seen = {};
+  let slides = [];
+  function addSlide(src, alt){
+    if (!src || seen[src]) return;
+    seen[src] = true;
+    slides.push({ src: src, alt: alt || ("Photograph of " + CONFIG.schoolName) });
+  }
+  addSlide(CONFIG.heroPhoto, "Photograph of " + CONFIG.schoolName);
+  GALLERY_ITEMS.filter(function(g){ return HIDDEN_GALLERY.indexOf(g.src)===-1; })
+    .forEach(function(g){ addSlide(g.src, g.title); });
+  UPLOADED_GALLERY.forEach(function(g){ addSlide(g.file, g.caption); });
+  slides = slides.slice(0, 7); // plenty to browse, without slowing the page down
+
+  if (slides.length === 0){
+    box.innerHTML = CONFIG.sketch
+      ? '<figure class="photo-frame hero-sketch"><img class="sketch" src="'+esc(CONFIG.sketch)+
+        '" alt="Pen and ink drawing of the gate of '+esc(CONFIG.schoolName)+'" width="1100" height="1057"></figure>'
+      : schoolDrawing();
+    return;
+  }
+  if (slides.length === 1){
+    box.innerHTML = '<figure class="photo-frame hero-photo-frame"><img class="hero-photo-img" src="'+
+      esc(slides[0].src)+'" alt="'+esc(slides[0].alt)+'" loading="eager" width="1600" height="900"></figure>';
+    return;
+  }
+
+  box.innerHTML =
+    '<div class="photo-frame hero-photo-frame hero-carousel" id="hero-carousel">' +
+    slides.map(function(s,i){
+      return '<img class="hc-slide'+(i===0?' active':'')+'" src="'+esc(s.src)+'" alt="'+esc(s.alt)+
+        '" loading="'+(i===0?'eager':'lazy')+'">';
+    }).join('') +
+    '<button class="hc-nav hc-prev" onclick="heroCarouselNav(-1)" aria-label="Previous photo">\u2039</button>' +
+    '<button class="hc-nav hc-next" onclick="heroCarouselNav(1)" aria-label="Next photo">\u203A</button>' +
+    '<div class="hc-dots">' +
+    slides.map(function(_,i){
+      return '<button class="hc-dot'+(i===0?' active':'')+'" onclick="heroCarouselGoTo('+i+')" aria-label="Go to photo '+(i+1)+'"></button>';
+    }).join('') +
+    '</div></div>';
+
+  HERO_CAROUSEL_INDEX = 0;
+  HERO_CAROUSEL_LEN = slides.length;
+  startHeroCarouselAuto();
+}
+
+let HERO_CAROUSEL_INDEX = 0, HERO_CAROUSEL_LEN = 0, HERO_CAROUSEL_TIMER = null;
+
+function heroCarouselShow(i){
+  const box = document.getElementById("hero-carousel");
+  if (!box) return;
+  box.querySelectorAll(".hc-slide").forEach(function(im,idx){ im.classList.toggle("active", idx===i); });
+  box.querySelectorAll(".hc-dot").forEach(function(d,idx){ d.classList.toggle("active", idx===i); });
+  HERO_CAROUSEL_INDEX = i;
+}
+function heroCarouselNav(delta){
+  if (!HERO_CAROUSEL_LEN) return;
+  heroCarouselShow((HERO_CAROUSEL_INDEX + delta + HERO_CAROUSEL_LEN) % HERO_CAROUSEL_LEN);
+  startHeroCarouselAuto(); // manual browsing resets the clock, so it doesn't jump right away
+}
+function heroCarouselGoTo(i){
+  heroCarouselShow(i);
+  startHeroCarouselAuto();
+}
+function startHeroCarouselAuto(){
+  if (HERO_CAROUSEL_TIMER) clearInterval(HERO_CAROUSEL_TIMER);
+  if (HERO_CAROUSEL_LEN < 2) return;
+  HERO_CAROUSEL_TIMER = setInterval(function(){
+    heroCarouselShow((HERO_CAROUSEL_INDEX + 1) % HERO_CAROUSEL_LEN);
+  }, 5000);
+}
+
 window.addEventListener("load",function(){
   var _orig=show; var _sb=false,_tb=false;
   show=function(name){_orig(name);
@@ -2345,6 +2459,10 @@ window.addEventListener("load",function(){
   var h=location.hash.slice(1);
   if(h==="students"||h==="teachers"||h==="gallery"){show(h);}
 });
+
+/* Home page hero photo carousel — called here, not from applyConfig(),
+   because it needs GALLERY_ITEMS above, which isn't defined yet that early. */
+buildHeroCarousel();
 </script>
 </body>
 </html>
