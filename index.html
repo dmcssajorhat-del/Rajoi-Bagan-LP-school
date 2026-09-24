@@ -235,6 +235,22 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
 .photo-frame img{ width:100%; height:auto; border-radius:8px; display:block; }
 .photo-frame figcaption{ font-size:.82rem; color:var(--ink-soft); padding:11px 4px 4px; margin:0; }
 
+.hero-photo-frame{
+  padding:0; overflow:hidden; border:1px solid var(--rule); border-radius:var(--radius);
+  box-shadow:0 10px 30px rgba(23,50,78,.16), 0 3px 0 rgba(23,50,78,.10);
+  animation:heroPhotoIn .8s cubic-bezier(.2,.7,.2,1) .1s both;
+}
+.hero-photo-frame img.hero-photo-img{
+  width:100%; height:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:0;
+}
+.hero-photo-frame figcaption{
+  padding:10px 14px; margin:0; font-size:.8rem; color:#fff; background:#17324E;
+}
+@keyframes heroPhotoIn{
+  from{ opacity:0; transform:translateY(14px) scale(.98); }
+  to{ opacity:1; transform:none; }
+}
+
 .gate-grid{ display:grid; grid-template-columns:1.08fr .92fr; gap:40px; align-items:center; margin-top:26px; }
 @media (max-width:880px){ .gate-grid{ grid-template-columns:1fr; gap:24px; } }
 .gate-grid h2{ margin-bottom:12px; }
@@ -668,7 +684,7 @@ footer.site a{ color:var(--ink); }
     <section class="block">
       <div class="gate-grid">
         <figure class="photo-frame">
-          <img id="gate-photo" src="" alt="" loading="lazy" width="1171" height="1135">
+          <img id="gate-photo" src="" alt="" loading="lazy" width="1280" height="720">
           <figcaption id="gate-caption"></figcaption>
         </figure>
         <div>
@@ -1274,10 +1290,18 @@ const CONFIG = {
 
   /* Pictures, kept next to this file. Replace the files to change the pictures —
      keep the same names and nothing else needs editing. */
-  sketch:       "school-sketch.jpg",
+  sketch:       "", /* removed — the Assamese text on the drawing had a spelling error; the safe, code-generated illustration below is used instead wherever this was shown */
   sketchCaption:"",
   gatePhoto:    "school-gate.jpg",
   gateCaption:  "",
+
+  /* Real photographs shown on the Home page — heroPhoto is the large image
+     next to the title, campusPhoto is shown further down in "Come through
+     the gate". Leave either one empty ("") to fall back to the sketch. */
+  heroPhoto:        "school-gate.jpg",
+  heroPhotoCaption: "The gate of Rajoi Bagan LP School",
+  campusPhoto:        "school-campus.jpg",
+  campusPhotoCaption: "The school buildings and grounds, seen from just inside the gate",
 
   /* ---- UDISE+ ENROLMENT RECORD ------------------------------------
      Add one line each year and the chart, the table, the class cards
@@ -1368,21 +1392,30 @@ function applyConfig(){
   if (CONFIG.phone){ tel.href = "tel:" + CONFIG.phone.replace(/\s/g,""); tel.textContent = CONFIG.phone; }
   else { tel.replaceWith("the school number"); }
 
-  /* hero: the pen-and-ink drawing of the gate, printed onto the ruled paper */
-  $("#hero-visual").innerHTML = CONFIG.sketch
-    ? '<figure class="photo-frame hero-sketch"><img class="sketch" src="'+esc(CONFIG.sketch)+
-      '" alt="Pen and ink drawing of the gate of '+esc(CONFIG.schoolName)+
-      '" width="1100" height="1057">'+
-      (CONFIG.sketchCaption?'<figcaption class="sketch-cap">'+esc(CONFIG.sketchCaption)+'</figcaption>':'')+
+  /* hero: a real photograph of the school, falling back to the pen-and-ink
+     drawing if no photo has been set */
+  $("#hero-visual").innerHTML = CONFIG.heroPhoto
+    ? '<figure class="photo-frame hero-photo-frame"><img class="hero-photo-img" src="'+esc(CONFIG.heroPhoto)+
+      '" alt="Photograph of '+esc(CONFIG.schoolName)+'" loading="eager" width="1600" height="900">'+
+      (CONFIG.heroPhotoCaption?'<figcaption class="sketch-cap">'+esc(CONFIG.heroPhotoCaption)+'</figcaption>':'')+
       '</figure>'
-    : schoolDrawing();
+    : (CONFIG.sketch
+        ? '<figure class="photo-frame hero-sketch"><img class="sketch" src="'+esc(CONFIG.sketch)+
+          '" alt="Pen and ink drawing of the gate of '+esc(CONFIG.schoolName)+
+          '" width="1100" height="1057">'+
+          (CONFIG.sketchCaption?'<figcaption class="sketch-cap">'+esc(CONFIG.sketchCaption)+'</figcaption>':'')+
+          '</figure>'
+        : schoolDrawing());
 
-  /* home: the photograph of the gate */
+  /* home: a real photograph of the campus, just inside the gate */
   const gp = $("#gate-photo");
-  if (CONFIG.gatePhoto){
-    gp.src = CONFIG.gatePhoto;
-    gp.alt = "The turquoise entrance gate of " + CONFIG.schoolName + ", with the school buildings beyond";
-    $("#gate-caption").textContent = CONFIG.gateCaption || "";
+  const campusSrc = CONFIG.campusPhoto || CONFIG.gatePhoto;
+  if (campusSrc){
+    gp.src = campusSrc;
+    gp.alt = CONFIG.campusPhoto
+      ? "The buildings and grounds of " + CONFIG.schoolName + ", seen from just inside the gate"
+      : "The turquoise entrance gate of " + CONFIG.schoolName + ", with the school buildings beyond";
+    $("#gate-caption").textContent = (CONFIG.campusPhoto ? CONFIG.campusPhotoCaption : CONFIG.gateCaption) || "";
   } else { gp.closest("figure").remove(); }
 
   /* admissions: the drawing again, smaller */
