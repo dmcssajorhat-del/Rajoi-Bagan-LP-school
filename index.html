@@ -198,7 +198,7 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
 
 /* ---------- hero ---------- */
 .hero{ padding-top:26px; padding-bottom:10px; }
-.hero-grid{ display:grid; grid-template-columns:1.22fr .78fr; gap:40px; align-items:center; }
+.hero-grid{ display:grid; grid-template-columns:.82fr 1.38fr; gap:36px; align-items:center; }
 @media (max-width:900px){ .hero-grid{ grid-template-columns:1fr; gap:30px; } }
 .hero h1{ font-size:clamp(2.4rem,6vw,4rem); margin:0 0 4px; }
 .hero h1 .line{ display:block; overflow:hidden; }
@@ -241,10 +241,7 @@ nav.main a[aria-current="page"]{ background:var(--ink); color:var(--paper); }
   animation:heroPhotoIn .8s cubic-bezier(.2,.7,.2,1) .1s both;
 }
 .hero-photo-frame img.hero-photo-img{
-  width:100%; height:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-radius:0;
-}
-.hero-photo-frame figcaption{
-  padding:10px 14px; margin:0; font-size:.8rem; color:#fff; background:#17324E;
+  width:100%; height:100%; aspect-ratio:4/3; object-fit:cover; display:block; border-radius:0;
 }
 @keyframes heroPhotoIn{
   from{ opacity:0; transform:translateY(14px) scale(.98); }
@@ -1299,7 +1296,7 @@ const CONFIG = {
      next to the title, campusPhoto is shown further down in "Come through
      the gate". Leave either one empty ("") to fall back to the sketch. */
   heroPhoto:        "school-gate.jpg",
-  heroPhotoCaption: "The gate of Rajoi Bagan LP School",
+  heroPhotoCaption: "",
   campusPhoto:        "school-campus.jpg",
   campusPhotoCaption: "The school buildings and grounds, seen from just inside the gate",
 
@@ -1393,12 +1390,11 @@ function applyConfig(){
   else { tel.replaceWith("the school number"); }
 
   /* hero: a real photograph of the school, falling back to the pen-and-ink
-     drawing if no photo has been set */
+     drawing if no photo has been set. No caption on purpose — the photo
+     itself is meant to be the first thing a visitor's eye lands on. */
   $("#hero-visual").innerHTML = CONFIG.heroPhoto
     ? '<figure class="photo-frame hero-photo-frame"><img class="hero-photo-img" src="'+esc(CONFIG.heroPhoto)+
-      '" alt="Photograph of '+esc(CONFIG.schoolName)+'" loading="eager" width="1600" height="900">'+
-      (CONFIG.heroPhotoCaption?'<figcaption class="sketch-cap">'+esc(CONFIG.heroPhotoCaption)+'</figcaption>':'')+
-      '</figure>'
+      '" alt="Photograph of '+esc(CONFIG.schoolName)+'" loading="eager" width="1600" height="900"></figure>'
     : (CONFIG.sketch
         ? '<figure class="photo-frame hero-sketch"><img class="sketch" src="'+esc(CONFIG.sketch)+
           '" alt="Pen and ink drawing of the gate of '+esc(CONFIG.schoolName)+
